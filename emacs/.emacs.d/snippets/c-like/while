@@ -1,0 +1,7 @@
+# key: w
+# name: while
+# --
+
+while ($1) {
+    $0
+}

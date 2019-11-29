@@ -1,0 +1,6 @@
+# key: p
+# name: println
+# --
+
+System.out.println("$1");
+$0

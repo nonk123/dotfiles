@@ -1,0 +1,9 @@
+# key: get
+# name: get
+# --
+
+public $1 get${2:$(capitalize yas-text)}() {
+    return $2;
+}
+
+$0

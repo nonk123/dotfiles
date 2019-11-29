@@ -1,0 +1,6 @@
+# key: f
+# name: field
+# --
+
+private $1 $2;
+$0

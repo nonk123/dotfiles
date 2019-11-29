@@ -1,0 +1,5 @@
+# key: con
+# name: constant
+# --
+
+public static final $1 ${2:$(upcase yas-text)} = $3;

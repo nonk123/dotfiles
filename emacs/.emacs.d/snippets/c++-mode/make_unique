@@ -1,0 +1,5 @@
+# key: mu
+# name: make_unique
+# --
+
+auto $1 = std::make_unique<$2>($3);

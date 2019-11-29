@@ -1,0 +1,12 @@
+#!/bin/sh
+
+paused=$([ "`mpc status | grep paused`" ] && echo "⏸️" || echo "▶️")
+repeat=$([ "`mpc status | grep \"repeat: on\"`" ] && echo "🔁")
+name=$(basename "$(mpc current)")
+time=$(mpc status | grep \# | awk '{ print $3 }')
+elapsed=$(echo "$time" | cut -d/ -f1)
+total=$(echo "$time" | cut -d/ -f2)
+
+format="$repeat$paused $name ($elapsed / $total)"
+
+[ "$name" ] && echo "$format" || echo "No music playing"

@@ -1,0 +1,7 @@
+# key: f
+# name: defun
+# --
+
+(defun $1 ($2)
+  $3)
+$0

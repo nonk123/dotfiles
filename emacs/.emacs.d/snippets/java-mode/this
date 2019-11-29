@@ -1,0 +1,5 @@
+# key: t
+# name: this
+# --
+
+this.$1 = $1;

@@ -1,0 +1,9 @@
+# key: set
+# name: set
+# --
+
+public void set${2:$(capitalize yas-text)}($1 $2) {
+    this.$2 = $2;
+}
+
+$0

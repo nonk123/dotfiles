@@ -1,0 +1,6 @@
+# key: hm
+# name: hashmap
+# --
+
+Map<$1, $2> $3 = new HashMap<>();
+$0

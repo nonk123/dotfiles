@@ -1,0 +1,6 @@
+# key: fs
+# name: for-short
+# --
+
+for ($1; $2; $3)
+    $0

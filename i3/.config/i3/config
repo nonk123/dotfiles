@@ -1,0 +1,60 @@
+bindsym mod1+mod2+mod3+mod4+control+shift+a kill
+
+font pango:DejaVu Sans Mono 12px
+
+for_window [class="^.*"] border pixel 1
+
+focus_follows_mouse no
+
+floating_modifier Mod4
+
+set_from_resource $background i3wm.background #000000
+set_from_resource $foreground i3wm.foreground #ffffff
+
+set_from_resource $color0 i3wm.color0 #000000
+set_from_resource $color8 i3wm.color8 #111111
+
+set_from_resource $color1 i3wm.color1 #ff0000
+set_from_resource $color9 i3wm.color9 #ff1111
+
+set_from_resource $color2 i3wm.color2 #00ff00
+set_from_resource $color10 i3wm.color10 #11ff11
+
+set_from_resource $color3 i3wm.color3 #ffff00
+set_from_resource $color11 i3wm.color11 #ffff11
+
+set_from_resource $color4 i3wm.color4 #0000ff
+set_from_resource $color12 i3wm.color12 #1111ff
+
+set_from_resource $color5 i3wm.color5 #ff00ff
+set_from_resource $color13 i3wm.color13 #ff11ff
+
+set_from_resource $color6 i3wm.color6 #00ffff
+set_from_resource $color14 i3wm.color14 #11ffff
+
+set_from_resource $color7 i3wm.color7 #eeeeee
+set_from_resource $color15 i3wm.color15 #ffffff
+
+client.focused          $color1 $background $foreground $color2     $color4
+client.focused_inactive $color2 $background $foreground $background $background
+client.unfocused        $color1 $background $foreground $background $background
+client.urgent           $color1 $background $foreground $background $color1
+client.background       $background
+
+bar {
+    position top
+    separator_symbol " "
+    font pango:DejaVu Sans Mono 9
+    status_command i3blocks
+
+    colors {
+        background $background
+        statusline $foreground
+        separator  $foreground
+        #                  border      backgr.     text
+        focused_workspace  $color4     $background $foreground
+        active_workspace   $color1     $background $foreground
+        inactive_workspace $background $background $foreground
+        urgent_workspace   $color1     $background $foreground
+    }
+}

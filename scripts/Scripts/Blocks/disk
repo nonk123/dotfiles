@@ -1,0 +1,16 @@
+#!/bin/bash
+
+emoji=💽
+
+used=`df -BG | awk '/sda1/ { print $3 }'`
+used=${used::-1}
+total=`df -BG | awk '/sda1/ { print $2 }'`
+total=${total::-1}
+avail=`expr $total - $used`
+
+echo "$emoji $used / $total GB"
+echo "$emoji $avail GB"
+
+[ `expr $avail "<" 18` = 1 ] && echo `xrdb -query | grep -m1 color3 | cut -f2`
+[ `expr $avail "<" 10` = 1 ] && echo `xrdb -query | grep -m1 color1 | cut -f2` \
+                             || echo `xrdb -query | grep -m1 color2 | cut -f2`

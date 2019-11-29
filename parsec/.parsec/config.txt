@@ -1,0 +1,27 @@
+# For help and a full list of settings visit: https://parsec.tv/config/
+
+# All configuration settings must appear on a new line.
+# Comments are allowed after a '#' character (end-of-line style).
+# All whitespace, besides the newline character '\n', is ignored.
+# All settings passed via the command line, or via the website, take precedence.
+# The configuration file will be overwritten by the application when changing settings.
+
+# Example:
+# encoder_bitrate = 10
+
+client_vsync = 0
+client_windowed = 1
+client_fullscreen = 0
+client_overlay = 1
+#client_renderer=1
+encoder_h265=1
+decoder_software=1
+
+server_refresh_rate = 20
+server_resolution_x = 1366
+server_resolution_y = 768
+encoder_bitrate = 100
+server_admin_mute = 0
+
+#network_ip_address=172.26.92.160
+network_ip_address=172.26.235.229

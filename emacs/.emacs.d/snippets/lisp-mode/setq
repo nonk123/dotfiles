@@ -1,0 +1,5 @@
+# key: s
+# name: setq
+# --
+
+(setq $1 $2)$0

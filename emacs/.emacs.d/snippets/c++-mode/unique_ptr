@@ -1,0 +1,5 @@
+# key: up
+# name: unique_ptr
+# --
+
+std::unique_ptr<$1> $2;

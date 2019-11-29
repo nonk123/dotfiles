@@ -1,0 +1,10 @@
+#!/bin/sh
+
+emoji=🌐
+
+ip=`ip a s ppp0 | awk '/inet[^6]/ { print $2 }'`
+
+[ "$ip" ] && echo "$emoji $ip" || echo "$emoji ppp0 down"
+[ "$ip" ] && echo "$emoji $ip" || echo "$emoji ppp0 down"
+[ "$ip" ] && echo `xrdb -query | grep -m1 color2 | cut -f2` \
+          || echo `xrdb -query | grep -m1 color1 | cut -f2`

@@ -1,0 +1,7 @@
+# key: ei
+# name: elif
+# --
+
+else if ($1) {
+    $0
+}

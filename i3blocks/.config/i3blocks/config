@@ -1,0 +1,42 @@
+full_text=〈
+
+[music]
+align=center
+command=~/Scripts/Blocks/music
+full_text=
+interval=1
+signal=1
+min_width=150
+
+[separator]
+
+[title]
+align=center
+command=xtitle -s
+full_text=
+interval=persist
+min_width=170
+
+[separator]
+
+[ip]
+command=~/Scripts/Blocks/ip
+interval=3
+
+[separator]
+
+[disk]
+command=~/Scripts/Blocks/disk
+interval=3
+
+[separator]
+
+[date]
+command=echo "📅 `LC_ALL=en-UK.utf8 date \"+%A %0d.%0m.%000y\"`"
+interval=5
+
+[separator]
+
+[time]
+command=echo "🕑 `LC_ALL=en-UK.utf8 date \"+%0H:%0M:%0S\"`"
+interval=1

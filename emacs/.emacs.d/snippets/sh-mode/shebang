@@ -1,0 +1,7 @@
+# key: #
+# name: shebang
+# --
+
+#!/bin/${1:sh}
+
+$0

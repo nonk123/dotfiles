@@ -1,0 +1,7 @@
+# key: i
+# name: if
+# --
+
+if $1; then
+    $0
+fi
