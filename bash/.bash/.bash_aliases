@@ -25,3 +25,7 @@ alias fuck='eval $(thefuck $(history | tail -n 2 | head -n 1 | cut -d " " -f 4-)
 alias fluidsynth="fluidsynth -a pulseaudio -m alsa_seq -g 1.0 /home/nonk/Misc/Unison.sf2"
 
 alias cmake="cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+
+xc() {
+    echo "`xrdb -query | grep -m1 \"$1\" | cut -f2`"
+}

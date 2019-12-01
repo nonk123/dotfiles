@@ -55,7 +55,7 @@
 *color7:                S_base2
 *color15:               S_base3
 
-*font: xft:DejaVu Sans Mono:size=9
+i3wm.font: xft:DejaVu Sans Mono:size=9
 
 URxvt*print-pipe: "cat > /dev/null"
 

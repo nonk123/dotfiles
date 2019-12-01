@@ -50,7 +50,7 @@ super + e
       emacsclient -c
 
 super + R
-      pkill --signal USR1 sxhkd && i3-msg restart
+      xrdb ~/.Xresources && pkill --signal USR1 sxhkd && i3-msg restart
 
 super + Return
       x-terminal-emulator

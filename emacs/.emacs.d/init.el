@@ -23,18 +23,11 @@
 (use-package solarized-theme
   :init (load-theme 'solarized-dark t))
 
-(use-package flycheck
-  :init (setq flycheck-clang-args '("-I/usr/lib/clang/9.0.0/include/"
-                                    "-I/usr/include/"
-                                    "-I/usr/include/c++/8"
-                                    "-I/usr/include/x86_64-linux-gnu/c++/8"
-                                    "-Iexternal/**"
-                                    "-Iinclude/**"
-                                    "-Isrc/**")))
-
 (use-package helm
   :init (require 'helm-config)
-  :bind ("M-x" . helm-M-x))
+  :bind
+  (("M-x" . helm-M-x)
+   ("C-x C-f" . helm-find-files)))
 
 (use-package company)
 (use-package helm-gtags
@@ -49,10 +42,9 @@
         ("<backtab>" . helm-company)))
 
 (use-package lsp-mode)
-(use-package lsp-ui)
+(use-package lsp-java)
 (use-package company-lsp)
 (use-package helm-lsp)
-(use-package lsp-java)
 
 (use-package yasnippet
   :config
@@ -93,7 +85,7 @@
 
 (add-to-list 'after-make-frame-functions 'after-make-frame-actions)
 
-(add-to-list 'load-path "~/.emacs.d/lisp")
+(add-to-list 'load-path "~/.emacs.d/lisp/")
 
 (global-set-key (kbd "s-i") (lambda () (interactive)
   (load-file "~/.emacs.d/init.el")))
@@ -121,7 +113,6 @@
   (interactive)
   (display-line-numbers-mode 1)
   (company-mode 1)
-  (flycheck-mode 1)
   (helm-mode 1)
   (helm-gtags-mode 1)
   (lsp-mode 1)
@@ -156,7 +147,7 @@
   tab-stop-list nil
   show-trailing-whitespace t
   epa-pinentry-mode 'loopback
-  multi-term-program "/bin/bash")
+  vc-follow-symlinks t)
 
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
