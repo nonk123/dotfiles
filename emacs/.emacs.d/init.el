@@ -30,6 +30,8 @@
    ("C-x C-f" . helm-find-files)))
 
 (use-package company)
+(use-package company-c-headers
+  :config (add-to-list 'company-backends 'company-c-headers))
 (use-package helm-gtags
   :init (setq-default helm-gtags-auto-update t
                       helm-gtags-ignore-case t))
@@ -41,18 +43,29 @@
    :map company-active-map
         ("<backtab>" . helm-company)))
 
-(use-package lsp-mode)
+(use-package lsp-mode
+  :commands lsp
+  :init (setq lsp-auto-guess-root t))
+(use-package ccls)
 (use-package lsp-java)
 (use-package company-lsp)
 (use-package helm-lsp)
 
+(use-package flycheck
+  :init
+  (setq lsp-prefer-flymake nil)
+  (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+  (global-flycheck-mode))
+(use-package lsp-ui)
+
 (use-package yasnippet
-  :config
-  (yas-global-mode 1)
+  :init
   (setq yas-triggers-in-field t)
-  (setq yas-indent-line 'fixed))
+  (setq yas-indent-line 'fixed)
+  :config (yas-global-mode 1))
 
 (use-package projectile
+  :init (setq projectile-project-search-path '("~/Sources/"))
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
@@ -115,7 +128,7 @@
   (company-mode 1)
   (helm-mode 1)
   (helm-gtags-mode 1)
-  (lsp-mode 1)
+  (lsp)
   (setq-local tab-width 4))
 
 (add-hook 'prog-mode-hook 'prog-actions)
@@ -129,8 +142,7 @@
 (defun c-actions ()
   (interactive)
   (setq-local c-basic-offset 4)
-  (setq-local c-default-style "java")
-  (ggtags-mode 1))
+  (setq-local c-default-style "java"))
 
 (add-hook 'c-mode-common-hook 'c-actions)
 
@@ -147,7 +159,8 @@
   tab-stop-list nil
   show-trailing-whitespace t
   epa-pinentry-mode 'loopback
-  vc-follow-symlinks t)
+  vc-follow-symlinks t
+  flycheck-disabled-checkers '(c/c++-clang))
 
 (menu-bar-mode 0)
 (scroll-bar-mode 0)

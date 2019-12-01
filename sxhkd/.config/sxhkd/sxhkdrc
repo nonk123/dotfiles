@@ -26,13 +26,13 @@ super + {t,T,s}
       i3-msg layout {toggle split,tabbed,stacking}
 
 super + {greater,less,p}
-      mpc {prev,next,toggle}; pkill -RTMIN+1 i3blocks
+      mpc {next,prev,toggle}; pkill -RTMIN+1 i3blocks
 
 super + r
       mpc repeat {on; mpc single on,off; mpc single off}; pkill -RTMIN+1 i3blocks
 
 super + u
-      mpc rescan && mpc update && mpc clear && mpc ls | mpc add
+      mpc rescan && mpc update && mpc clear && mpc ls | mpc add; pkill -RTMIN+1 i3blocks
 
 super + {plus,minus}
       mpc seek {+,-}10

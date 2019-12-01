@@ -1,5 +1,14 @@
 full_text=〈
 
+[title]
+align=center
+command=xtitle -s
+full_text=
+interval=persist
+min_width=170
+
+[separator]
+
 [music]
 align=center
 command=~/Scripts/Blocks/music
@@ -7,15 +16,6 @@ full_text=
 interval=1
 signal=1
 min_width=150
-
-[separator]
-
-[title]
-align=center
-command=xtitle -s
-full_text=
-interval=persist
-min_width=170
 
 [separator]
 
