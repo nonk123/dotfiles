@@ -45,7 +45,9 @@
 
 (use-package lsp-mode
   :commands lsp
-  :init (setq lsp-auto-guess-root t))
+  :init
+  (setq lsp-auto-guess-root t)
+  (setq lsp-enable-on-type-formatting nil))
 (use-package ccls)
 (use-package lsp-java)
 (use-package company-lsp)
@@ -65,7 +67,7 @@
   :config (yas-global-mode 1))
 
 (use-package projectile
-  :init (setq projectile-project-search-path '("~/Sources/"))
+  :init (setq projectile-project-search-path '("~/Sources/" "~/"))
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
@@ -85,6 +87,8 @@
         ("C-f" . sokoban-move-right)
         ("C-n" . sokoban-move-down)
         ("n" . nil)))
+
+(use-package string-inflection)
 
 (defun after-make-frame-actions (frame)
   (interactive)
@@ -106,6 +110,9 @@
 (global-set-key (kbd "s-SPC") 'rectangle-mark-mode)
 (global-set-key (kbd "s-w") (lambda () (interactive)
   (kill-ring-save (line-beginning-position) (line-end-position))))
+
+(global-set-key (kbd "M-p") 'scroll-down-line)
+(global-set-key (kbd "M-n") 'scroll-up-line)
 
 (defun tetris-actions ()
   (interactive)
@@ -139,12 +146,12 @@
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-actions)
 
-(defun c-actions ()
-  (interactive)
-  (setq-local c-basic-offset 4)
-  (setq-local c-default-style "java"))
-
-(add-hook 'c-mode-common-hook 'c-actions)
+(c-add-style "nonk123"
+  '("java"
+    (c-basic-offset . 4)
+    (c-offsets-alist
+     (access-label . /))))
+(setq c-default-style "nonk123")
 
 (defun text-actions ()
   (interactive)
@@ -159,8 +166,7 @@
   tab-stop-list nil
   show-trailing-whitespace t
   epa-pinentry-mode 'loopback
-  vc-follow-symlinks t
-  flycheck-disabled-checkers '(c/c++-clang))
+  vc-follow-symlinks t)
 
 (menu-bar-mode 0)
 (scroll-bar-mode 0)

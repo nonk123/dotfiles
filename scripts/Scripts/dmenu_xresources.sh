@@ -10,4 +10,4 @@ nf=`color foreground`
 sb=`color color4`
 sf=`color background`
 
-dmenu -fn "$fn" -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf"
+dmenu -fn "$fn" -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" "$@"

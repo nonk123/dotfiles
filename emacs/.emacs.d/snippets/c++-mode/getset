@@ -1,0 +1,13 @@
+# key: gs
+# name: getset
+# --
+
+$1 get${2:$(capitalize yas-text)}() {
+    return $2;
+}
+
+void set${2:$(capitalize yas-text)}($1 $2) {
+    this->$2 = $2;
+}
+
+$0

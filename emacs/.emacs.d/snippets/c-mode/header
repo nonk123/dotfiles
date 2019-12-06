@@ -2,7 +2,7 @@
 # name: header
 # --
 
-#ifndef ${1:`(upcase (replace-regexp-in-string "[. ]" "_" (file-name-nondirectory (buffer-file-name))))`}
+#ifndef ${1:`(upcase (replace-regexp-in-string "[. ]" "_" (string-inflection-underscore-function (file-name-nondirectory (buffer-file-name)))))`}
 #define $1
 
 $0
