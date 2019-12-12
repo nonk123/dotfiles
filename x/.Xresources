@@ -56,27 +56,3 @@
 *color15:               S_base3
 
 i3wm.font: xft:DejaVu Sans Mono:size=9
-
-URxvt*print-pipe: "cat > /dev/null"
-
-URxvt*termName: rxvt-unicode-256color
-URxvt*saveLines: 2000
-
-URxvt*depth: 256
-
-URxvt*scrollTtyOutput: false
-URxvt*scrollWithBuffer: true
-URxvt*scrollTtyKeypress: false
-
-URxvt.secondaryScreen: 1
-URxvt.secondaryScroll: 0
-
-URxvt*scrollBar: False
-URxvt*scrollBar_right: True
-URxvt*scrollstyle: plain
-
-URxvt*iso14755: False
-URxvt*iso14755_52: False
-
-URxvt.perl-ext-common: default,clipboard
-URxvt.keysym.Shift-Control-V: perl:clipboard:paste

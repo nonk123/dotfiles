@@ -3,7 +3,7 @@
 paused=$([ "`mpc status | grep paused`" ] && echo "⏸️" || echo "▶️")
 repeat=$([ "`mpc status | grep \"repeat: on\"`" ] && echo "🔁")
 name=$(basename "$(mpc current)")
-time=$(mpc status | grep \# | awk '{ print $3 }')
+time=$(mpc status | awk '/\#/ { print $3 }')
 elapsed=$(echo "$time" | cut -d/ -f1)
 total=$(echo "$time" | cut -d/ -f2)
 

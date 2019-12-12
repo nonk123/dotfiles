@@ -1,0 +1,13 @@
+# key: h
+# name: header
+# --
+
+;;; `(file-name-nondirectory (buffer-file-name))` --- $1.
+
+;;; Commentary:${2:$(if (string-blank-p yas-text) "" "\n;;; ")}$2
+
+;;; Code:
+$0
+
+(provide '`(file-name-base (buffer-file-name))`)
+;;; `(file-name-nondirectory (buffer-file-name))` ends here

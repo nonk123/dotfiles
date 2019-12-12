@@ -1,5 +1,5 @@
 super + {h,j,k,l}
-      i3-msg focus {left,down,up,right}
+      i3-msg focus {left,down,up,right}; pkill -RTMIN+1 i3blocks
 
 super + ctrl + {h,j,k,l}
       i3-msg move {left,down,up,right} 50 px
@@ -11,7 +11,7 @@ super + v
       i3-msg split {v,h}
 
 super + {_,ctrl +} {0-9}
-      i3-msg {_,move container to} workspace {0-9}
+      i3-msg {_,move container to} workspace {0-9}; pkill -RTMIN+1 i3blocks
 
 super + g
       i3-msg gaps inner all set {5,0}
@@ -25,21 +25,6 @@ super + {f,F}
 super + {t,T,s}
       i3-msg layout {toggle split,tabbed,stacking}
 
-super + {greater,less,p}
-      mpc {next,prev,toggle}; pkill -RTMIN+1 i3blocks
-
-super + r
-      mpc repeat {on; mpc single on,off; mpc single off}; pkill -RTMIN+1 i3blocks
-
-super + u
-      mpc rescan && mpc update && mpc clear && mpc ls | mpc add; pkill -RTMIN+1 i3blocks
-
-super + {plus,minus}
-      mpc seek {+,-}10
-
-super + P
-      ~/Scripts/play_by_filename.sh; pkill -RTMIN+1 i3blocks
-
 super + b
       ~/Scripts/surf.sh
 
@@ -49,8 +34,8 @@ super + d
 super + e
       emacsclient -c
 
-super + R
-      xrdb ~/.Xresources && pkill --signal USR1 sxhkd && i3-msg restart
+super + r
+      xrdb ~/.Xresources; pkill -USR1 sxhkd; i3-msg restart
 
 super + Return
       x-terminal-emulator

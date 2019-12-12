@@ -1,23 +1,20 @@
-full_text=〈
+#full_text= 〈 
+full_text= | 
+align=right
 
-[title]
-align=center
-command=xtitle -s
-full_text=
-interval=persist
-min_width=170
-
-[separator]
-
-[music]
-align=center
-command=~/Scripts/Blocks/music
+[desktops]
+align=left
+command=~/Scripts/Blocks/desktops
 full_text=
 interval=1
 signal=1
-min_width=150
 
-[separator]
+[title]
+align=center
+command=xtitle
+full_text=
+interval=1
+signal=1
 
 [ip]
 command=~/Scripts/Blocks/ip
@@ -32,11 +29,11 @@ interval=3
 [separator]
 
 [date]
-command=echo "📅 `LC_ALL=en-UK.utf8 date \"+%A %0d.%0m.%000y\"`"
+command=LC_ALL=en-UK.utf8 date "+%A %0d.%0m.%000y"
 interval=5
 
 [separator]
 
 [time]
-command=echo "🕑 `LC_ALL=en-UK.utf8 date \"+%0H:%0M:%0S\"`"
+command=LC_ALL=en-UK.utf8 date "+%0H:%0M:%0S"
 interval=1
