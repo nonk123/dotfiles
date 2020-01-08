@@ -5,12 +5,16 @@ avail=${avail::-1}
 
 format="$avail GB"
 
-ok=`xrdb -query | grep -m1 color2 | cut -f2`
+ ok=`xrdb -query | grep -m1 color2 | cut -f2`
 low=`xrdb -query | grep -m1 color3 | cut -f2`
 meh=`xrdb -query | grep -m1 color1 | cut -f2`
 
-[ `expr $avail \< 18` = 1 ] && color=$low
-[ `expr $avail \< 10` = 1 ] && color=$meh \
-                            || color=$ok
+if [ `expr $avail \< 18` = 1 ]; then
+    color=$low
+elif [ `expr $avail \< 10` = 1 ]; then
+    color=$meh
+else
+    color=$ok
+fi
 
 echo "%{F$color}$format"

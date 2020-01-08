@@ -7,7 +7,7 @@ color() {
 fn=`color font`
 nb=`color background`
 nf=`color foreground`
-sb=`color color4`
+sb=`color color2`
 sf=`color background`
 
 dmenu -fn "$fn" -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" "$@"

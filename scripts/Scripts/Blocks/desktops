@@ -3,11 +3,11 @@
 l=" "
 r=" "
 
-all=$(i3-msg -t get_workspaces | jq -j ".[] | \"$l\(.name)$r \"")
-selected=$(i3-msg -t get_workspaces | jq -j '.[] | select(.focused == true).name')
+all=`i3-msg -t get_workspaces | jq -j ".[] | \"$l\(.name)$r \""`
+selected=`i3-msg -t get_workspaces | jq -j '.[] | select(.focused == true).name'`
 
 g=B
-color=$(xrdb -query | grep -m1 color4 | cut -f2)
+color=`xrdb -query | grep -m1 color2 | cut -f2`
 
 withSelected=$(echo "$all" | sed "s/$l$selected$r/%{$g$color}$l$selected$r%{$g-}/")
 

@@ -3,9 +3,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(use-package solarized-theme
-  :init (load-theme 'solarized-dark t))
-
 (use-package helm
   :init (require 'helm-config)
   :bind
@@ -59,9 +56,10 @@
 
 (use-package markdown-mode)
 
-(use-package frames-only-mode
-  :init (frames-only-mode 1)
-  :bind ("s-o" . make-frame))
+(use-package slime
+  :init
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  (setq slime-contribs '(slime-fancy)))
 
 (use-package sokoban
   :bind
@@ -73,6 +71,4 @@
         ("n" . nil)))
 
 (use-package string-inflection)
-
-(provide 'packages)
 ;;; packages.el ends here

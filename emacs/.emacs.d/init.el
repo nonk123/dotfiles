@@ -4,13 +4,19 @@
 
 ;;; Code:
 (setq custom-file "~/.emacs.d/custom.el")
-(load-file custom-file)
+(load custom-file)
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-(require 'package-init)
-(require 'packages)
-(require 'hooks)
-(require 'keys)
-(require 'misc)
+(defun load-init ()
+  "Load all parts of the init file."
+  (interactive)
+  (dolist (file '("package-init"
+                  "packages"
+                  "hooks"
+                  "keys"
+                  "misc"))
+    (load file)))
+
+(load-init)
 ;;; init.el ends here

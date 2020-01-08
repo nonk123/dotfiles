@@ -1,58 +1,34 @@
-#define S_base03        #002b36
-#define S_base02        #073642
-#define S_base01        #586e75
-#define S_base00        #657b83
-#define S_base0         #839496
-#define S_base1         #93a1a1
-#define S_base2         #eee8d5
-#define S_base3         #fdf6e3
+*background:  #121212
+*foreground:  #bcbcbc
+*cursorColor: #5f87af
 
-*background:             S_base03
-*foreground:             S_base0
-*fadeColor:              S_base03
-*cursorColor:            S_base1
-*pointerColorBackground: S_base01
-*pointerColorForeground: S_base1
+*color0:      #121212
+*color8:      #121212
 
-#define S_yellow        #b58900
-#define S_orange        #cb4b16
-#define S_red           #dc322f
-#define S_magenta       #d33682
-#define S_violet        #6c71c4
-#define S_blue          #268bd2
-#define S_cyan          #2aa198
-#define S_green         #859900
+*color1:      #d75f5f
+*color9:      #d75f5f
 
-!! black dark/light
-*color0:                S_base02
-*color8:                S_base03
+*color2:      #87af5f
+*color10:     #87af5f
 
-!! red dark/light
-*color1:                S_red
-*color9:                S_orange
+*color3:      #afaf87
+*color11:     #afaf87
 
-!! green dark/light
-*color2:                S_green
-*color10:               S_base01
+*color4:      #5fafd7
+*color12:     #5fafd7
 
-!! yellow dark/light
-*color3:                S_yellow
-*color11:               S_base00
+*color5:      #af87af
+*color13:     #af87af
 
-!! blue dark/light
-*color4:                S_blue
-*color12:               S_base0
+*color6:      #5faf87
+*color14:     #5faf87
 
-!! magenta dark/light
-*color5:                S_magenta
-*color13:               S_violet
+*color7:      #bcbcbc
+*color15:     #bcbcbc
 
-!! cyan dark/light
-*color6:                S_cyan
-*color14:               S_base1
+XTerm.vt100.metaSendsEscape: true
 
-!! white dark/light
-*color7:                S_base2
-*color15:               S_base3
-
-i3wm.font: xft:DejaVu Sans Mono:size=9
+i3wm.font:        xft:Terminus:size=8:antialias=false:autohint=false
+XTerm.vt100.faceName: Terminus:size=8:antialias=false:autohint=false
+st.font:              Terminus:size=8:antialias=false:autohint=false
+emacs*font:           Terminus      8

@@ -14,6 +14,4 @@
 
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
-
-(provide 'package-init)
 ;;; package-init.el ends here

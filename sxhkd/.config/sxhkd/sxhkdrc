@@ -41,4 +41,4 @@ super + Return
       x-terminal-emulator
 
 {_,shift + }Print
-         ~/Scripts/{selection,desktop}_screenshot.sh
+         ~/Scripts/{selection,desktop}-screenshot.sh

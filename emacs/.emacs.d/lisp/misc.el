@@ -3,11 +3,15 @@
 ;;; Commentary:
 
 ;;; Code:
+(use-package emacs
+  :bind ("C-z" . nil))
+
 (c-add-style "nonk123"
   '("java"
     (c-basic-offset . 4)
     (c-offsets-alist
-     (access-label . /))))
+     (access-label . /)
+     (case-label . +))))
 (setq c-default-style "nonk123")
 
 (setq-default
@@ -17,6 +21,10 @@
   show-trailing-whitespace t
   epa-pinentry-mode 'loopback
   vc-follow-symlinks t)
+
+(setq whitespace-line-column 80)
+(setq whitespace-style '(face lines-tail))
+(whitespace-mode 1)
 
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
@@ -30,6 +38,4 @@
 (electric-indent-mode 0)
 
 (column-number-mode 1)
-
-(provide 'misc)
 ;;; misc.el ends here

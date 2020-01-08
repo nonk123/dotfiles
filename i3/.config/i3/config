@@ -8,6 +8,8 @@ focus_follows_mouse no
 
 floating_modifier Mod4
 
+exec_always --no-startup-id ~/Scripts/x-startup.sh
+
 set_from_resource $background i3wm.background #000000
 set_from_resource $foreground i3wm.foreground #ffffff
 
@@ -35,7 +37,7 @@ set_from_resource $color14 i3wm.color14 #11ffff
 set_from_resource $color7 i3wm.color7 #eeeeee
 set_from_resource $color15 i3wm.color15 #ffffff
 
-client.focused          $color4     $background $foreground $color2     $color4
+client.focused          $color2     $background $foreground $color4     $color2
 client.focused_inactive $background $background $foreground $background $background
 client.unfocused        $background $background $foreground $background $background
 client.urgent           $color1     $background $foreground $background $color1

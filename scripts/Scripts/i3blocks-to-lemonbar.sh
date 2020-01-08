@@ -1,15 +1,13 @@
 #!/bin/bash
 
-counter=0
-skip=4
+# Input lines to skip to save CPU usage.
+skip=3
 
 # Killing i3blocks kills this script too, for some reason.
 trap -- '' SIGRTMIN+1
 
 while read line; do
-    # Skip several lines because my CPU struggles to parse JSON 80 times/sec.
-    counter=`expr $counter + 1`
-    [ $counter != $skip ] && continue || counter=0
+    for i in {0..$skip}; do read line; done
 
     line="${line:1}"
 
@@ -50,4 +48,5 @@ while read line; do
 
         echo -e "$out"
     }
-done < <(i3blocks) | lemonbar -B `xrdb -query | grep -m1 background | cut -f2`
+done < <(i3blocks) | lemonbar -B `xrdb -query | grep -m1 background | cut -f2` \
+                              -f `xrdb -query | grep -m1 font | cut -f2`
