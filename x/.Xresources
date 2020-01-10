@@ -1,30 +1,47 @@
-*background:  #121212
-*foreground:  #bcbcbc
-*cursorColor: #5f87af
+#define black #202731
+#define blue #006aff
+#define green #44b839
+#define cyan #729cfb
+#define red #d43655
+#define magenta #b032ff
+#define brown #d97641
+#define lgray #aac4b2
+#define dgray #80979c
+#define lblue #30a5ff
+#define lgreen #90ff4f
+#define lcyan #a8d4ff
+#define lred #ff5252
+#define lmagenta #ff6bff
+#define yellow #ffe866
+#define white #fffae8
 
-*color0:      #121212
-*color8:      #121212
+*background:  black
+*foreground:  white
+*cursorColor: white
 
-*color1:      #d75f5f
-*color9:      #d75f5f
+*color0:      black
+*color8:      dgray
 
-*color2:      #87af5f
-*color10:     #87af5f
+*color1:      red
+*color9:      lred
 
-*color3:      #afaf87
-*color11:     #afaf87
+*color2:      green
+*color10:     lgreen
 
-*color4:      #5fafd7
-*color12:     #5fafd7
+*color3:      brown
+*color11:     yellow
 
-*color5:      #af87af
-*color13:     #af87af
+*color4:      blue
+*color12:     lblue
 
-*color6:      #5faf87
-*color14:     #5faf87
+*color5:      magenta
+*color13:     lmagenta
 
-*color7:      #bcbcbc
-*color15:     #bcbcbc
+*color6:      cyan
+*color14:     lcyan
+
+*color7:      lgray
+*color15:     white
 
 XTerm.vt100.metaSendsEscape: true
 

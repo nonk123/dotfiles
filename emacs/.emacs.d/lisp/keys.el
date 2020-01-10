@@ -3,6 +3,8 @@
 ;;; Commentary:
 
 ;;; Code:
+(global-unset-key (kbd "C-z"))
+
 (global-set-key (kbd "s-i") 'load-init)
 
 (global-set-key (kbd "s-o") 'make-frame)

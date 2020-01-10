@@ -3,9 +3,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(use-package emacs
-  :bind ("C-z" . nil))
-
 (c-add-style "nonk123"
   '("java"
     (c-basic-offset . 4)
@@ -32,9 +29,13 @@
 
 (blink-cursor-mode 0)
 
+(delete-selection-mode 1)
+
+(electric-pair-mode 1)
 (show-paren-mode 1)
 
-(delete-selection-mode 1)
+(global-subword-mode 1)
+
 (electric-indent-mode 0)
 
 (column-number-mode 1)
