@@ -9,6 +9,12 @@
   (("M-x" . helm-M-x)
    ("C-c M-x" . execute-extended-command)
    ("C-x C-f" . helm-find-files)))
+(use-package helm-xref)
+
+(use-package avy
+  :bind
+  (("C-;" . avy-goto-line)
+   ("C-:" . avy-goto-word-1)))
 
 (use-package company)
 (use-package company-c-headers
@@ -28,7 +34,17 @@
   :commands lsp
   :init
   (setq lsp-auto-guess-root t)
-  (setq lsp-enable-on-type-formatting nil))
+  (setq lsp-enable-on-type-formatting nil)
+  (setq lsp-enable-xref t)
+  (setq lsp-enable-imenu t)
+  :bind
+  (("C-c I" . lsp-organize-imports)
+   ("C-c i" . lsp-goto-implementation)
+   ("C-c d" . lsp-find-definition)
+   ("C-c m" . helm-imenu)
+   ("C-c x" . xref-find-definitions)
+   ("C-c r" . lsp-rename)
+   ("C-c a" . lsp-avy-lens)))
 (use-package ccls)
 (use-package lsp-java)
 (use-package company-lsp)
@@ -69,6 +85,21 @@
         ("C-f" . sokoban-move-right)
         ("C-n" . sokoban-move-down)
         ("n" . nil)))
+
+(use-package tetris
+  :bind
+  (:map tetris-mode-map
+        ("C-p" . tetris-rotate-prev)
+        ("C-b" . tetris-move-left)
+        ("C-f" . tetris-move-right)
+        ("C-n" . tetris-move-bottom)))
+
+(use-package windmove
+  :bind
+  (("C-c h" . windmove-left)
+   ("C-c j" . windmove-down)
+   ("C-c k" . windmove-up)
+   ("C-c l" . windmove-right)))
 
 (use-package string-inflection)
 ;;; packages.el ends here

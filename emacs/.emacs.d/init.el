@@ -13,8 +13,8 @@
   (interactive)
   (dolist (file '("package-init"
                   "packages"
-                  "hooks"
                   "keys"
+                  "hooks"
                   "misc"))
     (load file)))
 
