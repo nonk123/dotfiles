@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (use-package helm
   :init (require 'helm-config)
   :bind
@@ -102,4 +103,5 @@
    ("C-c l" . windmove-right)))
 
 (use-package string-inflection)
+
 ;;; packages.el ends here

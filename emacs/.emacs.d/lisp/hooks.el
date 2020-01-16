@@ -3,8 +3,9 @@
 ;;; Commentary:
 
 ;;; Code:
-(defun after-make-frame-actions (frame)
-  "Actions to perform upon creating a new FRAME."
+
+(defun make-frame-actions (frame)
+  "Actions to perform on a newly created FRAME."
   (interactive)
   (if (display-graphic-p frame)
       (progn
@@ -13,7 +14,7 @@
         (set-frame-font (x-get-resource "font" "emacs") nil t)
         (unbind "C-z"))
     (bind ("C-z" . suspend-frame))))
-(add-to-list 'after-make-frame-functions 'after-make-frame-actions)
+(add-to-list 'after-make-frame-functions 'make-frame-actions)
 
 (defun prog-actions ()
   "Actions to perform upon entering `prog-mode'."
@@ -39,4 +40,5 @@
   (set-fill-column 80)
   (auto-fill-mode 1))
 (add-hook 'text-mode-hook 'text-actions)
+
 ;;; hooks.el ends here

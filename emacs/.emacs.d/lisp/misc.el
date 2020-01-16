@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (c-add-style "nonk123"
   '("java"
     (c-basic-offset . 4)
@@ -39,4 +40,5 @@
 (electric-indent-mode 0)
 
 (column-number-mode 1)
+
 ;;; misc.el ends here

@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
@@ -19,4 +20,5 @@
     (load file)))
 
 (load-init)
+
 ;;; init.el ends here

@@ -3,6 +3,7 @@
 ;;; Commentary:
 
 ;;; Code:
+
 (defmacro unbind (&rest keys)
   "Unbind KEYS."
   (dolist (key keys)
@@ -27,4 +28,5 @@
       ("C-c ;" . comment-region)
       ("M-p"   . scroll-down-line)
       ("M-n"   . scroll-up-line))
+
 ;;; keys.el ends here
