@@ -26,6 +26,6 @@ alias fluidsynth="fluidsynth -a pulseaudio -m alsa_seq -g 1.0 /home/nonk/Misc/Un
 
 alias cmake="cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
-xc() {
+xr() {
     echo "`xrdb -query | grep -m1 \"$1\" | cut -f2`"
 }

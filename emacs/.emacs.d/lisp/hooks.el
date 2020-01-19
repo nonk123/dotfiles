@@ -24,7 +24,8 @@
   (helm-mode 1)
   (helm-gtags-mode 1)
   (lsp)
-  (lsp-lens-mode 1)
+  (when (bound-and-true-p lsp-mode)
+    (lsp-lens-mode 1))
   (setq-local tab-width 4))
 (add-hook 'prog-mode-hook 'prog-actions)
 

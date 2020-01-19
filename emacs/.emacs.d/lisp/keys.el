@@ -10,7 +10,7 @@
     (global-unset-key (kbd key))))
 
 (defmacro bind (&rest key-cons)
-  "Bind keys using a list of KEY-CONS."
+  "Bind keys globally from a list of KEY-CONS."
   (dolist (key-con key-cons)
     (global-set-key (kbd (car key-con)) (cdr key-con))))
 
@@ -18,8 +18,6 @@
   "Save whole line to the kill ring."
   (interactive)
   (kill-ring-save (line-beginning-position) (line-end-position)))
-
-(unbind "C-z")
 
 (bind ("s-i"   . load-init)
       ("s-o"   . make-frame)

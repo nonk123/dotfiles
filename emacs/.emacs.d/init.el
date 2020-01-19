@@ -4,8 +4,9 @@
 
 ;;; Code:
 
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
+(setq custom-file "~/.emacs.d/lisp/custom.el")
+(unless (file-exists-p custom-file)
+  (write-region "" "" custom-file))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
@@ -13,6 +14,7 @@
   "Load all parts of the init file."
   (interactive)
   (dolist (file '("package-init"
+                  "custom"
                   "packages"
                   "keys"
                   "hooks"

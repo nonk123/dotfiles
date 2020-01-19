@@ -49,4 +49,4 @@ while read line; do
         echo -e "$out"
     }
 done < <(i3blocks) | lemonbar -B `xrdb -query | grep -m1 background | cut -f2` \
-                              -f `xrdb -query | grep -m1 font | cut -f2`
+                              -f "`xrdb -query | grep -m1 font | cut -f2`"

@@ -1,4 +1,4 @@
-;;; package-init.el --- inits package.el.
+;;; package-init.el --- preparations for package.el.
 
 ;;; Commentary:
 

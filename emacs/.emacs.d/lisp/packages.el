@@ -7,9 +7,14 @@
 (use-package helm
   :init (require 'helm-config)
   :bind
-  (("M-x" . helm-M-x)
+  (("M-x"     . helm-M-x)
    ("C-c M-x" . execute-extended-command)
    ("C-x C-f" . helm-find-files)))
+(use-package helm-swoop
+  :after projectile
+  :bind
+  (("C-c s"   . helm-swoop)
+   ("C-c C-s" . helm-multi-swoop-projectile)))
 (use-package helm-xref)
 
 (use-package avy
@@ -55,7 +60,7 @@
   :init
   (setq lsp-prefer-flymake nil)
   (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
-  (global-flycheck-mode))
+  :config (global-flycheck-mode))
 (use-package lsp-ui)
 
 (use-package yasnippet
