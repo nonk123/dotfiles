@@ -29,11 +29,11 @@ interval=3
 [separator]
 
 [date]
-command=LC_ALL=en-UK.utf8 date "+%A %0d.%0m.%000y"
+command=date "+%A %0d.%0m.%000y"
 interval=5
 
 [separator]
 
 [time]
-command=LC_ALL=en-UK.utf8 date "+%0H:%0M:%0S"
+command=date "+%0H:%0M:%0S"
 interval=1

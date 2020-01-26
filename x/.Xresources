@@ -56,10 +56,10 @@ XTerm.ttyModes: erase ^?
 XTerm.vt100.saveLines: 4096
 XTerm.vt100.selectToClipboard: true
 
-i3wm.font:        xft:Inconsolata for Powerline:pixelsize=12
-XTerm.vt100.faceName: Inconsolata for Powerline:pixelsize=14
-st.font:              Inconsolata for Powerline:pixelsize=14
-emacs*font:           Inconsolata for Powerline:pixelsize=14
+i3wm.font:        xft:DejaVu Sans Mono for Powerline:pixelsize=12
+XTerm.vt100.faceName: DejaVu Sans Mono for Powerline:pixelsize=12
+st.font:              DejaVu Sans Mono for Powerline:pixelsize=12
+emacs*font:           DejaVu Sans Mono for Powerline:pixelsize=12
 
 XTerm.vt100.translations: #override \n\
         Ctrl Shift <Key> C: copy-selection(CLIPBOARD) \n\

@@ -4,7 +4,7 @@
 
 ;;; Code:
 
-(defmacro unbind (&rest keys)
+(defun unbind (&rest keys)
   "Unbind KEYS."
   (dolist (key keys)
     (global-unset-key (kbd key))))
@@ -18,6 +18,21 @@
   "Save whole line to the kill ring."
   (interactive)
   (kill-ring-save (line-beginning-position) (line-end-position)))
+
+(use-package tetris
+  :bind
+  (:map tetris-mode-map
+        ("C-p" . tetris-rotate-prev)
+        ("C-b" . tetris-move-left)
+        ("C-f" . tetris-move-right)
+        ("C-n" . tetris-move-bottom)))
+
+(use-package windmove
+  :bind
+  (("C-c h" . windmove-left)
+   ("C-c j" . windmove-down)
+   ("C-c k" . windmove-up)
+   ("C-c l" . windmove-right)))
 
 (bind ("s-i"   . load-init)
       ("s-o"   . make-frame)

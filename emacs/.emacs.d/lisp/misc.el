@@ -16,29 +16,53 @@
   indent-tabs-mode nil
   tab-width 4
   tab-stop-list nil
-  show-trailing-whitespace t
   epa-pinentry-mode 'loopback
   vc-follow-symlinks t)
 
-(setq whitespace-line-column 80)
-(setq whitespace-style '(face lines-tail))
-(whitespace-mode 1)
+(defmacro disable-mode (mode)
+  "Disable MODE if it is bound and enabled."
+  (when (bound-and-true-p mode)
+    `(,mode 0)))
 
-(menu-bar-mode 0)
-(scroll-bar-mode 0)
-(tool-bar-mode 0)
+(defmacro enable-mode (mode)
+  "Enable MODE if it is bound and disabled."
+  (when (and (boundp mode) `(not ,mode))
+    `(,mode 1)))
 
-(blink-cursor-mode 0)
+(use-package tramp
+  :init (setq tramp-default-method "ssh"))
 
-(delete-selection-mode 1)
+(use-package whitespace
+  :delight
+  global-whitespace-mode
+  whitespace-mode
+  :init
+  (setq whitespace-line-column 80)
+  (setq whitespace-style '(face trailing tab-mark lines-tail))
+  (enable-mode global-whitespace-mode))
 
-(electric-pair-mode 1)
-(show-paren-mode 1)
+(use-package eldoc
+  :delight)
 
-(global-subword-mode 1)
+(disable-mode menu-bar-mode)
+(disable-mode scroll-bar-mode)
+(disable-mode tool-bar-mode)
 
-(electric-indent-mode 0)
+(disable-mode blink-cursor-mode)
 
-(column-number-mode 1)
+(setq display-time-day-and-date t)
+(enable-mode display-time-mode)
+
+(enable-mode delete-selection-mode)
+
+(enable-mode electric-pair-mode)
+(enable-mode show-paren-mode)
+
+(disable-mode electric-indent-mode)
+
+(enable-mode column-number-mode)
+
+(setq desktop-save t)
+(enable-mode desktop-save-mode)
 
 ;;; misc.el ends here

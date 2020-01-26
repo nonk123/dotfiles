@@ -1,5 +1,5 @@
 #!/bin/sh
 
 for dir in `ls -d */`; do
-    stow "$dir"
+    stow "$@" "$dir"
 done

@@ -4,7 +4,10 @@
 
 ;;; Code:
 
+(use-package delight)
+
 (use-package helm
+  :delight
   :init (require 'helm-config)
   :bind
   (("M-x"     . helm-M-x)
@@ -22,10 +25,12 @@
   (("C-;" . avy-goto-line)
    ("C-:" . avy-goto-word-1)))
 
-(use-package company)
+(use-package company
+  :delight)
 (use-package company-c-headers
   :config (add-to-list 'company-backends 'company-c-headers))
 (use-package helm-gtags
+  :delight
   :init (setq-default helm-gtags-auto-update t
                       helm-gtags-ignore-case t))
 (use-package helm-company
@@ -37,6 +42,7 @@
         ("<backtab>" . helm-company)))
 
 (use-package lsp-mode
+  :delight
   :commands lsp
   :init
   (setq lsp-auto-guess-root t)
@@ -52,25 +58,35 @@
    ("C-c r" . lsp-rename)
    ("C-c a" . lsp-avy-lens)))
 (use-package ccls)
-(use-package lsp-java)
+(use-package lsp-java
+  :init (setq lsp-java-server-install-dir "~/.lsp/"))
 (use-package company-lsp)
 (use-package helm-lsp)
 
 (use-package flycheck
+  :delight
   :init
   (setq lsp-prefer-flymake nil)
-  (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+  (setq-default flycheck-disabled-checkers
+                '(c/c++-clang c/c++-cppcheck c/c++-gcc))
   :config (global-flycheck-mode))
-(use-package lsp-ui)
+(use-package lsp-ui
+  :delight)
 
 (use-package yasnippet
+  :delight yas-minor-mode
   :init
   (setq yas-triggers-in-field t)
   (setq yas-indent-line 'fixed)
   :config (yas-global-mode 1))
 
 (use-package projectile
-  :init (setq projectile-project-search-path '("~/Sources/" "~/"))
+  :delight '(:eval (concat " " (projectile-project-name)))
+  :init
+  (setq projectile-mode-line "Projectile")
+  (setq projectile-project-search-path '("~/"))
+  (setq projectile-globally-ignored-directories
+        '(".git" ".hg" ".svn" "build" "target" "elpa"))
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
@@ -80,6 +96,7 @@
 
 (use-package slime
   :init
+  (load "~/quicklisp/slime-helper.el")
   (setq inferior-lisp-program "/usr/local/bin/sbcl")
   (setq slime-contribs '(slime-fancy)))
 
@@ -91,21 +108,6 @@
         ("C-f" . sokoban-move-right)
         ("C-n" . sokoban-move-down)
         ("n" . nil)))
-
-(use-package tetris
-  :bind
-  (:map tetris-mode-map
-        ("C-p" . tetris-rotate-prev)
-        ("C-b" . tetris-move-left)
-        ("C-f" . tetris-move-right)
-        ("C-n" . tetris-move-bottom)))
-
-(use-package windmove
-  :bind
-  (("C-c h" . windmove-left)
-   ("C-c j" . windmove-down)
-   ("C-c k" . windmove-up)
-   ("C-c l" . windmove-right)))
 
 (use-package string-inflection)
 

@@ -18,7 +18,7 @@ alias b='source ~/.bashrc'
 
 alias v='vim -u NONE'
 
-alias e='emacsclient -t -a "emacs -t"'
+alias e='emacsclient -nw -a "emacs -nw"'
 
 alias fuck='eval $(thefuck $(history | tail -n 2 | head -n 1 | cut -d " " -f 4-))'
 

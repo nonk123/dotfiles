@@ -9,8 +9,6 @@
   (interactive)
   (if (display-graphic-p frame)
       (progn
-        (use-package xresources-theme)
-        ;; May be done by xresources-theme, not quite sure.
         (set-frame-font (x-get-resource "font" "emacs") nil t)
         (unbind "C-z"))
     (bind ("C-z" . suspend-frame))))
