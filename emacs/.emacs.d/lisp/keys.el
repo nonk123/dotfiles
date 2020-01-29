@@ -12,7 +12,10 @@
 (defmacro bind (&rest key-cons)
   "Bind keys globally from a list of KEY-CONS."
   (dolist (key-con key-cons)
-    (global-set-key (kbd (car key-con)) (cdr key-con))))
+    (let ((key (kbd (car key-con))) (def (cdr key-con)))
+      (when (stringp def)
+        (setq def (kbd def)))
+      (global-set-key key def))))
 
 (defun save-whole-line ()
   "Save whole line to the kill ring."
@@ -38,7 +41,7 @@
       ("s-o"   . make-frame)
       ("s-SPC" . rectangle-mark-mode)
       ("s-w"   . save-whole-line)
-      ("C-c ;" . comment-region)
+      ("C-c ;" . comment-or-uncomment-region)
       ("M-p"   . scroll-down-line)
       ("M-n"   . scroll-up-line))
 

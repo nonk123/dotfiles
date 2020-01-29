@@ -22,8 +22,9 @@
 
 (use-package avy
   :bind
-  (("C-;" . avy-goto-line)
-   ("C-:" . avy-goto-word-1)))
+  (("C-:" . avy-goto-line)
+   ("C-;" . avy-goto-word-1)
+   ("C-'" . avy-goto-char)))
 
 (use-package company
   :delight)

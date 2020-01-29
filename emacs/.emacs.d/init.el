@@ -17,8 +17,8 @@
                   "custom"
                   "packages"
                   "keys"
-                  "hooks"
-                  "misc"))
+                  "misc"
+                  "hooks"))
     (load file)))
 
 (load-init)

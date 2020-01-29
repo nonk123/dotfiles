@@ -62,7 +62,4 @@
 
 (enable-mode column-number-mode)
 
-(setq desktop-save t)
-(enable-mode desktop-save-mode)
-
 ;;; misc.el ends here
