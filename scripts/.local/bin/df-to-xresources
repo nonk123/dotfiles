@@ -9,6 +9,11 @@
 # Args:
 # $1 - path to colors.txt
 
+file=$1
+
+[ -z "$file" ] && echo "No file specified" && exit 1
+[ ! -e "$file" ] && echo "File doesn't exist: $file" && exit 1
+
 while read red; do
     # Actual color definitions begin with '['; everything else is comments.
     [ "${red:0:1}" != "[" ] && continue
@@ -27,4 +32,4 @@ while read red; do
 
     # And finish it off with a newline.
     echo
-done < $1
+done < "$file"

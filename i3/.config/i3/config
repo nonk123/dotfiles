@@ -8,7 +8,7 @@ focus_follows_mouse no
 
 floating_modifier Mod4
 
-exec_always --no-startup-id ~/Scripts/x-startup.sh
+exec_always --no-startup-id x-startup
 
 set_from_resource $background i3wm.background #000000
 set_from_resource $foreground i3wm.foreground #ffffff

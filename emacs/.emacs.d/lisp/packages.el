@@ -18,6 +18,7 @@
   :bind
   (("C-c s"   . helm-swoop)
    ("C-c C-s" . helm-multi-swoop-projectile)))
+(use-package helm-ag)
 (use-package helm-xref)
 
 (use-package avy
@@ -25,6 +26,9 @@
   (("C-:" . avy-goto-line)
    ("C-;" . avy-goto-word-1)
    ("C-'" . avy-goto-char)))
+
+(use-package magit
+  :bind ("C-x g" . magit-status))
 
 (use-package company
   :delight)
@@ -46,10 +50,12 @@
   :delight
   :commands lsp
   :init
+  (setq lsp-log-io t)
   (setq lsp-auto-guess-root t)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-enable-xref t)
   (setq lsp-enable-imenu t)
+  (setq lsp-pyls-server-command '("~/.local/bin/pyls"))
   :bind
   (("C-c I" . lsp-organize-imports)
    ("C-c i" . lsp-goto-implementation)
@@ -69,7 +75,12 @@
   :init
   (setq lsp-prefer-flymake nil)
   (setq-default flycheck-disabled-checkers
-                '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+                '(c/c++-clang
+                  c/c++-cppcheck
+                  c/c++-gcc
+                  python-pylint
+                  python-pycompile
+                  python-mypy))
   :config (global-flycheck-mode))
 (use-package lsp-ui
   :delight)
@@ -78,7 +89,7 @@
   :delight yas-minor-mode
   :init
   (setq yas-triggers-in-field t)
-  (setq yas-indent-line 'fixed)
+  (setq yas-indent-line 'auto)
   :config (yas-global-mode 1))
 
 (use-package projectile

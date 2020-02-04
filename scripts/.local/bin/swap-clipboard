@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sec=`xclip -o -sel sec`
+
+xclip -o -sel clip | xclip -sel sec
+echo "$sec" | xclip -sel clip

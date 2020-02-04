@@ -1,0 +1,5 @@
+#!/bin/sh
+
+lemonbar -f "`xrdb -query | grep -m1 font       | cut -f2`" \
+         -B "`xrdb -query | grep -m1 background | cut -f2`" \
+         -F "`xrdb -query | grep -m1 foreground | cut -f2`"

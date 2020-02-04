@@ -1,44 +1,53 @@
 super + {h,j,k,l}
-      i3-msg focus {left,down,up,right}; pkill -RTMIN+1 i3blocks
+    i3-msg focus {left,down,up,right}; pkill -RTMIN+1 i3blocks
 
 super + ctrl + {h,j,k,l}
-      i3-msg move {left,down,up,right} 50 px
+    i3-msg move {left,down,up,right} 50 px
 
 super + shift + {h,j,k,l}
-      i3-msg resize {grow width,grow height,shrink height,shrink width} 25 px
+    i3-msg resize {grow width,grow height,shrink height,shrink width} 25 px
 
 super + v
-      i3-msg split {v,h}
+    i3-msg split {v,h}
 
 super + {_,ctrl +} {0-9}
-      i3-msg {_,move container to} workspace {0-9}; pkill -RTMIN+1 i3blocks
+    i3-msg {_,move container to} workspace {0-9}; pkill -RTMIN+1 i3blocks
 
 super + g
-      i3-msg gaps inner all set {5,0}
+    i3-msg gaps inner all set {5,0}
 
 super + q
-      i3-msg kill
+    i3-msg kill
 
 super + {f,F}
-      i3-msg {floating,fullscreen} toggle
+    i3-msg {floating,fullscreen} toggle
 
 super + {t,T,s}
-      i3-msg layout {toggle split,tabbed,stacking}
+    i3-msg layout {toggle split,tabbed,stacking}
 
 super + b
-      ~/Scripts/surf.sh
+    start-surf
 
 super + d
-      dmenu_run
+    dmenu_run
 
 super + e
-      emacsclient -c
+    emacsclient -c
+
+super + p
+    swap-clipboard
 
 super + r
-      xrdb ~/.Xresources; pkill -USR1 sxhkd; i3-msg restart
+    pkill -USR1 sxhkd
+
+super + R
+    i3-msg restart
 
 super + Return
-      x-terminal-emulator
+    x-terminal-emulator
 
-{_,shift + }Print
-         ~/Scripts/{selection,desktop}-screenshot.sh
+Print
+    screenshot -s
+
+shift + Print
+    screenshot -i root

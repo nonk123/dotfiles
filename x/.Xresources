@@ -1,19 +1,19 @@
-#define black #31313e
-#define blue #4051da
-#define green #56b636
-#define cyan #52b7c0
-#define red #ce3137
-#define magenta #8e3aba
-#define brown #f0a22a
-#define lgray #afb5b7
-#define dgray #767681
-#define lblue #6295ed
-#define lgreen #aff239
-#define lcyan #acebd9
-#define lred #f8503e
-#define lmagenta #dd62c5
-#define yellow #fcef62
-#define white #ffffff
+#define black #202731
+#define blue #006aff
+#define green #44b839
+#define cyan #729cfb
+#define red #d43655
+#define magenta #b032ff
+#define brown #d97641
+#define lgray #aac4b2
+#define dgray #80979c
+#define lblue #30a5ff
+#define lgreen #90ff4f
+#define lcyan #a8d4ff
+#define lred #ff5252
+#define lmagenta #ff6bff
+#define yellow #ffe866
+#define white #fffae8
 
 *background:  black
 *foreground:  white
@@ -56,10 +56,10 @@ XTerm.ttyModes: erase ^?
 XTerm.vt100.saveLines: 4096
 XTerm.vt100.selectToClipboard: true
 
-i3wm.font:        xft:DejaVu Sans Mono for Powerline:pixelsize=12
-XTerm.vt100.faceName: DejaVu Sans Mono for Powerline:pixelsize=12
-st.font:              DejaVu Sans Mono for Powerline:pixelsize=12
-emacs*font:           DejaVu Sans Mono for Powerline:pixelsize=12
+i3wm.font:        xft:Hack:pixelsize=12
+XTerm.vt100.faceName: Hack:pixelsize=12
+st.font:              Hack:pixelsize=12
+emacs*font:           Hack:pixelsize=12
 
 XTerm.vt100.translations: #override \n\
         Ctrl Shift <Key> C: copy-selection(CLIPBOARD) \n\

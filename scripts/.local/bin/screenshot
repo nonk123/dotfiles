@@ -1,0 +1,12 @@
+#!/bin/sh
+
+format=png
+
+name="`whoami`@screenshot-`date +%d.%m.%Y-%H:%M:%S`.$format"
+dir=/tmp/screenshots/
+file="$dir/$name"
+
+mkdir -p $dir
+
+maim "$@" -f $format /dev/stdout | tee $file | xclip -t image/$format -sel clip
+upload "$file" | xclip -sel sec

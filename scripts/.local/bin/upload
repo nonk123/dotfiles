@@ -1,0 +1,11 @@
+#!/bin/sh
+
+file=$1
+
+user=nonk
+protocol=http
+domain=tilde.as205315.net
+port=2020
+
+scp "$file" $user@$domain:~/Files/
+echo "$protocol://$domain:$port/`basename "$file"`"
