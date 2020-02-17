@@ -1,9 +1,0 @@
-# key: sv
-# name: static_void
-# --
-
-${1:public} static void $2($3) {
-    $4
-}
-
-$0

@@ -1,5 +1,0 @@
-# key: r
-# name: return
-# --
-
-return $1;

@@ -1,6 +1,0 @@
-# key: ws
-# name: while-short
-# --
-
-while ($1)
-    $0

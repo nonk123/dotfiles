@@ -1,5 +1,0 @@
-# key: te
-# name: ternary
-# --
-
-($1 ? $2 : $3) $0

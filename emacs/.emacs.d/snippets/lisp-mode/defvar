@@ -1,5 +1,0 @@
-# key: v
-# name: defvar
-# --
-
-(defvar $1 $2)$0

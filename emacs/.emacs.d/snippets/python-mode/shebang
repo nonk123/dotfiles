@@ -1,0 +1,7 @@
+# key: #!
+# name: shebang
+# --
+
+#!/usr/bin/python${1:3}
+
+$0

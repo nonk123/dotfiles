@@ -1,6 +1,0 @@
-# key: eis
-# name: elif-short
-# --
-
-else if ($1)
-    $0

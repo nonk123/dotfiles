@@ -1,9 +1,0 @@
-# key: s
-# name: static
-# --
-
-${1:public} static ${2:void} $3($4) {
-    $5
-}
-
-$0

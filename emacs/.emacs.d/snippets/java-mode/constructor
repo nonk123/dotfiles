@@ -1,9 +1,0 @@
-# key: co
-# name constructor
-# --
-
-public `(file-name-base (buffer-file-name))`($1) {
-    $2
-}
-
-$0

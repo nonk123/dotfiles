@@ -1,9 +1,0 @@
-# key: v
-# name: void
-# --
-
-${1:public} void $2($3) {
-    $4
-}
-
-$0

@@ -1,6 +1,0 @@
-# key: is
-# name: if-short
-# --
-
-if ($1)
-    $0

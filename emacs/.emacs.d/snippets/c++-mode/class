@@ -1,8 +1,0 @@
-# key: c
-# name: class
-# --
-
-class $1 {
-  public:
-    $0
-};

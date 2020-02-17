@@ -1,8 +1,0 @@
-# key: c
-# name: defcustom
-# --
-
-(defcustom $1 $2
-  "$5"
-  :group $3
-  :type $4)$0

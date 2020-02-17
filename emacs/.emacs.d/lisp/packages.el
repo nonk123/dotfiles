@@ -47,7 +47,7 @@
         ("<backtab>" . helm-company)))
 
 (use-package lsp-mode
-  :delight
+  :delight lsp-mode lsp-lens-mode
   :commands lsp
   :init
   (setq lsp-log-io t)
@@ -59,7 +59,7 @@
   :bind
   (("C-c I" . lsp-organize-imports)
    ("C-c i" . lsp-goto-implementation)
-   ("C-c d" . lsp-find-definition)
+   ("C-c D" . lsp-find-definition)
    ("C-c m" . helm-imenu)
    ("C-c x" . xref-find-definitions)
    ("C-c r" . lsp-rename)
@@ -69,6 +69,17 @@
   :init (setq lsp-java-server-install-dir "~/.lsp/"))
 (use-package company-lsp)
 (use-package helm-lsp)
+(use-package dap-mode
+  :delight " DAP"
+  :init (require 'dap-python)
+  :config
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  :bind
+  (("C-c b" . dap-breakpoint-toggle)
+   ("C-c n" . dap-next)
+   ("C-c u" . dap-step-in)
+   ("C-c o" . dap-step-out)))
 
 (use-package flycheck
   :delight
@@ -83,7 +94,8 @@
                   python-mypy))
   :config (global-flycheck-mode))
 (use-package lsp-ui
-  :delight)
+  :delight
+  :init (setq lsp-ui-doc-enable nil))
 
 (use-package yasnippet
   :delight yas-minor-mode
@@ -106,10 +118,16 @@
 
 (use-package markdown-mode)
 
+(use-package lua-mode)
+
 (use-package slime
   :init
-  (load "~/quicklisp/slime-helper.el")
-  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  (let ((slime-helper "~/quicklisp/slime-helper.el")
+        (inferior-lisp "/usr/local/bin/sbcl"))
+    (when (file-exists-p slime-helper)
+      (load slime-helper))
+    (when (file-exists-p inferior-lisp)
+      (setq inferior-lisp-program inferior-lisp)))
   (setq slime-contribs '(slime-fancy)))
 
 (use-package sokoban

@@ -4,23 +4,36 @@
 
 ;;; Code:
 
-(defun unbind (&rest keys)
-  "Unbind KEYS."
+(defun unbind (keymap &rest keys)
+  "Unbind KEYS from a KEYMAP."
   (dolist (key keys)
-    (global-unset-key (kbd key))))
+    (define-key keymap (kbd key) nil)))
 
-(defmacro bind (&rest key-cons)
-  "Bind keys globally from a list of KEY-CONS."
+(defmacro bind (keymap &rest key-cons)
+  "Bind keys from a list of KEY-CONS onto a KEYMAP."
   (dolist (key-con key-cons)
     (let ((key (kbd (car key-con))) (def (cdr key-con)))
       (when (stringp def)
         (setq def (kbd def)))
-      (global-set-key key def))))
+      (define-key (eval keymap) key def))))
 
 (defun save-whole-line ()
   "Save whole line to the kill ring."
   (interactive)
   (kill-ring-save (line-beginning-position) (line-end-position)))
+
+(defun my-lsp-show-documentation ()
+  "Show documentation for symbol at point in a temporary buffer."
+  (interactive)
+  (let ((doc (-some->>
+              (gethash "contents" (lsp-request
+                                   "textDocument/hover"
+                                   (lsp--text-document-position-params)))
+              lsp-ui-doc--extract
+              (replace-regexp-in-string "\r" ""))))
+    (unless (string-empty-p doc)
+      (with-output-to-temp-buffer "*LSP Documentation*"
+        (print doc)))))
 
 (use-package tetris
   :bind
@@ -37,7 +50,9 @@
    ("C-c k" . windmove-up)
    ("C-c l" . windmove-right)))
 
-(bind ("s-i"   . load-init)
+(bind global-map
+      ("C-c d" . my-lsp-show-documentation)
+      ("s-i"   . load-init)
       ("s-o"   . make-frame)
       ("s-SPC" . rectangle-mark-mode)
       ("s-w"   . save-whole-line)
