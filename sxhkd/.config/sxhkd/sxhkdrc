@@ -1,5 +1,5 @@
 super + {h,j,k,l}
-    i3-msg focus {left,down,up,right}; pkill -RTMIN+1 i3blocks
+    i3-msg focus {left,down,up,right}
 
 super + ctrl + {h,j,k,l}
     i3-msg move {left,down,up,right} 50 px
@@ -11,7 +11,7 @@ super + v
     i3-msg split {v,h}
 
 super + {_,ctrl +} {0-9}
-    i3-msg {_,move container to} workspace {0-9}; pkill -RTMIN+1 i3blocks
+    i3-msg {_,move container to} workspace {0-9}
 
 super + g
     i3-msg gaps inner all set {5,0}
@@ -25,6 +25,18 @@ super + {f,F}
 super + {t,T,s}
     i3-msg layout {toggle split,tabbed,stacking}
 
+super + p
+    mpd-control select
+
+super + o
+    mpd-control toggle
+
+super + {bracketleft,bracketright}
+    mpd-control {prev,next}
+
+super + {braceleft,braceright}
+    mpd-control seek {-,+}8
+
 super + b
     start-surf
 
@@ -34,7 +46,7 @@ super + d
 super + e
     emacsclient -c
 
-super + p
+super + P
     swap-clipboard
 
 super + r

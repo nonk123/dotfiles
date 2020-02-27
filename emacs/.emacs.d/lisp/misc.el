@@ -20,13 +20,13 @@
   vc-follow-symlinks t)
 
 (defmacro disable-mode (mode)
-  "Disable MODE if it is bound and enabled."
-  (when (bound-and-true-p mode)
+  "Disable MODE if it is bound."
+  (when (boundp mode)
     `(,mode 0)))
 
 (defmacro enable-mode (mode)
-  "Enable MODE if it is bound and disabled."
-  (when (and (boundp mode) `(not ,mode))
+  "Enable MODE if it is bound."
+  (when (boundp mode)
     `(,mode 1)))
 
 (use-package tramp

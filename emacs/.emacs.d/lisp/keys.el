@@ -22,18 +22,44 @@
   (interactive)
   (kill-ring-save (line-beginning-position) (line-end-position)))
 
+(defun show-documentation (docstring)
+  "Show a DOCSTRING in a temporary buffer."
+  (unless (string-empty-p docstring)
+    (with-output-to-temp-buffer "*Documentation*"
+      (print docstring))))
+
 (defun my-lsp-show-documentation ()
+  "`lsp-mode' implementation of `show-documentation-at-point'."
+  (interactive)
+  (show-documentation
+   (-some->>
+    (gethash "contents" (lsp-request
+                         "textDocument/hover"
+                         (lsp--text-document-position-params)))
+    lsp-ui-doc--extract
+    (replace-regexp-in-string "\r" ""))))
+
+(defun show-emacs-lisp-documentation-at-point ()
+  "`emacs-lisp-mode' implementation of `show-documentation-at-point'."
+  (let ((fun (function-called-at-point))
+        (var (variable-at-point)))
+    (cond
+     (fun
+      (describe-function fun))
+     (var
+      (describe-variable var))
+     (t
+      (message "nil")))))
+
+(defun show-documentation-at-point ()
   "Show documentation for symbol at point in a temporary buffer."
   (interactive)
-  (let ((doc (-some->>
-              (gethash "contents" (lsp-request
-                                   "textDocument/hover"
-                                   (lsp--text-document-position-params)))
-              lsp-ui-doc--extract
-              (replace-regexp-in-string "\r" ""))))
-    (unless (string-empty-p doc)
-      (with-output-to-temp-buffer "*LSP Documentation*"
-        (print doc)))))
+  (unless (and (bound-and-true-p lsp-mode) (my-lsp-show-documentation))
+   (cond
+    ((equal major-mode 'emacs-lisp-mode)
+     (show-emacs-lisp-documentation-at-point))
+    (t
+     (message "No documentation handler found")))))
 
 (use-package tetris
   :bind
@@ -51,7 +77,7 @@
    ("C-c l" . windmove-right)))
 
 (bind global-map
-      ("C-c d" . my-lsp-show-documentation)
+      ("C-c d" . show-documentation-at-point)
       ("s-i"   . load-init)
       ("s-o"   . make-frame)
       ("s-SPC" . rectangle-mark-mode)

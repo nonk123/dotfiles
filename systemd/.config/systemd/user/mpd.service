@@ -5,8 +5,8 @@ Documentation=file:///usr/share/doc/mpd/html/user.html
 After=network.target sound.target
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/mpd
+Type=exec
+ExecStart=/usr/bin/mpd --no-daemon --verbose --stdout
 LimitRTPRIO=50
 LimitRTTIME=infinity
 ProtectSystem=yes

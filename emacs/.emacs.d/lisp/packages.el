@@ -9,6 +9,7 @@
 (use-package helm
   :delight
   :init (require 'helm-config)
+  :config (helm-mode 1)
   :bind
   (("M-x"     . helm-M-x)
    ("C-c M-x" . execute-extended-command)
@@ -70,7 +71,7 @@
 (use-package company-lsp)
 (use-package helm-lsp)
 (use-package dap-mode
-  :delight " DAP"
+  :delight
   :init (require 'dap-python)
   :config
   (dap-mode 1)
@@ -110,7 +111,7 @@
   (setq projectile-mode-line "Projectile")
   (setq projectile-project-search-path '("~/"))
   (setq projectile-globally-ignored-directories
-        '(".git" ".hg" ".svn" "build" "target" "elpa"))
+        '(".git" ".hg" ".svn" "build" "target"))
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile

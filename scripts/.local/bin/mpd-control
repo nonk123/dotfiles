@@ -1,0 +1,37 @@
+#!/bin/bash
+
+host=185.222.117.80
+port=6600
+http_port=8000
+
+http="http://$host:$http_port"
+[ -z $(mpc playlist | grep $http) ] && mpc add $http
+
+function _mpc {
+    mpc --host=$host --port=$port "$@"
+}
+
+cmd=$@
+
+if [ "$cmd" = select ]; then
+    result=$(_mpc listall | dmenu-xresources -i -p "Select a song")
+
+    if [ "$result" ]; then
+        _mpc stop
+        _mpc clear
+        _mpc search filename "$result" | _mpc add
+        _mpc play
+        mpc play
+        notify-send "Now Playing" "$(echo ${result%%.*} | sed 's/\// - /g')"
+    fi
+elif [ "$cmd" = toggle ]; then
+    if [ "$(mpc | grep "playing")" ]; then
+        mpc stop
+        notify-send "Paused"
+    else
+        mpc play
+        notify-send "Resumed"
+    fi
+else
+    _mpc $cmd
+fi
