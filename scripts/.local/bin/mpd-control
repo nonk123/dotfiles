@@ -11,19 +11,44 @@ function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
+function _dmenu {
+    dmenu-xresources -i -p "$1"
+}
+
+function path_to_track {
+    echo "$@" | sed 's/\// - /g; s/\.mp3//g'
+}
+
+function track_to_path {
+    echo "$@.mp3" | sed 's/ - /\//g'
+}
+
+function play {
+    track="$1"
+
+    _mpc stop
+    _mpc clear
+    _mpc search filename "$track" | _mpc add
+    _mpc play
+
+    mpc play
+    notify-send "Now Playing" "$(path_to_track $track)"
+}
+
+function listall {
+    path_to_track "$(_mpc listall)"
+}
+
 cmd=$@
 
 if [ "$cmd" = select ]; then
-    result=$(_mpc listall | dmenu-xresources -i -p "Select a song")
-
-    if [ "$result" ]; then
-        _mpc stop
-        _mpc clear
-        _mpc search filename "$result" | _mpc add
-        _mpc play
-        mpc play
-        notify-send "Now Playing" "$(echo ${result%%.*} | sed 's/\// - /g')"
-    fi
+    result=$(listall | _dmenu "Select a song")
+    [ "$result" ] && play "$(track_to_path $result)"
+elif [ "$cmd" = interactive ]; then
+    artist=$(_mpc ls | _dmenu "Select an artist")
+    [ "$artist" ] && album=$(_mpc ls "$artist" | _dmenu "Select an album")
+    [ "$album" ] && track=$(_mpc ls "$album" | _dmenu "Select a track")
+    [ "$track" ] && play "$track"
 elif [ "$cmd" = toggle ]; then
     if [ "$(mpc | grep "playing")" ]; then
         mpc stop
@@ -33,5 +58,5 @@ elif [ "$cmd" = toggle ]; then
         notify-send "Resumed"
     fi
 else
-    _mpc $cmd
+    _mpc "$@"
 fi

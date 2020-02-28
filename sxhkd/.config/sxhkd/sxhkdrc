@@ -28,6 +28,9 @@ super + {t,T,s}
 super + p
     mpd-control select
 
+super + semicolon
+    mpd-control interactive
+
 super + o
     mpd-control toggle
 

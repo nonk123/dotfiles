@@ -19,8 +19,6 @@
   (interactive)
   (display-line-numbers-mode 1)
   (company-mode 1)
-  (helm-mode 1)
-  (helm-gtags-mode 1)
   (lsp)
   (when (bound-and-true-p lsp-mode)
     (lsp-lens-mode 1))

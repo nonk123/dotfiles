@@ -1,0 +1,66 @@
+#!/usr/bin/python3
+
+from pypresence import Presence
+from subprocess import check_output
+
+import re
+from os.path import splitext
+import time
+
+from datetime import datetime
+
+default = ("Nothing", "Nothing", "Nothing", 1, 1)
+
+def get_current_track():
+    output = check_output("mpd-control", shell=True).decode("utf-8").rstrip("\n")
+
+    lines = output.split("\n")
+
+    if len(lines) == 3:
+        split = lines[0].split("/")
+        artist, album, track = split[0], split[1], splitext(split[2])[0]
+    else:
+        artist, album, track = default[:3]
+
+    status = lines[1] if len(lines) == 3 else lines[0]
+    status = re.split(r" +", status)
+
+    progress = status[2].split("/")
+
+    elapsed, length = [datetime.strptime(x, "%M:%S") for x in progress]
+
+    now = datetime.now()
+
+    start = (now - elapsed).total_seconds()
+    end = (now + (length - elapsed)).timestamp()
+
+    return artist, album, track, start, end
+
+def main():
+    rpc = Presence("682642731578687616")
+    rpc.connect()
+
+    print("Ready")
+
+    while True:
+        output = check_output("mpc", shell=True).decode("utf-8")
+        playing = output.find("playing") != -1
+
+        if playing:
+            artist, album, track, start, end = get_current_track()
+        else:
+            artist, album, track, start, end = default
+
+        rpc.update(details=artist,
+                   state=track,
+                   large_image="nonk",
+                   large_text=album,
+                   small_image="playing" if playing else "paused",
+                   small_text="playing" if playing else "paused",
+                   start=start,
+                   end=end)
+
+        time.sleep(15)
+
+if __name__ == "__main__":
+    main()

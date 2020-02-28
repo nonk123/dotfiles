@@ -35,10 +35,15 @@
   :delight)
 (use-package company-c-headers
   :config (add-to-list 'company-backends 'company-c-headers))
+(use-package gxref
+  :init (add-to-list 'xref-backend-functions 'gxref-xref-backend))
 (use-package helm-gtags
   :delight
   :init (setq-default helm-gtags-auto-update t
-                      helm-gtags-ignore-case t))
+                      helm-gtags-ignore-case t)
+  :config
+  (gtags-mode 1)
+  (helm-gtags-mode 1))
 (use-package helm-company
   :bind
   (:map company-mode-map
@@ -54,15 +59,12 @@
   (setq lsp-log-io t)
   (setq lsp-auto-guess-root t)
   (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-enable-xref t)
-  (setq lsp-enable-imenu t)
   (setq lsp-pyls-server-command '("~/.local/bin/pyls"))
   :bind
   (("C-c I" . lsp-organize-imports)
    ("C-c i" . lsp-goto-implementation)
    ("C-c D" . lsp-find-definition)
    ("C-c m" . helm-imenu)
-   ("C-c x" . xref-find-definitions)
    ("C-c r" . lsp-rename)
    ("C-c a" . lsp-avy-lens)))
 (use-package ccls)

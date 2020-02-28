@@ -42,24 +42,27 @@
 (defun show-emacs-lisp-documentation-at-point ()
   "`emacs-lisp-mode' implementation of `show-documentation-at-point'."
   (let ((fun (function-called-at-point))
-        (var (variable-at-point)))
+        (var (variable-at-point t)))
     (cond
+     ((and var (boundp var) (not (functionp var)) (/= var 0))
+      (describe-variable var))
      (fun
       (describe-function fun))
-     (var
-      (describe-variable var))
      (t
       (message "nil")))))
 
 (defun show-documentation-at-point ()
   "Show documentation for symbol at point in a temporary buffer."
   (interactive)
-  (unless (and (bound-and-true-p lsp-mode) (my-lsp-show-documentation))
-   (cond
-    ((equal major-mode 'emacs-lisp-mode)
-     (show-emacs-lisp-documentation-at-point))
-    (t
-     (message "No documentation handler found")))))
+  (cond
+   ((equal major-mode 'emacs-lisp-mode)
+    (show-emacs-lisp-documentation-at-point))
+   ((bound-and-true-p slime-mode)
+    (slime-documentation (slime-symbol-at-point)))
+   ((bound-and-true-p lsp-mode)
+    (my-lsp-show-documentation))
+   (t
+    (message "No documentation handler found"))))
 
 (use-package tetris
   :bind
