@@ -34,8 +34,8 @@ super + semicolon
 super + o
     mpd-control toggle
 
-super + {bracketleft,bracketright}
-    mpd-control {prev,next}
+super + bracketleft
+    notify-send "Info" "$(mpd-control)"
 
 super + {braceleft,braceright}
     mpd-control seek {-,+}8

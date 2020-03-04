@@ -1,0 +1,10 @@
+#!/bin/sh
+
+file="/tmp/prompt"
+
+cat > "$file"
+
+output=$(emacsclient -e "(prompt \"${1:-Select something}: \" \"$file\")")
+[ "$output" = nil ] || echo "${output:1:-1}"
+
+rm "$file"

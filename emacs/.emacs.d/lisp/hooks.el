@@ -4,16 +4,6 @@
 
 ;;; Code:
 
-(defun make-frame-actions (frame)
-  "Actions to perform on a newly created FRAME."
-  (interactive)
-  (if (display-graphic-p frame)
-      (progn
-        (set-frame-font (x-get-resource "font" "emacs") nil t)
-        (unbind global-map "C-z"))
-    (bind global-map ("C-z" . suspend-frame))))
-(add-to-list 'after-make-frame-functions 'make-frame-actions)
-
 (defun prog-actions ()
   "Actions to perform upon entering `prog-mode'."
   (interactive)

@@ -1,17 +1,9 @@
 #!/bin/sh
 
 xset r rate 250 60
+xsetroot -cursor_name left_ptr
 setxkbmap -option 'grp:shift_caps_toggle' -layout us,de,ru
 
-xrdb ~/.Xresources
-
-# Solid color background.
-convert -size 2x2 xc:`xrdb -query | grep -m1 background | cut -f2` /tmp/background.png
+color=$(xrdb -query | grep -m1 background | cut -f2)
+convert -size 2x2 xc:$color /tmp/background.png
 feh --bg-fill /tmp/background.png
-
-# TODO: add a proper status bar?
-pkill lemonbar
-while :; do
-    echo "%{r}`date`"
-    sleep 1
-done | lemonbar-xresources

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-website=`echo "google.com" | dmenu-xresources -i -p "Website:"`
+website=$(echo "google.com" | prompt "Website:")
 [ "$website" ] && surf "$website"

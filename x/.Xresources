@@ -49,6 +49,7 @@ XTerm.borderWidth: 0
 
 XTerm.vt100.locale: true
 
+XTerm.vt100.allowSendEvents: true
 XTerm.vt100.metaSendsEscape: true
 XTerm.vt100.backarrowKey: false
 XTerm.ttyModes: erase ^?

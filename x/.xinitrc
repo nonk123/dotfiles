@@ -2,8 +2,9 @@
 
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+xrdb ~/.Xresources
+
 xcompmgr -n &
 dunst &
-sxhkd &
 
-exec i3
+exec emacsclient -c

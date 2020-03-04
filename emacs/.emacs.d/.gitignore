@@ -1,7 +1,9 @@
 elpa/
 auto-save-list/
+my-stuff/
 
 custom.el
+lisp/my-stuff.el
 
 *.eld
 tramp

@@ -19,16 +19,6 @@
   epa-pinentry-mode 'loopback
   vc-follow-symlinks t)
 
-(defmacro disable-mode (mode)
-  "Disable MODE if it is bound."
-  (when (boundp mode)
-    `(,mode 0)))
-
-(defmacro enable-mode (mode)
-  "Enable MODE if it is bound."
-  (when (boundp mode)
-    `(,mode 1)))
-
 (use-package tramp
   :init (setq tramp-default-method "ssh"))
 
@@ -37,27 +27,27 @@
   :init
   (setq whitespace-line-column 80)
   (setq whitespace-style '(face trailing tab-mark lines-tail))
-  (enable-mode global-whitespace-mode))
+  (global-whitespace-mode 1))
 
 (use-package eldoc
   :delight)
 
-(disable-mode menu-bar-mode)
-(disable-mode scroll-bar-mode)
-(disable-mode tool-bar-mode)
+(menu-bar-mode 0)
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
 
-(disable-mode blink-cursor-mode)
+(blink-cursor-mode 0)
 
 (setq display-time-day-and-date t)
-(enable-mode display-time-mode)
+(display-time-mode 1)
 
-(enable-mode delete-selection-mode)
+(delete-selection-mode 1)
 
-(enable-mode electric-pair-mode)
-(enable-mode show-paren-mode)
+(electric-pair-mode 1)
+(show-paren-mode 1)
 
-(disable-mode electric-indent-mode)
+(electric-indent-mode 0)
 
-(enable-mode column-number-mode)
+(column-number-mode 1)
 
 ;;; misc.el ends here
