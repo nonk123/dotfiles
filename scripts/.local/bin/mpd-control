@@ -7,54 +7,47 @@ http_port=8000
 http="http://$host:$http_port"
 
 mpc playlist | grep $http > /dev/null || mpc add $http
-pgrep music-status > /dev/null || music-status & disown
+#pgrep music-status > /dev/null || music-status & disown
 
 function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
-function path_to_track {
-    echo "$@" | sed 's/\// - /g; s/\.mp3//g'
-}
-
-function track_to_path {
-    echo "$@.mp3" | sed 's/ - /\//g'
-}
-
 function play {
-    track="$1"
-
     _mpc stop
     _mpc clear
-    _mpc search filename "$track" | _mpc add
+
+    echo "$1" | while read track; do
+        _mpc search filename "$track" | _mpc add
+    done
+
     _mpc play
 
     mpc play
-    notify-send "Now Playing" "$(path_to_track $track)"
 }
 
-function listall {
-    path_to_track "$(_mpc listall)"
+function pause {
+    _mpc pause
+    notify-send "Paused"
+}
+
+function resume {
+    _mpc play
+    notify-send "Resumed"
 }
 
 cmd=$@
 
 if [ "$cmd" = select ]; then
-    result=$(listall | prompt "Select a song")
-    [ "$result" ] && play "$(track_to_path $result)"
+    result=$(_mpc listall | prompt "Select a song")
+    [ "$result" ] && play "$result"
 elif [ "$cmd" = interactive ]; then
     artist=$(_mpc ls | prompt "Select an artist")
     [ "$artist" ] && album=$(_mpc ls "$artist" | prompt "Select an album")
     [ "$album" ] && track=$(_mpc ls "$album" | prompt "Select a track")
     [ "$track" ] && play "$track"
 elif [ "$cmd" = toggle ]; then
-    if [ "$(mpc | grep "playing")" ]; then
-        mpc stop
-        notify-send "Paused"
-    else
-        mpc play
-        notify-send "Resumed"
-    fi
+    _mpc | grep playing && pause || resume
 else
     _mpc "$@"
 fi

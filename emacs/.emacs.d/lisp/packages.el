@@ -119,6 +119,16 @@
 (use-package helm-projectile
   :config (helm-projectile-on))
 
+(use-package treemacs
+  :init
+  (treemacs-git-mode 'deferred)
+  (treemacs-filewatch-mode 1)
+  :bind ("C-c t" . treemacs))
+(use-package treemacs-projectile)
+(use-package treemacs-magit)
+
+(use-package aggressive-indent)
+
 (use-package markdown-mode)
 
 (use-package lua-mode)

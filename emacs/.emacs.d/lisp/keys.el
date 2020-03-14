@@ -54,8 +54,24 @@
         ("C-f" . tetris-move-right)
         ("C-n" . tetris-move-bottom)))
 
+(defun my-kill-region (arg)
+  "Kill ARG lines unless a region is selected."
+  (interactive "P")
+  (if (region-active-p)
+      (kill-region (region-beginning) (region-end))
+    (kill-whole-line arg)))
+
+(defun my-kill-ring-save ()
+  "Save whole line to kill ring unless a region is selected."
+  (interactive)
+  (if (region-active-p)
+      (kill-ring-save (region-beginning) (region-end))
+    (kill-ring-save (line-beginning-position) (line-end-position))))
+
 (bind global-map
       ("C-c d" . show-documentation-at-point)
+      ("C-w"   . my-kill-region)
+      ("M-w"   . my-kill-ring-save)
       ("s-i"   . load-init)
       ("s-o"   . make-frame)
       ("s-SPC" . rectangle-mark-mode)

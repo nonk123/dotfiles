@@ -32,6 +32,9 @@
 (use-package eldoc
   :delight)
 
+(desktop-change-dir "~/.emacs.d/.cache/")
+(desktop-save-mode 1)
+
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)

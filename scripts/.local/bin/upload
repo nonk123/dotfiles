@@ -4,8 +4,8 @@ file=$1
 
 user=nonk
 protocol=http
-domain=tilde.as205315.net
+addr=tilde.as205315.net
 port=2020
 
-scp "$file" $user@$domain:~/Files/
-echo "$protocol://$domain:$port/`basename "$file"`"
+scp "$file" "$user@$addr:~/Files/"
+echo "$protocol://$addr:$port/$(basename "$file")"

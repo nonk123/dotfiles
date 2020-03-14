@@ -42,8 +42,16 @@ Asynchronous if SYNC is nil.  May output to BUF if it is set."
   "Return the result of `sh' called with CMD as a vector of lines."
   (split-string (sh-output cmd) "\n" t))
 
+(defun prompt-actions (candidates)
+  (with-temp-buffer
+    (dolist (candidate (helm-marked-candidates))
+      (insert candidate)
+      (newline))
+    (buffer-string)))
+
 (defun prompt (msg file)
   "Show a `helm' prompt, using candidates from FILE, and MSG as the prompt message."
+  (interactive)
   (let ((candidates
          (if (file-exists-p file)
              (with-temp-buffer
@@ -51,8 +59,10 @@ Asynchronous if SYNC is nil.  May output to BUF if it is set."
                (split-string (buffer-string) "\n" t))
            (error (format "File doesn't exist: %s" file)))))
     (helm :prompt msg
+          :candidate-number-limit 250
           :buffer "*prompt*"
-          :sources (helm-build-sync-source "prompt"
+          :sources (helm-build-sync-source msg
+                     :action 'prompt-actions
                      :candidates candidates))))
 
 ;;; utils.el ends here

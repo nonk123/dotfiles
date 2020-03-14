@@ -3,7 +3,3 @@
 xset r rate 250 60
 xsetroot -cursor_name left_ptr
 setxkbmap -option 'grp:shift_caps_toggle' -layout us,de,ru
-
-color=$(xrdb -query | grep -m1 background | cut -f2)
-convert -size 2x2 xc:$color /tmp/background.png
-feh --bg-fill /tmp/background.png

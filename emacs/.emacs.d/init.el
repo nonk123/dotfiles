@@ -25,7 +25,12 @@
                   "my-exwm"
                   "hooks"
                   "my-stuff"))
-    (load file t)))
+    (load file))
+  (when enable-exwm
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+    (exwm-enable)
+    (exwm-input--post-init)))
 
 (load-init)
 

@@ -71,6 +71,32 @@
       (kill-process process))
     (kill-current-buffer)))
 
+(defun exchange-window (move-function &rest args)
+  "Exchange buffers in windows using MOVE-FUNCTION with optional ARGS."
+  (let ((old-buffer (current-buffer))
+        (old-window (selected-window)))
+    (funcall move-function args)
+    (set-window-buffer old-window (current-buffer))
+    (set-window-buffer (selected-window) old-buffer)))
+
+(defun exchange-left ()
+  (interactive)
+  (exchange-window 'windmove-left))
+
+(defun exchange-down ()
+  (interactive)
+  (exchange-window 'windmove-down))
+
+(defun exchange-up ()
+  (interactive)
+  (exchange-window 'windmove-up))
+
+(defun exchange-right ()
+  (interactive)
+  (exchange-window 'windmove-right))
+
+(defvar enable-exwm nil)
+
 (use-package exwm
   :init
   (setq exwm-workspace-number 10)
@@ -84,6 +110,10 @@
           (,(kbd "s-j") . windmove-down)
           (,(kbd "s-k") . windmove-up)
           (,(kbd "s-l") . windmove-right)
+          (,(kbd "C-s-h") . exchange-left)
+          (,(kbd "C-s-j") . exchange-down)
+          (,(kbd "C-s-k") . exchange-up)
+          (,(kbd "C-s-l") . exchange-right)
           (,(kbd "s-n") . split-window-below)
           (,(kbd "s-m") . split-window-right)
           (,(kbd "s-w") . delete-window)
@@ -91,6 +121,7 @@
           (,(kbd "s-b") . switch-to-buffer)
           (,(kbd "s-f") . exwm-layout-toggle-fullscreen)
           (,(kbd "s-r") . exwm-floating-toggle-floating)
+          (,(kbd "s-t") . exwm-reset)
           (,(kbd "s-g") . exwm-input-toggle-keyboard)
           ,@(mapcar (lambda (i)
                      `(,(kbd (format "s-%d" i)) .
@@ -110,10 +141,7 @@
           (,(kbd "s-o") . mpd-toggle)
           (,(kbd "s-[") . mpd-info)
           (,(kbd "s-{") . mpd-rewind)
-          (,(kbd "s-}") . mpd-forward)))
-  (require 'exwm-systemtray)
-  (exwm-systemtray-enable)
-  (exwm-enable))
+          (,(kbd "s-}") . mpd-forward))))
 
 (defun exwm-update-class-actions ()
   (exwm-workspace-rename-buffer exwm-class-name))
@@ -128,6 +156,7 @@
   "Actions to perform upon starting EXWM."
   (interactive)
   (sh "x-startup" t)
+  (use-package dracula-theme)
   (set-frame-font (x-get-resource "font" "emacs") nil t)
   (unbind global-map "C-z"))
 (add-hook 'exwm-init-hook 'exwm-init-actions)
