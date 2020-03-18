@@ -30,7 +30,8 @@
     (require 'exwm-systemtray)
     (exwm-systemtray-enable)
     (exwm-enable)
-    (exwm-input--post-init)))
+    (dolist (binding exwm-input-global-keys)
+      (exwm-input-set-key (car binding) (cdr binding)))))
 
 (load-init)
 

@@ -13,7 +13,7 @@ function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
-function play {
+function queue {
     _mpc stop
     _mpc clear
 
@@ -22,32 +22,57 @@ function play {
     done
 
     _mpc play
+}
 
+function play {
+    queue "$1"
+
+    mpc stop
     mpc play
+
+    notify-send "Playing"
+}
+
+function start_selection {
+    _mpc listall | prompt "Select a track"
 }
 
 function pause {
     _mpc pause
+    mpc stop
     notify-send "Paused"
 }
 
 function resume {
     _mpc play
+    mpc play
     notify-send "Resumed"
 }
 
 cmd=$@
 
-if [ "$cmd" = select ]; then
-    result=$(_mpc listall | prompt "Select a song")
+case "$cmd" in
+select)
+    result=$(start_selection)
     [ "$result" ] && play "$result"
-elif [ "$cmd" = interactive ]; then
+    ;;
+queue)
+    result=$(start_selection)
+    [ "$result" ] && queue "$result"
+    ;;
+interactive)
     artist=$(_mpc ls | prompt "Select an artist")
     [ "$artist" ] && album=$(_mpc ls "$artist" | prompt "Select an album")
     [ "$album" ] && track=$(_mpc ls "$album" | prompt "Select a track")
     [ "$track" ] && play "$track"
-elif [ "$cmd" = toggle ]; then
+    ;;
+toggle)
     _mpc | grep playing && pause || resume
-else
+    ;;
+http)
+    echo "$http"
+    ;;
+*)
     _mpc "$@"
-fi
+    ;;
+esac

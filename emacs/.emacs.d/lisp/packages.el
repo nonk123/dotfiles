@@ -32,7 +32,8 @@
   :bind ("C-x g" . magit-status))
 
 (use-package company
-  :delight)
+  :delight
+  :init (setq company-idle-delay nil))
 (use-package company-c-headers
   :config (add-to-list 'company-backends 'company-c-headers))
 (use-package gxref

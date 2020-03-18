@@ -5,19 +5,18 @@
 ;;; Code:
 
 (c-add-style "nonk123"
-  '("java"
-    (c-basic-offset . 4)
-    (c-offsets-alist
-     (access-label . /)
-     (case-label . +))))
+             '("java"
+               (c-basic-offset . 4)
+               (c-offsets-alist
+                (access-label . /)
+                (case-label . +))))
 (setq c-default-style "nonk123")
 
 (setq-default
-  indent-tabs-mode nil
-  tab-width 4
-  tab-stop-list nil
-  epa-pinentry-mode 'loopback
-  vc-follow-symlinks t)
+ indent-tabs-mode nil
+ tab-stop-list nil
+ epa-pinentry-mode 'loopback
+ vc-follow-symlinks t)
 
 (use-package tramp
   :init (setq tramp-default-method "ssh"))
@@ -31,9 +30,6 @@
 
 (use-package eldoc
   :delight)
-
-(desktop-change-dir "~/.emacs.d/.cache/")
-(desktop-save-mode 1)
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)

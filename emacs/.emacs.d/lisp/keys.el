@@ -70,6 +70,8 @@
 
 (bind global-map
       ("C-c d" . show-documentation-at-point)
+      ("C-,"   . previous-buffer)
+      ("C-."   . next-buffer)
       ("C-w"   . my-kill-region)
       ("M-w"   . my-kill-ring-save)
       ("s-i"   . load-init)
