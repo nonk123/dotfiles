@@ -25,13 +25,13 @@
                   "my-exwm"
                   "hooks"
                   "my-stuff"))
-    (load file))
+    (load file t))
   (when enable-exwm
     (require 'exwm-systemtray)
     (exwm-systemtray-enable)
     (exwm-enable)
     (dolist (binding exwm-input-global-keys)
-      (exwm-input-set-key (car binding) (cdr binding)))))
+      (exwm-input--set-key (car binding) (cdr binding)))))
 
 (load-init)
 

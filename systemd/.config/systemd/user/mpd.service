@@ -5,8 +5,11 @@ Documentation=file:///usr/share/doc/mpd/html/user.html
 After=network.target sound.target
 
 [Service]
-Type=exec
-ExecStart=/usr/bin/mpd --no-daemon --verbose --stdout
+Type=forking
+ExecStart=/usr/bin/mpd --verbose --stdout
+Restart=on-failure
+StandardOutput=journal
+StandardError=journal
 LimitRTPRIO=50
 LimitRTTIME=infinity
 ProtectSystem=yes

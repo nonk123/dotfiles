@@ -13,6 +13,9 @@ function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
+_mpc single on > /dev/null &
+_mpc repeat on > /dev/null &
+
 function queue {
     _mpc stop
     _mpc clear
@@ -68,6 +71,9 @@ interactive)
     ;;
 toggle)
     _mpc | grep playing && pause || resume
+    ;;
+status)
+    notify-send "Status" "$(_mpc)"
     ;;
 http)
     echo "$http"

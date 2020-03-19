@@ -4,9 +4,9 @@ Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
 
 [Service]
 Type=forking
+Environment=SSH_AUTH_SOCK=%t/keyring/ssh
 ExecStart=/usr/bin/emacs --daemon
 ExecStop=/usr/bin/emacsclient -e "(kill-emacs)"
-Environment=SSH_AUTH_SOCK=%t/keyring/ssh
 Restart=on-failure
 
 [Install]

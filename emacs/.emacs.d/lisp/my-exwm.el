@@ -47,6 +47,14 @@
   (interactive)
   (sh "mpd-control queue"))
 
+(defun mpd-prev ()
+  (interactive)
+  (sh "mpd-control prev"))
+
+(defun mpd-next ()
+  (interactive)
+  (sh "mpd-control next"))
+
 (defun mpd-interactive ()
   (interactive)
   (sh "mpd-control interactive"))
@@ -55,9 +63,9 @@
   (interactive)
   (sh "mpd-control toggle"))
 
-(defun mpd-info ()
+(defun mpd-status ()
   (interactive)
-  (sh "notify-send \"Info\" \"$(mpd-control)\""))
+  (sh "mpd-control status"))
 
 (defun mpd-rewind ()
   (interactive)
@@ -145,9 +153,11 @@
           (,(kbd "s-d") . helm-dmenu)
           (,(kbd "s-p") . mpd-select)
           (,(kbd "s-P") . mpd-queue)
+          (,(kbd "s-,") . mpd-prev)
+          (,(kbd "s-.") . mpd-next)
           (,(kbd "s-;") . mpd-interactive)
           (,(kbd "s-o") . mpd-toggle)
-          (,(kbd "s-[") . mpd-info)
+          (,(kbd "s-[") . mpd-status)
           (,(kbd "s-{") . mpd-rewind)
           (,(kbd "s-}") . mpd-forward))))
 
