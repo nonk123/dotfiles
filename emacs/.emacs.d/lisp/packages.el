@@ -43,7 +43,6 @@
   :init (setq-default helm-gtags-auto-update t
                       helm-gtags-ignore-case t)
   :config
-  (gtags-mode 1)
   (helm-gtags-mode 1))
 (use-package helm-company
   :bind
@@ -115,6 +114,7 @@
   (setq projectile-project-search-path '("~/"))
   (setq projectile-globally-ignored-directories
         '(".git" ".hg" ".svn" "build" "target"))
+  (projectile-add-known-project "/ssh:music@185.222.117.80:~/music_downloader")
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
@@ -128,11 +128,18 @@
 (use-package treemacs-projectile)
 (use-package treemacs-magit)
 
+(use-package vterm
+  :disabled
+  :init (setq vterm-kill-buffer-on-exit t)
+  :bind ("C-x C-x" . vterm-send-C-x))
+
 (use-package aggressive-indent)
 
 (use-package markdown-mode)
 
-(use-package lua-mode)
+(use-package lua-mode
+  ;; Incompatible with Emacs 28 as of now.
+  :disabled)
 
 (use-package slime
   :init

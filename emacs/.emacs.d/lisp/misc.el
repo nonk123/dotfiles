@@ -25,8 +25,7 @@
   :delight global-whitespace-mode whitespace-mode
   :init
   (setq whitespace-line-column 80)
-  (setq whitespace-style '(face trailing tab-mark lines-tail))
-  (global-whitespace-mode 1))
+  (setq whitespace-style '(face trailing tab-mark lines-tail)))
 
 (use-package eldoc
   :delight)

@@ -9,6 +9,7 @@
   (display-line-numbers-mode 1)
   (company-mode 1)
   (aggressive-indent-mode 1)
+  (whitespace-mode 1)
   (lsp)
   (when (bound-and-true-p lsp-mode)
     (lsp-lens-mode 1))

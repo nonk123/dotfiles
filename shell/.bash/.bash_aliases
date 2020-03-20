@@ -16,16 +16,8 @@ alias i='ip a s'
 alias x='xrdb ~/.Xresources'
 alias b='source ~/.bashrc'
 
-alias v='vim -u NONE'
-
 alias e='emacsclient -nw -a "emacs -nw"'
 
-alias fuck='eval $(thefuck $(history | tail -n 2 | head -n 1 | cut -d " " -f 4-))'
+alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
 
-alias fluidsynth="fluidsynth -a pulseaudio -m alsa_seq -g 1.0 /home/nonk/Misc/Unison.sf2"
-
-alias cmake="cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-
-xr() {
-    echo "`xrdb -query | grep -m1 \"$1\" | cut -f2`"
-}
+alias pipr='pip3 install -r requirements.txt'

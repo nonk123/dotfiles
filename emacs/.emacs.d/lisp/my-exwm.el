@@ -7,7 +7,7 @@
 (defun exec ()
   "Execute a command asynchronously without showing its output."
   (interactive)
-  (sh (or (read-string "$ ") "")))
+  (sh (read-shell-command "$ ")))
 
 (defun exec-buf ()
   "Execute a command similar to `exec', but show its output in a temp buffer."
@@ -78,7 +78,8 @@
 (defun force-kill-current-buffer ()
   "Kill the current buffer even if it has a process running."
   (interactive)
-  (let ((process (get-buffer-process (current-buffer))))
+  (let ((process (get-buffer-process (current-buffer)))
+        (kill-buffer-query-functions '()))
     (when (processp process)
       (kill-process process))
     (kill-current-buffer)))
