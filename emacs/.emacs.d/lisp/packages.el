@@ -59,7 +59,7 @@
   (setq lsp-log-io t)
   (setq lsp-auto-guess-root t)
   (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-pyls-server-command '("~/.local/bin/pyls"))
+  (setq lsp-pyls-server-command "~/.local/bin/pyls")
   :bind
   (("C-c I" . lsp-organize-imports)
    ("C-c i" . lsp-goto-implementation)
@@ -69,7 +69,7 @@
    ("C-c a" . lsp-avy-lens)))
 (use-package ccls)
 (use-package lsp-java
-  :init (setq lsp-java-server-install-dir "~/.lsp/"))
+  :init (setq lsp-java-server-install-dir "~/.lsp/eclipse/"))
 (use-package company-lsp)
 (use-package helm-lsp)
 (use-package dap-mode

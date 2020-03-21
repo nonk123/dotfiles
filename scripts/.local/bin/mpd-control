@@ -13,7 +13,6 @@ function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
-_mpc single on > /dev/null &
 _mpc repeat on > /dev/null &
 
 function queue {
@@ -52,6 +51,10 @@ function resume {
     notify-send "Resumed"
 }
 
+function status {
+    notify-send "Status" "$(_mpc)"
+}
+
 cmd=$@
 
 case "$cmd" in
@@ -73,10 +76,19 @@ toggle)
     _mpc | grep playing && pause || resume
     ;;
 status)
-    notify-send "Status" "$(_mpc)"
+    status
     ;;
 http)
     echo "$http"
+    ;;
+next)
+    _mpc next && status
+    ;;
+prev)
+    _mpc prev && status
+    ;;
+single)
+    _mpc single && status
     ;;
 *)
     _mpc "$@"

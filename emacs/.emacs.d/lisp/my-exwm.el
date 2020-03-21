@@ -67,6 +67,10 @@
   (interactive)
   (sh "mpd-control status"))
 
+(defun mpd-single ()
+  (interactive)
+  (sh "mpd-control single"))
+
 (defun mpd-rewind ()
   (interactive)
   (sh "mpd-control seek -8"))
@@ -78,8 +82,7 @@
 (defun force-kill-current-buffer ()
   "Kill the current buffer even if it has a process running."
   (interactive)
-  (let ((process (get-buffer-process (current-buffer)))
-        (kill-buffer-query-functions '()))
+  (let ((process (get-buffer-process (current-buffer))))
     (when (processp process)
       (kill-process process))
     (kill-current-buffer)))
@@ -159,6 +162,7 @@
           (,(kbd "s-;") . mpd-interactive)
           (,(kbd "s-o") . mpd-toggle)
           (,(kbd "s-[") . mpd-status)
+          (,(kbd "s-]") . mpd-single)
           (,(kbd "s-{") . mpd-rewind)
           (,(kbd "s-}") . mpd-forward))))
 
