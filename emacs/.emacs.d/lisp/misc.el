@@ -18,21 +18,8 @@
  epa-pinentry-mode 'loopback
  vc-follow-symlinks t)
 
-(use-package tramp
-  :init (setq tramp-default-method "ssh"))
-
-(use-package whitespace
-  :delight global-whitespace-mode whitespace-mode
-  :init
-  (setq whitespace-line-column 80)
-  (setq whitespace-style '(face trailing tab-mark lines-tail)))
-
-(use-package eldoc
-  :delight)
-
 (menu-bar-mode 0)
 (tool-bar-mode 0)
-(scroll-bar-mode 0)
 
 (blink-cursor-mode 0)
 
@@ -47,5 +34,9 @@
 (electric-indent-mode 0)
 
 (column-number-mode 1)
+
+;; Breaks everything in TTY version.
+(when (bound-and-true-p scroll-bar-mode)
+  (scroll-bar-mode 0))
 
 ;;; misc.el ends here

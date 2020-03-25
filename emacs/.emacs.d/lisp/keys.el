@@ -4,45 +4,24 @@
 
 ;;; Code:
 
-(defun show-documentation (docstring)
-  "Show a DOCSTRING in a temporary buffer."
-  (unless (string-empty-p docstring)
-    (with-output-to-temp-buffer "*Documentation*"
-      (print docstring))))
-
-(defun my-lsp-show-documentation ()
+(defun show-lsp-documentation-at-point ()
   "`lsp-mode' implementation of `show-documentation-at-point'."
-  (interactive)
-  (show-documentation
-   (-some->>
-    (gethash "contents" (lsp-request
-                         "textDocument/hover"
-                         (lsp--text-document-position-params)))
-    lsp-ui-doc--extract
-    (replace-regexp-in-string "\r" ""))))
-
-(defun show-emacs-lisp-documentation-at-point ()
-  "`emacs-lisp-mode' implementation of `show-documentation-at-point'."
-  (let ((fun (function-called-at-point))
-        (var (variable-at-point t)))
-    (cond
-     ((and var (boundp var) (not (functionp var)) (/= var 0))
-      (describe-variable var))
-     (fun
-      (describe-function fun))
-     (t
-      (message "nil")))))
+  (with-help-window (help-buffer)
+    (princ (gethash "contents"
+                    (lsp-request "textDocument/hover"
+                                 (lsp--text-document-position-params))))))
 
 (defun show-documentation-at-point ()
   "Show documentation for symbol at point in a temporary buffer."
   (interactive)
   (cond
-   ((equal major-mode 'emacs-lisp-mode)
-    (show-emacs-lisp-documentation-at-point))
+   ((or (equal major-mode 'emacs-lisp-mode)
+        (equal major-mode 'lisp-interaction-mode))
+    (describe-symbol (symbol-at-point)))
    ((bound-and-true-p slime-mode)
     (slime-documentation (slime-symbol-at-point)))
    ((bound-and-true-p lsp-mode)
-    (my-lsp-show-documentation))
+    (show-lsp-documentation-at-point))
    (t
     (message "No documentation handler found"))))
 
@@ -69,6 +48,7 @@
     (kill-ring-save (line-beginning-position) (line-end-position))))
 
 (bind global-map
+      ("C-c C-k" . eval-buffer)
       ("C-c d" . show-documentation-at-point)
       ("C-,"   . previous-buffer)
       ("C-."   . next-buffer)
@@ -77,8 +57,6 @@
       ("s-i"   . load-init)
       ("s-o"   . make-frame)
       ("s-SPC" . rectangle-mark-mode)
-      ("C-c ;" . comment-or-uncomment-region)
-      ("M-p"   . scroll-down-line)
-      ("M-n"   . scroll-up-line))
+      ("C-c ;" . comment-or-uncomment-region))
 
 ;;; keys.el ends here

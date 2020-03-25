@@ -1,4 +1,4 @@
-;;; packages.el --- packages part of init.el.
+;;; packages.el --- packages part of init.el. -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -12,15 +12,18 @@
   :config (helm-mode 1)
   :bind
   (("M-x"     . helm-M-x)
+   ("C-x b"   . helm-buffers-list)
    ("C-c M-x" . execute-extended-command)
    ("C-x C-f" . helm-find-files)))
 (use-package helm-swoop
-  :after projectile
+  :after helm projectile
   :bind
   (("C-c s"   . helm-swoop)
    ("C-c C-s" . helm-multi-swoop-projectile)))
-(use-package helm-ag)
-(use-package helm-xref)
+(use-package helm-ag
+  :after helm)
+(use-package helm-xref
+  :after helm)
 
 (use-package avy
   :bind
@@ -33,72 +36,127 @@
 
 (use-package company
   :delight
-  :init (setq company-idle-delay nil))
+  :init (setq company-idle-delay nil)
+  :hook ((prog-mode sgml-mode) company-mode))
 (use-package company-c-headers
+  :after company
   :config (add-to-list 'company-backends 'company-c-headers))
 (use-package gxref
-  :init (add-to-list 'xref-backend-functions 'gxref-xref-backend))
+  :config (add-to-list 'xref-backend-functions 'gxref-xref-backend))
 (use-package helm-gtags
   :delight
+  :after helm
   :init (setq-default helm-gtags-auto-update t
                       helm-gtags-ignore-case t)
-  :config
-  (helm-gtags-mode 1))
+  :config (helm-gtags-mode 1))
 (use-package helm-company
+  :after helm company
   :bind
   (:map company-mode-map
         ("<M-tab>" . company-complete)
         ("<backtab>" . helm-company)
-   :map company-active-map
+        :map company-active-map
         ("<backtab>" . helm-company)))
 
+(defun my-lsp-remote (server &rest args)
+  (lsp-stdio-connection
+   (lambda ()
+     `("bash" "-lc" ,(format "lsp-remote %s %s %s"
+                             server
+                             (projectile-project-root)
+                             (string-join args " "))))))
+
+(defvar lsp-remote-dir (temporary-file-directory)
+  "Directory where local projects are stored on the remote server.")
+
+(defun lsp-remote-uri->path (uri)
+  (expand-file-name
+   (replace-regexp-in-string
+    (format "^%s" lsp-remote-dir)
+    (concat (projectile-project-root) (file-name-as-directory ".."))
+    (url-filename (url-generic-parse-url uri)))))
+
+(defun lsp-remote-local->remote (path)
+  (concat
+   lsp-remote-dir
+   (file-relative-name path (concat (projectile-project-root path) ".."))))
+
+(defun lsp-remote-path->uri (path)
+  (concat "file://" (lsp-remote-local->remote path)))
+
+(defun make-lsp-remote-client (cmd &rest args)
+  (let ((remote (temporary-file-directory)))
+    (apply #'make-lsp-client
+           :new-connection (apply 'my-lsp-remote (car cmd) (cdr cmd))
+           :uri->path-fn 'lsp-remote-uri->path
+           :path->uri-fn 'lsp-remote-path->uri
+           :priority 10
+           args)))
+
 (use-package lsp-mode
-  :delight lsp-mode lsp-lens-mode
-  :commands lsp
+  :delight lsp-lens-mode
   :init
+  (setq lsp-keymap-prefix nil)
   (setq lsp-log-io t)
-  (setq lsp-auto-guess-root t)
+  (setq lsp-lens-auto-enable t)
   (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-pyls-server-command "~/.local/bin/pyls")
-  :bind
-  (("C-c I" . lsp-organize-imports)
-   ("C-c i" . lsp-goto-implementation)
-   ("C-c D" . lsp-find-definition)
-   ("C-c m" . helm-imenu)
-   ("C-c r" . lsp-rename)
-   ("C-c a" . lsp-avy-lens)))
+  (setq lsp-server-install-dir "~/.lsp/")
+  (setq lsp-pyls-server-command '("python3" "-m" "pyls"))
+  :config
+  ;; JS.
+  (lsp-register-client
+   (make-lsp-remote-client '("javascript-typescript-stdio")
+                           :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                           :completion-in-comments? t
+                           :server-id 'jsts-ssh))
+  ;; HTML.
+  (lsp-register-client
+   (make-lsp-remote-client '("html-languageserver" "--stdio")
+                           :major-modes '(html-mode sgml-mode)
+                           :completion-in-comments? t
+                           :server-id 'html-ls-ssh
+                           :initialized-fn (lambda (w)
+                                             (with-lsp-workspace w
+                                               (lsp--set-configuration
+                                                (lsp-configuration-section "html"))))))
+  ;; Python.
+  (lsp-register-client
+   (make-lsp-remote-client lsp-pyls-server-command
+                           :major-modes '(python-mode cython-mode)
+                           :server-id 'pyls-ssh
+                           :environment-fn (lambda ()
+                                             `(("VIRTUAL_ENV" . ,(lsp-remote-local->remote
+                                                                  (concat
+                                                                   (projectile-project-root) "env/")))))
+                           :library-folders-fn (lambda (_workspace)
+                                                 lsp-clients-python-library-directories)
+                           :initialized-fn (lambda (workspace)
+                                             (with-lsp-workspace workspace
+                                               (lsp--set-configuration (lsp-configuration-section "pyls"))))))
+  :hook ((prog-mode html-mode sgml-mode mhtml-mode web-mode) . lsp)
+  :bind (("C-c r" . lsp-rename)
+         ("C-c i" . lsp-organize-imports)
+         ("C-c f" . lsp-code-actions)))
+(use-package company-lsp
+  :after company lsp)
+(use-package helm-lsp
+  :after helm lsp)
 (use-package ccls)
 (use-package lsp-java
-  :init (setq lsp-java-server-install-dir "~/.lsp/eclipse/"))
-(use-package company-lsp)
-(use-package helm-lsp)
-(use-package dap-mode
-  :delight
-  :init (require 'dap-python)
-  :config
-  (dap-mode 1)
-  (dap-ui-mode 1)
-  :bind
-  (("C-c b" . dap-breakpoint-toggle)
-   ("C-c n" . dap-next)
-   ("C-c u" . dap-step-in)
-   ("C-c o" . dap-step-out)))
+  :after lsp)
 
 (use-package flycheck
-  :delight
-  :init
-  (setq lsp-prefer-flymake nil)
-  (setq-default flycheck-disabled-checkers
-                '(c/c++-clang
-                  c/c++-cppcheck
-                  c/c++-gcc
-                  python-pylint
-                  python-pycompile
-                  python-mypy))
-  :config (global-flycheck-mode))
-(use-package lsp-ui
-  :delight
-  :init (setq lsp-ui-doc-enable nil))
+  :after lsp
+  :init (setq-default flycheck-disabled-checkers
+                      '(c/c++-clang
+                        c/c++-cppcheck
+                        c/c++-gcc
+                        python-pylint
+                        python-pycompile
+                        python-mypy))
+  :config (global-flycheck-mode)
+  :bind (("M-n" . flycheck-next-error)
+         ("M-p" . flycheck-previous-error)))
 
 (use-package yasnippet
   :delight yas-minor-mode
@@ -107,33 +165,31 @@
   (setq yas-indent-line 'auto)
   :config (yas-global-mode 1))
 
+(defun my-projectile-project-find-function (dir)
+  "Bridge between projectile and project.el."
+  (let ((root (projectile-project-root dir)))
+    (and root (cons 'transient root))))
+
 (use-package projectile
-  :delight '(:eval (concat " " (projectile-project-name)))
   :init
-  (setq projectile-mode-line "Projectile")
-  (setq projectile-project-search-path '("~/"))
+  (add-to-list 'project-find-functions 'my-projectile-project-find-function)
+  (setq projectile-project-search-path '("~/Sources"))
+  (projectile-add-known-project "~/dotfiles")
   (setq projectile-globally-ignored-directories
         '(".git" ".hg" ".svn" "build" "target"))
-  (projectile-add-known-project "/ssh:music@185.222.117.80:~/music_downloader")
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
-  :config (helm-projectile-on))
-
-(use-package treemacs
-  :init
-  (treemacs-git-mode 'deferred)
-  (treemacs-filewatch-mode 1)
-  :bind ("C-c t" . treemacs))
-(use-package treemacs-projectile)
-(use-package treemacs-magit)
+  :init (helm-projectile-on))
 
 (use-package vterm
   :disabled
   :init (setq vterm-kill-buffer-on-exit t)
   :bind ("C-x C-x" . vterm-send-C-x))
 
-(use-package aggressive-indent)
+(use-package aggressive-indent
+  :hook (((prog-mode sgml-mode) . aggressive-indent-mode)
+         ((python-mode sh-mode) . aggressive-indent-mode)))
 
 (use-package markdown-mode)
 
@@ -142,6 +198,7 @@
   :disabled)
 
 (use-package slime
+  :disabled
   :init
   (let ((slime-helper "~/quicklisp/slime-helper.el")
         (inferior-lisp "/usr/local/bin/sbcl"))
@@ -161,5 +218,28 @@
         ("n" . nil)))
 
 (use-package string-inflection)
+
+(use-package xref
+  :hook (emacs-lisp-mode . xref-etags-mode))
+
+(use-package whitespace
+  :delight
+  :init
+  (setq whitespace-line-column 80)
+  (setq whitespace-style '(face trailing tab-mark lines-tail))
+  :hook ((prog-mode sgml-mode) . whitespace-mode))
+
+(use-package eldoc
+  :delight)
+
+(use-package display-line-numbers
+  :delight
+  :hook ((prog-mode sgml-mode) . display-line-numbers-mode))
+
+(use-package emacs
+  :init (setq initial-major-mode 'fundamental-mode)
+  :hook (text-mode . (lambda ()
+                       (set-fill-column 80)
+                       (auto-fill-mode))))
 
 ;;; packages.el ends here

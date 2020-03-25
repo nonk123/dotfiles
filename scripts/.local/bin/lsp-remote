@@ -1,0 +1,23 @@
+#!/bin/bash
+
+user=lsp
+host=185.222.117.73
+local_port=2000
+
+server=$1
+project_root=$(realpath ${2:-.})
+[ $# -gt 2 ] && shift 2 && server_args=$@ || server_args=
+
+exec 3<<EOF
+path="$(whoami)@localhost:$project_root"
+dest=/tmp/$(basename $project_root)
+ssh_command="ssh -c aes128-ctr"
+options=auto_cache,reconnect,no_readahead,ro,ssh_command="\$ssh_command"
+sshmount "\$path" "\$dest" -p $local_port -o "\$options" || exit 1
+cd \$dest
+# pyls hack.
+export VIRTUAL_ENV=$VIRTUAL_ENV
+exec $server $server_args
+EOF
+
+exec cat /proc/$$/fd/{3,0} | ssh -CR $local_port:localhost:22 $user@$host /bin/bash -l

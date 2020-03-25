@@ -111,8 +111,6 @@
   (interactive)
   (exchange-window 'windmove-right))
 
-(defvar enable-exwm nil)
-
 (use-package exwm
   :init
   (setq exwm-workspace-number 10)
@@ -175,14 +173,31 @@
     (exwm-workspace-rename-buffer exwm-title)))
 (add-hook 'exwm-update-title-hook 'exwm-update-title-actions)
 
+(defvar exwm-enabled nil)
+
 (defun exwm-init-actions ()
-  "Actions to perform upon starting EXWM."
   (interactive)
   (sh "x-startup" t)
   (use-package modus-vivendi-theme)
   (load-theme 'modus-vivendi t)
   (set-frame-font (x-get-resource "font" "emacs") nil t)
-  (unbind global-map "C-z"))
+  (unbind global-map "C-z")
+  (setq exwm-enabled t))
 (add-hook 'exwm-init-hook 'exwm-init-actions)
+
+(defun exwm-exit-actions ()
+  (interactive)
+  (setq exwm-enabled nil))
+(add-hook 'exwm-exit-hook 'exwm-exit-actions)
+
+(defun start-exwm ()
+  (require 'exwm-systemtray)
+  (exwm-systemtray-enable)
+  (exwm-enable)
+  (dolist (binding exwm-input-global-keys)
+    (exwm-input--set-key (car binding) (cdr binding))))
+
+(when exwm-enabled
+  (start-exwm))
 
 ;;; my-exwm.el ends here

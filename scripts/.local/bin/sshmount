@@ -1,0 +1,12 @@
+#!/bin/sh
+
+path=$1
+dest=$2
+[ $# -gt 2 ] && shift 2
+
+if mountpoint -q $dest && [ -d $dest ]; then
+    exit 0
+else
+    mkdir -p $dest
+    sshfs $path $dest "$@"
+fi
