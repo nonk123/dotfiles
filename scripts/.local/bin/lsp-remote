@@ -2,22 +2,62 @@
 
 user=lsp
 host=185.222.117.73
-local_port=2000
+reverse=2000
+dest_root=/tmp/
+archive_dir=/tmp/
+
+addr=$user@$host
 
 server=$1
 project_root=$(realpath ${2:-.})
-[ $# -gt 2 ] && shift 2 && server_args=$@ || server_args=
+[ $# -gt 2 ] && shift 2
+
+dest="$dest_root/$(basename $project_root)"
+
+archive_name=transfer.tar
+archive=$archive_dir/$archive_name
+
+cd $project_root
+
+function copy {
+    ssh $addr mkdir -p $2
+    scp -r $1 $addr:$2
+
+    if [ $# -gt 2 ]; then
+        shift 2
+        for line in "$@"; do
+            echo "$line"
+        done | ssh $addr bash
+    fi
+}
+
+function mount {
+    archive=/tmp/transfer.tar
+    files=$archive.ls
+
+    (git ls-files; git ls-files -o -X "$project_root/.gitignore") > $files
+    rm -f $archive
+    tar -czf $archive -T $files
+
+    archive_name=$(basename $archive)
+    copy $archive $dest "mkdir -p $dest" "cd $dest" "tar -xf $archive_name" "rm $archive_name"
+
+    inotifywait -rm . | while read line; do
+        case $(echo "$line" | cut -d\  -f2) in
+            MODIFY|CREATE)
+                dir=$(echo "$line" | cut -d\  -f1)
+                name=$(echo "$line" | cut -d\  -f3)
+                copy $dir/$name $dest/$dir/$name
+                ;;
+        esac
+    done
+}
 
 exec 3<<EOF
-path="$(whoami)@localhost:$project_root"
-dest=/tmp/$(basename $project_root)
-ssh_command="ssh -c aes128-ctr"
-options=auto_cache,reconnect,no_readahead,ro,ssh_command="\$ssh_command"
-sshmount "\$path" "\$dest" -p $local_port -o "\$options" || exit 1
-cd \$dest
+cd $dest
 # pyls hack.
 export VIRTUAL_ENV=$VIRTUAL_ENV
-exec $server $server_args
+exec $server $@
 EOF
 
-exec cat /proc/$$/fd/{3,0} | ssh -CR $local_port:localhost:22 $user@$host /bin/bash -l
+mount & exec cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l
