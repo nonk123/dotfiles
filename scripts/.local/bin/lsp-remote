@@ -48,6 +48,8 @@ function mount {
     archive_name=$(basename $archive)
     ssh $addr mkdir -p $dest
     copy $archive $dest "cd $dest" "tar -xf $archive_name" "rm $archive_name" "echo > .projectile"
+
+    mainloop
 }
 
 function mainloop {
@@ -72,5 +74,5 @@ cd $dest
 exec $server $@
 EOF
 
-mount
-mainloop & exec cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l
+mount &
+exec cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l
