@@ -96,12 +96,21 @@
 (use-package lsp-mode
   :delight lsp-lens-mode
   :init
+  (setq lsp-auto-configure nil)
   (setq lsp-keymap-prefix nil)
   (setq lsp-log-io t)
   (setq lsp-lens-auto-enable t)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-server-install-dir "~/.lsp/")
   (setq lsp-pyls-server-command '("python3" "-m" "pyls"))
+  (setq lsp-idle-delay 1)
+  (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-enable-folding nil)
+  (defvar lsp-on-touch-time 0)
+  (defadvice lsp-on-change (around lsp-on-change-hack activate)
+    (when (> (- (float-time (current-time)) lsp-on-touch-time) 5)
+      (setq lsp-on-touch-time (float-time (current-time)))
+      ad-do-it))
   :config
   ;; JS.
   (lsp-register-client
@@ -133,6 +142,8 @@
   :bind (("C-c r" . lsp-rename)
          ("C-c i" . lsp-organize-imports)
          ("C-c f" . lsp-execute-code-action)))
+;; Needed just for docstring extraction.
+(use-package lsp-ui)
 
 (use-package company-lsp
   :after company lsp)

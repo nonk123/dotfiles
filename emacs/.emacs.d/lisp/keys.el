@@ -6,10 +6,15 @@
 
 (defun show-lsp-documentation-at-point ()
   "`lsp-mode' implementation of `show-documentation-at-point'."
-  (with-help-window (help-buffer)
-    (princ (gethash "contents"
-                    (lsp-request "textDocument/hover"
-                                 (lsp--text-document-position-params))))))
+  (let ((doc
+         (lsp-ui-doc--extract
+          (gethash "contents"
+                   (lsp-request "textDocument/hover"
+                                (lsp--text-document-position-params))))))
+    (if (string-empty-p doc)
+        (message "No documentation found")
+      (with-help-window (help-buffer)
+        (princ doc)))))
 
 (defun show-documentation-at-point ()
   "Show documentation for symbol at point in a temporary buffer."
