@@ -147,7 +147,7 @@
                           (exwm-workspace-switch-create ,i))))
                     (number-sequence 0 9))
           (,(kbd "C-c C-c") . exwm-input-send-next-key)
-          (,(kbd "<s-return>") . x-terminal-emulator)
+          (,(kbd "<s-return>") . vterm)
           (,(kbd "<print>") . screenshot)
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)
