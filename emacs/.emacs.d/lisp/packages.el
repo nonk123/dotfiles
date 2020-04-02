@@ -66,7 +66,7 @@
                              (projectile-project-root)
                              (string-join args " "))))))
 
-(defvar lsp-remote-dir (temporary-file-directory)
+(defvar lsp-remote-dir "/tmp/"
   "Directory where local projects are stored on the remote server.")
 
 (defun lsp-remote-uri->path (uri)
@@ -124,10 +124,6 @@
    (make-lsp-remote-client lsp-pyls-server-command
                            :major-modes '(python-mode cython-mode)
                            :server-id 'pyls-ssh
-                           :environment-fn (lambda ()
-                                             `(("VIRTUAL_ENV" . ,(lsp-remote-local->remote
-                                                                  (concat
-                                                                   (projectile-project-root) "env/")))))
                            :library-folders-fn (lambda (_workspace)
                                                  lsp-clients-python-library-directories)
                            :initialized-fn (lambda (workspace)
@@ -136,7 +132,8 @@
   :hook ((prog-mode html-mode sgml-mode mhtml-mode web-mode) . lsp)
   :bind (("C-c r" . lsp-rename)
          ("C-c i" . lsp-organize-imports)
-         ("C-c f" . lsp-code-actions)))
+         ("C-c f" . lsp-execute-code-action)))
+
 (use-package company-lsp
   :after company lsp)
 (use-package helm-lsp
@@ -189,7 +186,7 @@
 
 (use-package aggressive-indent
   :hook (((prog-mode sgml-mode) . aggressive-indent-mode)
-         ((python-mode sh-mode) . aggressive-indent-mode)))
+         ((python-mode sh-mode) . (lambda () (aggressive-indent-mode 0)))))
 
 (use-package markdown-mode)
 

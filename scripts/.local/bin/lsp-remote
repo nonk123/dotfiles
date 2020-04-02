@@ -17,10 +17,12 @@ dest="$dest_root/$(basename $project_root)"
 archive_name=transfer.tar
 archive=$archive_dir/$archive_name
 
+env_dir=env/
+
 cd $project_root
 
 function copy {
-    ssh $addr mkdir -p $2
+    ssh $addr mkdir -p $(dirname $2)
     scp -r $1 $addr:$2
 
     if [ $# -gt 2 ]; then
@@ -31,33 +33,44 @@ function copy {
     fi
 }
 
+function project_ls {
+    git ls-files -X .gitignore
+    git ls-files -X .gitignore -o
+    [ -d $env_dir ] && echo $env_dir
+}
+
 function mount {
     archive=/tmp/transfer.tar
-    files=$archive.ls
 
-    (git ls-files; git ls-files -o -X "$project_root/.gitignore") > $files
     rm -f $archive
-    tar -czf $archive -T $files
+    tar -czf $archive -T <(project_ls)
 
     archive_name=$(basename $archive)
-    copy $archive $dest "mkdir -p $dest" "cd $dest" "tar -xf $archive_name" "rm $archive_name"
+    ssh $addr mkdir -p $dest
+    copy $archive $dest "cd $dest" "tar -xf $archive_name" "rm $archive_name" "echo > .projectile"
+}
 
+function mainloop {
     inotifywait -rm . | while read line; do
-        case $(echo "$line" | cut -d\  -f2) in
-            MODIFY|CREATE)
-                dir=$(echo "$line" | cut -d\  -f1)
-                name=$(echo "$line" | cut -d\  -f3)
-                copy $dir/$name $dest/$dir/$name
-                ;;
-        esac
+        file=$(echo "$line" | cut -d\  -f1,3 | tr \  /)
+        event=$(echo "$line" | cut -d\  -f2)
+
+        if grep -vE '^\.?#|~$' <(basename $file); then
+            case $event in
+                MODIFY|CREATE)
+                    copy $file $dest/$file
+                    ;;
+            esac
+        fi
     done
 }
 
 exec 3<<EOF
+mkdir -p $dest
 cd $dest
-# pyls hack.
-export VIRTUAL_ENV=$VIRTUAL_ENV
+[ -d $env_dir ] && export VIRTUAL_ENV=\$(realpath $env_dir)
 exec $server $@
 EOF
 
-mount & exec cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l
+mount
+mainloop & exec cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l
