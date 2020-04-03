@@ -198,6 +198,6 @@
 
 (when exwm-enabled
   (start-exwm)
-  (set-frame-font "Inconsolata for Powerline 12" nil t))
+  (set-frame-font "Hack 10" nil t))
 
 ;;; my-exwm.el ends here
