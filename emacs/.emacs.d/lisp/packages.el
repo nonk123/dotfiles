@@ -10,26 +10,23 @@
   :delight
   :init (require 'helm-config)
   :config (helm-mode 1)
-  :bind
-  (("M-x"     . helm-M-x)
-   ("C-x b"   . helm-buffers-list)
-   ("C-c M-x" . execute-extended-command)
-   ("C-x C-f" . helm-find-files)))
+  :bind (("M-x"     . helm-M-x)
+         ("C-x b"   . helm-buffers-list)
+         ("C-c M-x" . execute-extended-command)
+         ("C-x C-f" . helm-find-files)))
 (use-package helm-swoop
   :after helm projectile
-  :bind
-  (("C-c s"   . helm-swoop)
-   ("C-c C-s" . helm-multi-swoop-projectile)))
+  :bind (("C-c s"   . helm-swoop)
+         ("C-c C-s" . helm-multi-swoop-projectile)))
 (use-package helm-ag
   :after helm)
 (use-package helm-xref
   :after helm)
 
 (use-package avy
-  :bind
-  (("C-:" . avy-goto-line)
-   ("C-;" . avy-goto-word-1)
-   ("C-'" . avy-goto-char)))
+  :bind (("C-:" . avy-goto-line)
+         ("C-;" . avy-goto-word-1)
+         ("C-'" . avy-goto-char)))
 
 (use-package magit
   :bind ("C-x g" . magit-status))
@@ -139,10 +136,9 @@
                                              (with-lsp-workspace workspace
                                                (lsp--set-configuration (lsp-configuration-section "pyls"))))))
   :hook ((prog-mode html-mode sgml-mode mhtml-mode web-mode) . lsp)
-  :bind
-  (("C-c r" . lsp-rename)
-   ("C-c i" . lsp-organize-imports)
-   ("C-c f" . lsp-execute-code-action)))
+  :bind (("C-c r" . lsp-rename)
+         ("C-c i" . lsp-organize-imports)
+         ("C-c f" . lsp-execute-code-action)))
 ;; Needed just for docstring extraction.
 (use-package lsp-ui)
 
@@ -183,9 +179,8 @@
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
-  :bind
-  (("C-x C-x" . vterm-send-C-x)
-   ("C-x x"   . exchange-point-and-mark)))
+  :bind (("C-x C-x" . vterm-send-C-x)
+         ("C-x x"   . exchange-point-and-mark)))
 
 (use-package markdown-mode)
 
@@ -237,9 +232,8 @@
 
 (use-package flymake
   :hook ((prog-mode markdown-mode) flymake-mode)
-  :bind
-  (("M-n" . flymake-goto-next-error)
-   ("M-p" . flymake-goto-prev-error)))
+  :bind (("M-n" . flymake-goto-next-error)
+         ("M-p" . flymake-goto-prev-error)))
 
 (use-package emacs
   :init (setq initial-major-mode 'fundamental-mode)
