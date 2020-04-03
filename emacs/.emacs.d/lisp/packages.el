@@ -198,10 +198,6 @@
   :bind (("C-x C-x" . vterm-send-C-x)
          ("C-x x"   . exchange-point-and-mark)))
 
-(use-package aggressive-indent
-  :hook (((prog-mode sgml-mode) . aggressive-indent-mode)
-         ((python-mode sh-mode) . (lambda () (aggressive-indent-mode 0)))))
-
 (use-package markdown-mode)
 
 (use-package lua-mode
