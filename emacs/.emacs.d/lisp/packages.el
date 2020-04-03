@@ -154,20 +154,6 @@
 (use-package lsp-java
   :after lsp)
 
-(use-package flycheck
-  :after lsp
-  :init (setq-default flycheck-disabled-checkers
-                      '(c/c++-clang
-                        c/c++-cppcheck
-                        c/c++-gcc
-                        python-pylint
-                        python-pycompile
-                        python-mypy))
-  :config (global-flycheck-mode)
-  :bind
-  (("M-n" . flycheck-next-error)
-   ("M-p" . flycheck-previous-error)))
-
 (use-package yasnippet
   :delight yas-minor-mode
   :init
@@ -248,6 +234,12 @@
 
 (use-package vc
   :init (setq vc-handled-backends nil))
+
+(use-package flymake
+  :hook ((prog-mode markdown-mode) flymake-mode)
+  :bind
+  (("M-n" . flymake-goto-next-error)
+   ("M-p" . flymake-goto-prev-error)))
 
 (use-package emacs
   :init (setq initial-major-mode 'fundamental-mode)
