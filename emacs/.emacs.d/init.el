@@ -4,7 +4,7 @@
 
 ;;; Code:
 
-(setq custom-file "~/.emacs.d/lisp/custom.el")
+(setq custom-file "~/.emacs.d/custom.el")
 (unless (file-exists-p custom-file)
   (write-region "" "" custom-file))
 
@@ -21,7 +21,7 @@
                   "utils"
                   "packages"
                   "keys"
-                  "misc"
+                  "miscellaneous"
                   "my-exwm"
                   "my-stuff"))
     (load file t)))
