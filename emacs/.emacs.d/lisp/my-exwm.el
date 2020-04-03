@@ -190,6 +190,7 @@
 (add-hook 'exwm-exit-hook 'exwm-exit-actions)
 
 (defun start-exwm ()
+  (scroll-bar-mode 0)
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
   (exwm-enable)
@@ -198,7 +199,6 @@
 
 (when exwm-enabled
   (start-exwm)
-  (set-frame-font "Hack 10" nil t)
-  (scroll-bar-mode 0))
+  (set-frame-font "Hack 10" nil t))
 
 ;;; my-exwm.el ends here
