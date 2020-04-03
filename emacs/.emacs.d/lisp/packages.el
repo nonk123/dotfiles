@@ -246,6 +246,9 @@
   :delight
   :hook ((prog-mode sgml-mode) . display-line-numbers-mode))
 
+(use-package vc
+  :init (setq vc-handled-backends nil))
+
 (use-package emacs
   :init (setq initial-major-mode 'fundamental-mode)
   :hook (text-mode . (lambda ()
