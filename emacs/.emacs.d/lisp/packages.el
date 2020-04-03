@@ -188,6 +188,7 @@
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
+  :after helm projectile
   :init (helm-projectile-on))
 
 (use-package vterm
