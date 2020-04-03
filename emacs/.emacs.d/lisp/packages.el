@@ -115,7 +115,7 @@
   ;; JS.
   (lsp-register-client
    (make-lsp-remote-client '("javascript-typescript-stdio")
-                           :activation-fn 'lsp-typescript-javascript-tsx-jsx-activate-p
+                           :major-modes '(javascript-mode js-mode)
                            :completion-in-comments? t
                            :server-id 'jsts-ssh))
   ;; HTML.
