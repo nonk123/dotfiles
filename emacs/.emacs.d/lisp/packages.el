@@ -191,7 +191,7 @@
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
   :after helm projectile
-  :init (helm-projectile-on))
+  :config (helm-projectile-on))
 
 (use-package vterm
   :init
