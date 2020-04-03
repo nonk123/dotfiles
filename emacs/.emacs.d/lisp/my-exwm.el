@@ -198,6 +198,7 @@
 
 (when exwm-enabled
   (start-exwm)
-  (set-frame-font "Hack 10" nil t))
+  (set-frame-font "Hack 10" nil t)
+  (scroll-bar-mode 0))
 
 ;;; my-exwm.el ends here

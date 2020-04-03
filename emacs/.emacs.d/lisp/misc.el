@@ -35,8 +35,4 @@
 
 (column-number-mode 1)
 
-;; Breaks everything in TTY version.
-(when (bound-and-true-p scroll-bar-mode)
-  (scroll-bar-mode 0))
-
 ;;; misc.el ends here
