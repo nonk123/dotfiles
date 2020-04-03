@@ -246,6 +246,7 @@
 (use-package emacs
   :init (setq initial-major-mode 'fundamental-mode)
   :hook (text-mode . (lambda ()
+                       (interactive)
                        (set-fill-column 80)
                        (auto-fill-mode))))
 
