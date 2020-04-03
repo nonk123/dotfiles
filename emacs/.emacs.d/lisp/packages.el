@@ -139,9 +139,10 @@
                                              (with-lsp-workspace workspace
                                                (lsp--set-configuration (lsp-configuration-section "pyls"))))))
   :hook ((prog-mode html-mode sgml-mode mhtml-mode web-mode) . lsp)
-  :bind (("C-c r" . lsp-rename)
-         ("C-c i" . lsp-organize-imports)
-         ("C-c f" . lsp-execute-code-action)))
+  :bind
+  (("C-c r" . lsp-rename)
+   ("C-c i" . lsp-organize-imports)
+   ("C-c f" . lsp-execute-code-action)))
 ;; Needed just for docstring extraction.
 (use-package lsp-ui)
 
@@ -163,8 +164,9 @@
                         python-pycompile
                         python-mypy))
   :config (global-flycheck-mode)
-  :bind (("M-n" . flycheck-next-error)
-         ("M-p" . flycheck-previous-error)))
+  :bind
+  (("M-n" . flycheck-next-error)
+   ("M-p" . flycheck-previous-error)))
 
 (use-package yasnippet
   :delight yas-minor-mode
@@ -195,8 +197,9 @@
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
-  :bind (("C-x C-x" . vterm-send-C-x)
-         ("C-x x"   . exchange-point-and-mark)))
+  :bind
+  (("C-x C-x" . vterm-send-C-x)
+   ("C-x x"   . exchange-point-and-mark)))
 
 (use-package markdown-mode)
 
