@@ -178,9 +178,8 @@
 (defun exwm-init-actions ()
   (interactive)
   (sh "x-startup" t)
-  (use-package modus-vivendi-theme)
-  (load-theme 'modus-vivendi t)
-  (set-frame-font (x-get-resource "font" "emacs") nil t)
+  (use-package atom-one-dark-theme)
+  (load-theme 'atom-one-dark t)
   (unbind global-map "C-z")
   (setq exwm-enabled t))
 (add-hook 'exwm-init-hook 'exwm-init-actions)
@@ -198,6 +197,7 @@
     (exwm-input--set-key (car binding) (cdr binding))))
 
 (when exwm-enabled
-  (start-exwm))
+  (start-exwm)
+  (set-frame-font "Inconsolata for Powerline 12" nil t))
 
 ;;; my-exwm.el ends here
