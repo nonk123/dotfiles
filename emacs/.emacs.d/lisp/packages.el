@@ -15,7 +15,7 @@
          ("C-c M-x" . execute-extended-command)
          ("C-x C-f" . helm-find-files)))
 (use-package helm-swoop
-  :after helm projectile
+  :after (helm projectile)
   :bind (("C-c s"   . helm-swoop)
          ("C-c C-s" . helm-multi-swoop-projectile)))
 (use-package helm-ag
@@ -47,7 +47,7 @@
                       helm-gtags-ignore-case t)
   :config (helm-gtags-mode 1))
 (use-package helm-company
-  :after helm company
+  :after (helm company)
   :bind
   (:map company-mode-map
         ("<M-tab>" . company-complete)
@@ -143,9 +143,9 @@
 (use-package lsp-ui)
 
 (use-package company-lsp
-  :after company lsp)
+  :after (company lsp))
 (use-package helm-lsp
-  :after helm lsp)
+  :after (helm lsp))
 (use-package ccls)
 (use-package lsp-java
   :after lsp)
@@ -172,7 +172,7 @@
   :config (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
-  :after helm projectile
+  :after (helm projectile)
   :config (helm-projectile-on))
 
 (use-package vterm
