@@ -16,8 +16,8 @@
 (defun load-init ()
   "Load all parts of the init file."
   (interactive)
+  (load-file custom-file)
   (dolist (file '("package-init"
-                  "custom"
                   "utils"
                   "packages"
                   "keys"
