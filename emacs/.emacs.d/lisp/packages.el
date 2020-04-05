@@ -34,7 +34,7 @@
 (use-package company
   :delight
   :init (setq company-idle-delay nil)
-  :hook ((prog-mode sgml-mode) company-mode))
+  :hook ((prog-mode sgml-mode) . company-mode))
 (use-package company-c-headers
   :after company
   :config (add-to-list 'company-backends 'company-c-headers))
@@ -45,7 +45,7 @@
   :after helm
   :init (setq-default helm-gtags-auto-update t
                       helm-gtags-ignore-case t)
-  :config (helm-gtags-mode 1))
+  :hook (company-mode . helm-gtags-mode))
 (use-package helm-company
   :after (helm company)
   :bind
@@ -173,7 +173,7 @@
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
   :after (helm projectile)
-  :config (helm-projectile-on))
+  :init (helm-projectile-on))
 
 (use-package vterm
   :init
@@ -239,7 +239,7 @@
   :init (setq vc-handled-backends nil))
 
 (use-package flymake
-  :hook ((prog-mode markdown-mode) flymake-mode)
+  :hook ((prog-mode markdown-mode) . flymake-mode)
   :bind (("M-n" . flymake-goto-next-error)
          ("M-p" . flymake-goto-prev-error)))
 
