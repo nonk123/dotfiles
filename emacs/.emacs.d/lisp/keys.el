@@ -55,12 +55,12 @@
 (bind global-map
       ("C-c C-k" . eval-buffer)
       ("C-c d" . show-documentation-at-point)
+      ("C-c u" . list-packages)
       ("C-,"   . previous-buffer)
       ("C-."   . next-buffer)
       ("C-w"   . my-kill-region)
       ("M-w"   . my-kill-ring-save)
       ("s-i"   . load-init)
-      ("s-o"   . make-frame)
       ("s-SPC" . rectangle-mark-mode)
       ("C-c ;" . comment-or-uncomment-region))
 
