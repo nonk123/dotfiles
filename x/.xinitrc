@@ -5,8 +5,7 @@ xrdb ~/.Xresources
 xcompmgr -n &
 dunst &
 
-. ~/.profile
+xhost +local:
 
 emacsclient -e "(start-exwm)"
-
 exec emacsclient -c
