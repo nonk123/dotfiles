@@ -223,6 +223,14 @@
 (use-package eldoc
   :delight)
 
+(use-package tetris
+  :bind
+  (:map tetris-mode-map
+        ("C-p" . tetris-rotate-prev)
+        ("C-b" . tetris-move-left)
+        ("C-f" . tetris-move-right)
+        ("C-n" . tetris-move-bottom)))
+
 (use-package display-line-numbers
   :delight
   :hook ((prog-mode sgml-mode) . display-line-numbers-mode))

@@ -30,14 +30,6 @@
    (t
     (message "No documentation handler found"))))
 
-(use-package tetris
-  :bind
-  (:map tetris-mode-map
-        ("C-p" . tetris-rotate-prev)
-        ("C-b" . tetris-move-left)
-        ("C-f" . tetris-move-right)
-        ("C-n" . tetris-move-bottom)))
-
 (defun my-kill-region (arg)
   "Kill ARG lines unless a region is selected."
   (interactive "P")
