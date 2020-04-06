@@ -34,7 +34,7 @@
 (use-package company
   :delight
   :init (setq company-idle-delay nil)
-  :hook ((prog-mode sgml-mode) . company-mode))
+  :hook ((prog-mode sgml-mode xml-mode) . company-mode))
 (use-package company-c-headers
   :after company
   :config (add-to-list 'company-backends 'company-c-headers))
@@ -104,6 +104,7 @@
   (setq lsp-enable-symbol-highlighting nil)
   (setq lsp-enable-folding nil)
   (defvar lsp-on-touch-time 0)
+  ;; TODO: update to the new advice syntax.
   (defadvice lsp-on-change (around lsp-on-change-hack activate)
     (when (> (- (float-time (current-time)) lsp-on-touch-time) 5)
       (setq lsp-on-touch-time (float-time (current-time)))
@@ -135,7 +136,7 @@
                            :initialized-fn (lambda (workspace)
                                              (with-lsp-workspace workspace
                                                (lsp--set-configuration (lsp-configuration-section "pyls"))))))
-  :hook ((prog-mode html-mode sgml-mode mhtml-mode web-mode) . lsp)
+  :hook ((prog-mode sgml-mode xml-mode) . lsp)
   :bind (("C-c r" . lsp-rename)
          ("C-c i" . lsp-organize-imports)
          ("C-c f" . lsp-execute-code-action)))
@@ -240,7 +241,7 @@
   :init (setq vc-handled-backends nil))
 
 (use-package flymake
-  :hook ((prog-mode markdown-mode) . flymake-mode)
+  :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode)
   :bind (("M-n" . flymake-goto-next-error)
          ("M-p" . flymake-goto-prev-error)))
 
