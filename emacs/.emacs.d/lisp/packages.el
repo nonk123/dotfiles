@@ -143,12 +143,13 @@
 (use-package lsp-ui)
 
 (use-package company-lsp
-  :after (company lsp))
+  :after (company lsp-mode)
+  :config (add-to-list 'company-backends 'company-lsp))
 (use-package helm-lsp
-  :after (helm lsp))
+  :after (helm lsp-mode))
 (use-package ccls)
 (use-package lsp-java
-  :after lsp)
+  :after lsp-mode)
 
 (use-package yasnippet
   :delight yas-minor-mode
