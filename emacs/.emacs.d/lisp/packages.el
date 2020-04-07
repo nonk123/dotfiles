@@ -93,7 +93,9 @@
 (use-package lsp-mode
   :delight lsp-lens-mode
   :init
-  (setq lsp-auto-configure nil)
+  (defun lsp--auto-configure-after-disable-lsp-ui-hack ()
+    (lsp-ui-mode 0))
+  (advice-add 'lsp--auto-configure :after #'lsp--auto-configure-after-disable-lsp-ui-hack)
   (setq lsp-keymap-prefix nil)
   (setq lsp-log-io t)
   (setq lsp-lens-auto-enable t)
