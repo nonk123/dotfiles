@@ -104,11 +104,11 @@
   (setq lsp-enable-symbol-highlighting nil)
   (setq lsp-enable-folding nil)
   (defvar lsp-on-touch-time 0)
-  ;; TODO: update to the new advice syntax.
-  (defadvice lsp-on-change (around lsp-on-change-hack activate)
+  (defun lsp-on-change-around-hack (orig-fun &rest args)
     (when (> (- (float-time (current-time)) lsp-on-touch-time) 5)
       (setq lsp-on-touch-time (float-time (current-time)))
-      ad-do-it))
+      (apply orig-fun args)))
+  (advice-add 'lsp-on-change :around #'lsp-on-change-around-hack)
   :config
   ;; JS.
   (lsp-register-client
