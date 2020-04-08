@@ -3,8 +3,6 @@
 user=lsp
 host=185.222.117.73
 reverse=2000
-dest_root=/tmp/
-archive_dir=/tmp/
 
 addr=$user@$host
 
@@ -12,11 +10,8 @@ server=$1
 project_root=$(realpath ${2:-.})
 [ $# -gt 2 ] && shift 2
 
-dest="$dest_root/$(basename $project_root)"
-
-archive_name=transfer.tar
-archive=$archive_dir/$archive_name
-
+dest="/tmp/$(basename $project_root)"
+archive=/tmp/transfer.tar
 env_dir=env/
 
 cd $project_root
@@ -40,30 +35,21 @@ function project_ls {
 }
 
 function mount {
-    archive=/tmp/transfer.tar
-
     rm -f $archive
     tar -czf $archive -T <(project_ls)
 
     archive_name=$(basename $archive)
-    ssh $addr mkdir -p $dest
+    ssh $addr "mkdir -p $dest"
     copy $archive $dest "cd $dest" "tar -xf $archive_name" "rm $archive_name" "echo > .projectile"
 
     mainloop
 }
 
 function mainloop {
-    inotifywait -rm . | while read line; do
-        file=$(echo "$line" | cut -d\  -f1,3 | tr \  /)
-        event=$(echo "$line" | cut -d\  -f2)
-
-        if grep -vE '^\.?#|~$' <(basename $file); then
-            case $event in
-                MODIFY|CREATE)
-                    copy $file $dest/$file
-                    ;;
-            esac
-        fi
+    while :; do
+        file=$(inotifywait -r -e modify -e create -e moved_to . \
+                   | cut -d' '  -f1,3 | sed 's/ //g')
+        grep -E '[~#]$' <(basename $file) || copy $file $dest/$file
     done
 }
 
