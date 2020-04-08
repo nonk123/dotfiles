@@ -102,15 +102,9 @@
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-server-install-dir "~/.lsp/")
   (setq lsp-pyls-server-command '("python3" "-m" "pyls"))
-  (setq lsp-idle-delay 1)
+  (setq lsp-idle-delay 0.5)
   (setq lsp-enable-symbol-highlighting nil)
   (setq lsp-enable-folding nil)
-  (defvar lsp-on-touch-time 0)
-  (defun lsp-on-change-around-hack (orig-fun &rest args)
-    (when (> (- (float-time (current-time)) lsp-on-touch-time) 5)
-      (setq lsp-on-touch-time (float-time (current-time)))
-      (apply orig-fun args)))
-  (advice-add 'lsp-on-change :around #'lsp-on-change-around-hack)
   :config
   ;; JS.
   (lsp-register-client
