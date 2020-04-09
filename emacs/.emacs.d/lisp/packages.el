@@ -243,6 +243,7 @@
 
 (use-package emacs
   :init (setq initial-major-mode 'fundamental-mode)
+  :mode ("\\.bash" . sh-mode)
   :hook (text-mode . (lambda ()
                        (interactive)
                        (set-fill-column 80)
