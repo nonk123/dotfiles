@@ -242,11 +242,11 @@
          ("M-p" . flymake-goto-prev-error)))
 
 (use-package emacs
-  :init (setq initial-major-mode 'fundamental-mode)
   :mode ("\\.bash" . sh-mode)
   :hook (text-mode . (lambda ()
                        (interactive)
                        (set-fill-column 80)
-                       (auto-fill-mode))))
+                       (auto-fill-mode)))
+  :bind ("C-x C-b" . ibuffer))
 
 ;;; packages.el ends here
