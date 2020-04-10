@@ -247,6 +247,7 @@
                        (interactive)
                        (set-fill-column 80)
                        (auto-fill-mode)))
-  :bind ("C-x C-b" . ibuffer))
+  :bind (("C-x C-b" . ibuffer)
+         ("s-i" . load-init)))
 
 ;;; packages.el ends here

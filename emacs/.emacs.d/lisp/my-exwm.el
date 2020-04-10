@@ -146,6 +146,7 @@
           (,(kbd "s-r") . exwm-floating-toggle-floating)
           (,(kbd "s-t") . exwm-reset)
           (,(kbd "s-g") . exwm-input-toggle-keyboard)
+          (,(kbd "s-i") . load-init)
           ,@(mapcar (lambda (i)
                       `(,(kbd (format "s-%d" i)) .
                         (lambda ()

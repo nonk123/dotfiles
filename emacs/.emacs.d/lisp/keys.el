@@ -52,7 +52,6 @@
       ("C-."   . next-buffer)
       ("C-w"   . my-kill-region)
       ("M-w"   . my-kill-ring-save)
-      ("s-i"   . load-init)
       ("s-SPC" . rectangle-mark-mode)
       ("C-c ;" . comment-or-uncomment-region))
 
