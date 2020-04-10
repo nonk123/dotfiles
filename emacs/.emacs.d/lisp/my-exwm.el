@@ -95,6 +95,12 @@
     (set-window-buffer old-window (current-buffer))
     (set-window-buffer (selected-window) old-buffer)))
 
+(defun my-vterm ()
+  "Call `vterm' in project root or home directory."
+  (interactive)
+  (let ((default-directory (or (projectile-project-root) (expand-file-name "~"))))
+    (vterm)))
+
 (defun exchange-left ()
   (interactive)
   (exchange-window 'windmove-left))
@@ -147,7 +153,7 @@
                           (exwm-workspace-switch-create ,i))))
                     (number-sequence 0 9))
           (,(kbd "C-c C-c") . exwm-input-send-next-key)
-          (,(kbd "<s-return>") . vterm)
+          (,(kbd "<s-return>") . my-vterm)
           (,(kbd "<print>") . screenshot)
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)
