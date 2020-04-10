@@ -16,18 +16,6 @@ env_dir=env/
 
 cd $project_root
 
-function copy {
-    ssh $addr mkdir -p $(dirname $2)
-    scp -r $1 $addr:$2
-
-    if [ $# -gt 2 ]; then
-        shift 2
-        for line in "$@"; do
-            echo "$line"
-        done | ssh $addr bash
-    fi
-}
-
 function project_ls {
     git ls-files -X .gitignore
     git ls-files -X .gitignore -o
@@ -39,18 +27,25 @@ function mount {
     tar -czf $archive -T <(project_ls)
 
     archive_name=$(basename $archive)
-    ssh $addr "mkdir -p $dest"
-    copy $archive $dest "cd $dest" "tar -xf $archive_name" "rm $archive_name" "echo > .projectile"
+
+    scp $archive $addr:$dest
+
+    ssh $addr << EOF
+cd $dest
+tar -xf $archive_name
+rm -f $archive_name
+echo > .projectile
+EOF
 
     mainloop
 }
 
 function mainloop {
-    while :; do
-        file=$(inotifywait -r -e modify -e create -e moved_to . \
-                   | cut -d' '  -f1,3 | sed 's/ //g')
-        grep -E '[~#]$' <(basename $file) || copy $file $dest/$file
-    done
+    inotifywait -rm -e modify -e create -e moved_to . \
+        | parallel 'file=$(echo {} | awk "{ print \$1 \$3 }")' \
+                   '; basename $file | grep -vE "^$|^\.#|[~#]$" > /dev/null' \
+                   "&& ssh $addr 'mkdir -p \$(dirname $dest/\$file)'" \
+                   "&& scp \$file $addr:$dest/\$file"
 }
 
 exec 3<<EOF
