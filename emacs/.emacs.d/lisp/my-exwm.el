@@ -201,7 +201,8 @@
   (exwm-systemtray-enable)
   (exwm-enable)
   (dolist (binding exwm-input-global-keys)
-    (exwm-input--set-key (car binding) (cdr binding))))
+    (exwm-input--set-key (car binding) (cdr binding)))
+  (exwm-input--update-global-prefix-keys))
 
 (when exwm-enabled
   (start-exwm)
