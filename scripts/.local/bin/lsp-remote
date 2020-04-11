@@ -24,18 +24,21 @@ function project_ls {
 
 function mount {
     rm -f $archive
-    tar -czf $archive -T <(project_ls)
 
-    archive_name=$(basename $archive)
+    if ssh $addr "test ! -d $dest"; then
+        tar -czf $archive -T <(project_ls)
 
-    scp $archive $addr:$dest
+        scp $archive $addr:$dest
 
-    ssh $addr << EOF
+        archive_name=$(basename $archive)
+
+        ssh $addr << EOF
 cd $dest
 tar -xf $archive_name
 rm -f $archive_name
 echo > .projectile
 EOF
+    fi
 
     mainloop
 }
