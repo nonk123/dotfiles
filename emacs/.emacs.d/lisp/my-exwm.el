@@ -63,6 +63,10 @@
   (interactive)
   (sh "mpd-control toggle"))
 
+(defun mpd-clear ()
+  (interactive)
+  (sh "mpd-control stop; mpd-control clear"))
+
 (defun mpd-status ()
   (interactive)
   (sh "mpd-control status"))
@@ -166,6 +170,7 @@
           (,(kbd "s-.") . mpd-next)
           (,(kbd "s-;") . mpd-interactive)
           (,(kbd "s-o") . mpd-toggle)
+          (,(kbd "s-O") . mpd-clear)
           (,(kbd "s-[") . mpd-status)
           (,(kbd "s-]") . mpd-single)
           (,(kbd "s-{") . mpd-rewind)
