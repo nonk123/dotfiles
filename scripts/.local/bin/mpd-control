@@ -16,9 +16,6 @@ function _mpc {
 _mpc repeat on > /dev/null &
 
 function queue {
-    _mpc stop
-    _mpc clear
-
     echo "$1" | while read track; do
         _mpc search filename "$track" | _mpc add
     done
@@ -27,6 +24,9 @@ function queue {
 }
 
 function play {
+    _mpc stop
+    _mpc clear
+
     queue "$1"
 
     mpc stop
