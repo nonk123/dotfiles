@@ -28,14 +28,12 @@ function mount {
     if ssh $addr "test ! -d $dest"; then
         tar -czf $archive -T <(project_ls)
 
+        ssh $addr "mkdir -p $dest"
         scp $archive $addr:$dest
-
-        archive_name=$(basename $archive)
 
         ssh $addr << EOF
 cd $dest
-tar -xf $archive_name
-rm -f $archive_name
+tar -xf \$(basename $archive)
 echo > .projectile
 EOF
     fi
