@@ -16,8 +16,6 @@ alias i='ip a s'
 alias x='xrdb ~/.Xresources'
 alias b='source ~/.bashrc'
 
-alias e='emacsclient -nw -a "emacs -nw"'
-
 alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
 
 alias pipr='pip3 install -r requirements.txt'
