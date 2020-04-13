@@ -115,7 +115,7 @@
   ;; HTML.
   (lsp-register-client
    (make-lsp-remote-client '("html-languageserver" "--stdio")
-                           :major-modes '(html-mode sgml-mode)
+                           :major-modes '(html-mode mhtml-mode css-mode sgml-mode)
                            :completion-in-comments? t
                            :server-id 'html-ls-ssh
                            :initialized-fn (lambda (w)
