@@ -197,6 +197,9 @@
       (setq inferior-lisp-program inferior-lisp)))
   (setq slime-contribs '(slime-fancy)))
 
+(use-package elisp-slime-nav
+  :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
+
 (use-package sokoban
   :bind
   (:map sokoban-mode-map
