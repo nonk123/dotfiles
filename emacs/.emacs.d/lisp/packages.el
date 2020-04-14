@@ -198,6 +198,7 @@
   (setq slime-contribs '(slime-fancy)))
 
 (use-package elisp-slime-nav
+  :delight
   :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
 
 (use-package sokoban
