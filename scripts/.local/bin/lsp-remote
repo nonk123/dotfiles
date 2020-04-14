@@ -19,7 +19,6 @@ cd $project_root
 function project_ls {
     git ls-files -X .gitignore
     git ls-files -X .gitignore -o
-    [ -d $env_dir ] && echo $env_dir
 }
 
 function mount {
@@ -35,6 +34,11 @@ function mount {
 cd $dest
 tar -xf \$(basename $archive)
 echo > .projectile
+
+if [ $(test -d $env_dir && echo yes) ]; then
+    python3 -m virtualenv $env_dir
+    pip3 install -r requirements.txt
+fi
 EOF
     fi
 
@@ -42,7 +46,7 @@ EOF
 }
 
 function mainloop {
-    inotifywait -rm -e modify -e create -e moved_to . \
+    inotifywait -rm -e modify -e create -e moved_to $(project_ls) \
         | parallel 'file=$(echo {} | awk "{ print \$1 \$3 }")' \
                    '; basename $file | grep -vE "^$|^\.#|[~#]$" > /dev/null' \
                    "&& ssh $addr 'mkdir -p \$(dirname $dest/\$file)'" \
