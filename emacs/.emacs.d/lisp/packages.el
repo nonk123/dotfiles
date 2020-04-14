@@ -177,8 +177,7 @@
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
-  :bind (("C-x C-x" . vterm-send-C-x)
-         ("C-x x"   . exchange-point-and-mark)))
+  :bind ("C-c C-x" . vterm-send-C-x))
 
 (use-package markdown-mode)
 
