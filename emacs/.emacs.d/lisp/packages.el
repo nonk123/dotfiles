@@ -94,14 +94,15 @@
     (lsp-ui-mode 0))
   (advice-add 'lsp--auto-configure :after #'lsp--auto-configure-after-disable-lsp-ui-hack)
   (setq lsp-keymap-prefix nil)
+  (setq lsp-signature-auto-activate nil)
   (setq lsp-log-io t)
   (setq lsp-lens-auto-enable t)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-server-install-dir "~/.lsp/")
-  (setq lsp-pyls-server-command '("python3" "-m" "pyls"))
   (setq lsp-idle-delay 0.5)
   (setq lsp-enable-symbol-highlighting nil)
   (setq lsp-enable-folding nil)
+  (setq lsp-pyls-server-command '("python3" "-m" "pyls"))
   :config
   ;; JS.
   (lsp-register-client
