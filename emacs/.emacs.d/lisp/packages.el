@@ -198,6 +198,20 @@
       (setq inferior-lisp-program inferior-lisp)))
   (setq slime-contribs '(slime-fancy)))
 
+(use-package aggressive-indent
+  :hook (((prog-mode html-mode mhtml-mode sgml-mode) . aggressive-indent-mode)
+         (python-mode . (lambda () (interactive) (aggressive-indent-mode 0)))))
+
+(use-package highlight-indent-guides
+  :init (setq highlight-indent-guides-method 'bitmap)
+  :hook ((prog-mode html-mode mhtml-mode smgl-mode) . highlight-indent-guides-mode))
+
+(use-package smartparens
+  :init
+  (require 'smartparens-config)
+  (setq sp-highlight-pair-overlay nil)
+  :hook ((prog-mode html-mode mhtml-mode smgl-mode) . smartparens-mode))
+
 (use-package elisp-slime-nav
   :delight
   :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
