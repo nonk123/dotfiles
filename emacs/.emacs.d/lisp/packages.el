@@ -249,7 +249,8 @@
         ("M-p" . flymake-goto-prev-error)))
 
 (use-package emacs
-  :mode ("\\.bash" . sh-mode)
+  :mode (("\\.bash" . sh-mode)
+         ("\\.gitignore" . prog-mode))
   :hook (text-mode . (lambda ()
                        (interactive)
                        (set-fill-column 80)
