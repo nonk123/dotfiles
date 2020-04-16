@@ -50,10 +50,7 @@
   :after (helm company)
   :bind
   (:map company-mode-map
-        ("<M-tab>" . company-complete)
-        ("<backtab>" . helm-company)
-        :map company-active-map
-        ("<backtab>" . helm-company)))
+        ("<M-tab>" . helm-company)))
 
 (defun my-lsp-remote (server &rest args)
   (lsp-stdio-connection
@@ -133,9 +130,11 @@
                                              (with-lsp-workspace workspace
                                                (lsp--set-configuration (lsp-configuration-section "pyls"))))))
   :hook ((prog-mode sgml-mode xml-mode) . lsp)
-  :bind (("C-c r" . lsp-rename)
-         ("C-c i" . lsp-organize-imports)
-         ("C-c f" . lsp-execute-code-action)))
+  :bind
+  (:map lsp-mode-map
+        ("C-c r" . lsp-rename)
+        ("C-c i" . lsp-organize-imports)
+        ("C-c f" . lsp-execute-code-action)))
 ;; Needed just for docstring extraction.
 (use-package lsp-ui)
 
@@ -177,7 +176,9 @@
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
-  :bind ("C-c C-x" . vterm-send-C-x))
+  :bind
+  (:map vterm-mode-map
+        ("C-c C-x" . vterm-send-C-x)))
 
 (use-package markdown-mode)
 
@@ -241,8 +242,10 @@
 
 (use-package flymake
   :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode)
-  :bind (("M-n" . flymake-goto-next-error)
-         ("M-p" . flymake-goto-prev-error)))
+  :bind
+  (:map flymake-mode-map
+        ("M-n" . flymake-goto-next-error)
+        ("M-p" . flymake-goto-prev-error)))
 
 (use-package emacs
   :mode ("\\.bash" . sh-mode)
@@ -251,6 +254,7 @@
                        (set-fill-column 80)
                        (auto-fill-mode)))
   :bind (("C-x C-b" . ibuffer)
+         ("<S-tab>" . ff-find-other-file)
          ("s-i" . load-init)))
 
 ;;; packages.el ends here
