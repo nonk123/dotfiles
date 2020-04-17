@@ -52,101 +52,47 @@
   (:map company-mode-map
         ("<M-tab>" . helm-company)))
 
-(defun my-lsp-remote (server &rest args)
-  (lsp-stdio-connection
-   (lambda ()
-     `("bash" "-lc" ,(format "lsp-remote %s %s %s"
-                             server
-                             (projectile-project-root)
-                             (string-join args " "))))))
+(defun use-lsp-remote (con)
+  (if (listp (cdr con))
+      (let ((shell "bash")
+            (server-command (cadr con))
+            (server-args (string-join
+                          (mapcar
+                           (lambda (x)
+                             (if (eq x :autoport) "1337" x))
+                           (cddr con))
+                          " ")))
+        (if (and (stringp server-command)
+                 (not (string-suffix-p "lsp-remote" server-command)))
+            (cons (car con)
+                  `("~/.local/bin/lsp-remote" ,server-command ,server-args))
+          con))
+    con))
 
-(defvar lsp-remote-dir "/tmp/"
-  "Directory where local projects are stored on the remote server.")
+(defconst level-up (file-name-as-directory ".."))
 
-(defun lsp-remote-uri->path (uri)
-  (expand-file-name
-   (replace-regexp-in-string
-    (format "^%s" lsp-remote-dir)
-    (concat (projectile-project-root) (file-name-as-directory ".."))
-    (url-filename (url-generic-parse-url uri)))))
-
-(defun lsp-remote-local->remote (path)
-  (concat
-   lsp-remote-dir
-   (file-relative-name path (concat (projectile-project-root path) ".."))))
-
-(defun lsp-remote-path->uri (path)
-  (concat "file://" (lsp-remote-local->remote path)))
-
-(defun make-lsp-remote-client (cmd &rest args)
-  (let ((remote (temporary-file-directory)))
-    (apply #'make-lsp-client
-           :new-connection (apply 'my-lsp-remote (car cmd) (cdr cmd))
-           :uri->path-fn 'lsp-remote-uri->path
-           :path->uri-fn 'lsp-remote-path->uri
-           :priority 10
-           args)))
-
-(use-package lsp-mode
-  :delight lsp-lens-mode
+(use-package eglot
+  :commands (eglot eglot-ensure)
   :init
-  (defun lsp--auto-configure-after-disable-lsp-ui-hack ()
-    (lsp-ui-mode 0))
-  (advice-add 'lsp--auto-configure :after #'lsp--auto-configure-after-disable-lsp-ui-hack)
-  (setq lsp-keymap-prefix nil)
-  (setq lsp-signature-auto-activate nil)
-  (setq lsp-log-io t)
-  (setq lsp-lens-auto-enable t)
-  (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-server-install-dir "~/.lsp/")
-  (setq lsp-idle-delay 0.5)
-  (setq lsp-enable-symbol-highlighting nil)
-  (setq lsp-enable-folding nil)
-  (setq lsp-pyls-server-command '("python3" "-m" "pyls"))
+  (defun eglot--uri-to-path (uri)
+    (expand-file-name
+     (replace-regexp-in-string
+      "^/tmp/"
+      (concat (projectile-project-root) level-up)
+      (url-filename (url-generic-parse-url uri)))))
+  (defun eglot--path-to-uri (path)
+    (concat "file:///tmp/"
+            (file-relative-name path (concat (projectile-project-root path) level-up))))
+  (setq eglot-sync-connect t)
+  (setq eglot-put-doc-in-help-buffer t)
   :config
-  ;; JS.
-  (lsp-register-client
-   (make-lsp-remote-client '("javascript-typescript-stdio")
-                           :major-modes '(javascript-mode js-mode)
-                           :completion-in-comments? t
-                           :server-id 'jsts-ssh))
-  ;; HTML.
-  (lsp-register-client
-   (make-lsp-remote-client '("html-languageserver" "--stdio")
-                           :major-modes '(html-mode mhtml-mode css-mode sgml-mode)
-                           :completion-in-comments? t
-                           :server-id 'html-ls-ssh
-                           :initialized-fn (lambda (w)
-                                             (with-lsp-workspace w
-                                               (lsp--set-configuration
-                                                (lsp-configuration-section "html"))))))
-  ;; Python.
-  (lsp-register-client
-   (make-lsp-remote-client lsp-pyls-server-command
-                           :major-modes '(python-mode cython-mode)
-                           :server-id 'pyls-ssh
-                           :library-folders-fn (lambda (_workspace)
-                                                 lsp-clients-python-library-directories)
-                           :initialized-fn (lambda (workspace)
-                                             (with-lsp-workspace workspace
-                                               (lsp--set-configuration (lsp-configuration-section "pyls"))))))
-  :hook ((prog-mode sgml-mode xml-mode) . lsp)
+  (setf (cdr (assoc 'python-mode eglot-server-programs)) '("python3" "-m" "pyls"))
+  (setq eglot-server-programs (mapcar #'use-lsp-remote eglot-server-programs))
+  :hook ((python-mode javascript-mode js-mode mhtml-mode sgml-mode xml-mode) . eglot-ensure)
   :bind
-  (:map lsp-mode-map
-        ("C-c r" . lsp-rename)
-        ("C-c i" . lsp-organize-imports)
-        ("C-c f" . lsp-execute-code-action)))
-;; Needed just for docstring extraction.
-(use-package lsp-ui)
-
-(use-package company-lsp
-  :after (company lsp-mode)
-  :config (add-to-list 'company-backends 'company-lsp))
-(use-package helm-lsp
-  :after (helm lsp-mode))
-(use-package ccls)
-(use-package lsp-java
-  :after lsp-mode)
+  (:map eglot-mode-map
+        ("C-c r" . eglot-rename)
+        ("C-c f" . eglot-code-actions)))
 
 (use-package yasnippet
   :delight yas-minor-mode
@@ -156,7 +102,7 @@
   :config (yas-global-mode 1))
 
 (defun my-projectile-project-find-function (dir)
-  "Bridge between projectile and project.el."
+  "Bridge between projectile and project.el.  Used in eglot."
   (let ((root (projectile-project-root dir)))
     (and root (cons 'transient root))))
 
@@ -167,7 +113,7 @@
   (projectile-add-known-project "~/dotfiles")
   (setq projectile-globally-ignored-directories
         '(".git" ".hg" ".svn" "build" "target"))
-  :config (projectile-mode 1)
+  (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
   :after (helm projectile)

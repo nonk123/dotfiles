@@ -4,18 +4,6 @@
 
 ;;; Code:
 
-(defun show-lsp-documentation-at-point ()
-  "`lsp-mode' implementation of `show-documentation-at-point'."
-  (let ((doc
-         (lsp-ui-doc--extract
-          (gethash "contents"
-                   (lsp-request "textDocument/hover"
-                                (lsp--text-document-position-params))))))
-    (if (string-empty-p doc)
-        (message "No documentation found")
-      (with-help-window (help-buffer)
-        (princ doc)))))
-
 (defun show-documentation-at-point ()
   "Show documentation for symbol at point in a temporary buffer."
   (interactive)
@@ -25,8 +13,8 @@
     (describe-symbol (symbol-at-point)))
    ((bound-and-true-p slime-mode)
     (slime-documentation (slime-symbol-at-point)))
-   ((bound-and-true-p lsp-mode)
-    (show-lsp-documentation-at-point))
+   ((bound-and-true-p eglot-mode)
+    (eglot-help-at-point))
    (t
     (message "No documentation handler found"))))
 
