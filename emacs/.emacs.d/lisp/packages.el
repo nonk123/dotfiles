@@ -199,14 +199,17 @@
   (setq slime-contribs '(slime-fancy)))
 
 (use-package aggressive-indent
+  :delight
   :hook (((prog-mode html-mode mhtml-mode sgml-mode) . aggressive-indent-mode)
-         (python-mode . (lambda () (interactive) (aggressive-indent-mode 0)))))
+         ((python-mode sh-mode) . (lambda () (interactive) (aggressive-indent-mode 0)))))
 
 (use-package highlight-indent-guides
+  :delight
   :init (setq highlight-indent-guides-method 'bitmap)
   :hook ((prog-mode html-mode mhtml-mode smgl-mode) . highlight-indent-guides-mode))
 
 (use-package smartparens
+  :delight
   :init
   (require 'smartparens-config)
   (setq sp-highlight-pair-overlay nil)
