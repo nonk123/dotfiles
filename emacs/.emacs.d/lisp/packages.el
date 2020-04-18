@@ -147,8 +147,7 @@
 
 (use-package aggressive-indent
   :delight
-  :hook (((prog-mode html-mode mhtml-mode sgml-mode) . aggressive-indent-mode)
-         ((python-mode sh-mode) . (lambda () (interactive) (aggressive-indent-mode 0)))))
+  :hook ((js-mode typescript-mode c-mode-common) . aggressive-indent-mode))
 
 (use-package highlight-indent-guides
   :delight
