@@ -1,0 +1,12 @@
+clear mod1
+clear mod2
+clear mod3
+clear mod4
+clear mod5
+
+keycode 135 = Hyper_L
+
+add mod1 = Alt_L Alt_R Meta_L
+add mod2 = Num_Lock
+add mod3 = Hyper_L
+add mod4 = Super_L Super_R
