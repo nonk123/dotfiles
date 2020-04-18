@@ -56,12 +56,12 @@ function mainloop {
 
 exec 3<<EOF
 function pyls_deps {
-    source $env_dir/bin/activate
-    python3 -m pip install -r requirements.txt
+    (source $env_dir/bin/activate;
+     python3 -m pip install -r requirements.txt) > /dev/stderr
 }
 
 cd $dest
-[ -d $env_dir ] && export VIRTUAL_ENV=$env_dir && (pyls_deps) &
+[ -d $env_dir ] && export VIRTUAL_ENV=$env_dir && pyls_deps &
 exec $@
 EOF
 

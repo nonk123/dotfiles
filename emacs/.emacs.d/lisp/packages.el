@@ -83,6 +83,7 @@
   (defun eglot--path-to-uri (path)
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) level-up))))
+  (setq eglot-connect-timeout 10)
   (setq eglot-sync-connect t)
   (setq eglot-put-doc-in-help-buffer t)
   :config
