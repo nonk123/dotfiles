@@ -10,7 +10,7 @@
   (sh (read-shell-command "$ ")))
 
 (defun exec-buf ()
-  "Execute a command similar to `exec', but show its output in a temp buffer."
+  "Execute a command similarly to `exec', but show its output in a temp buffer."
   (interactive)
   (with-output-to-temp-buffer "*Command output*"
     (let (output)
@@ -19,69 +19,11 @@
         (setq output (buffer-string)))
       (princ output))))
 
-(defun browser ()
-  (sh "qutebrowser"))
+(defun sh-binding (command)
+  `(lambda () (interactive) (sh ,command)))
 
-(defun helm-dmenu ()
-  "Show a dmenu-like prompt using `helm'."
-  (interactive)
-  (sh (or (helm :sources (helm-build-sync-source "helm-dmenu"
-                           :candidates (sh-output-lines "dmenu_path"))
-                :prompt "$ "
-                :buffer "*helm-dmenu*")
-          "")))
-
-(defun x-terminal-emulator ()
-  (interactive)
-  (sh "x-terminal-emulator"))
-
-(defun screenshot ()
-  (interactive)
-  (sh "screenshot"))
-
-(defun mpd-select ()
-  (interactive)
-  (sh "mpd-control select"))
-
-(defun mpd-queue ()
-  (interactive)
-  (sh "mpd-control queue"))
-
-(defun mpd-prev ()
-  (interactive)
-  (sh "mpd-control prev"))
-
-(defun mpd-next ()
-  (interactive)
-  (sh "mpd-control next"))
-
-(defun mpd-interactive ()
-  (interactive)
-  (sh "mpd-control interactive"))
-
-(defun mpd-toggle ()
-  (interactive)
-  (sh "mpd-control toggle"))
-
-(defun mpd-clear ()
-  (interactive)
-  (sh "mpd-control stop; mpd-control clear"))
-
-(defun mpd-status ()
-  (interactive)
-  (sh "mpd-control status"))
-
-(defun mpd-single ()
-  (interactive)
-  (sh "mpd-control single"))
-
-(defun mpd-rewind ()
-  (interactive)
-  (sh "mpd-control seek -8"))
-
-(defun mpd-forward ()
-  (interactive)
-  (sh "mpd-control seek +8"))
+(defun mpd-binding (command)
+  (sh-binding (concat "mpd-control " command)))
 
 (defun force-kill-current-buffer ()
   "Kill the current buffer even if it has a process running."
@@ -124,7 +66,6 @@
 (use-package exwm
   :init
   (setq exwm-workspace-number 10)
-  (setq exwm-workspace-current-index 1)
   (setq exwm-workspace-show-all-buffers t)
   (setq exwm-layout-show-all-buffers t)
   (setq exwm-input-simulation-keys '(([?\C-c ?\C-c] . ?\C-c)))
@@ -159,22 +100,22 @@
                     (number-sequence 0 9))
           (,(kbd "C-c C-c") . exwm-input-send-next-key)
           (,(kbd "<s-return>") . my-vterm)
-          (,(kbd "<print>") . screenshot)
+          (,(kbd "<print>") . ,(sh-binding "screenshot"))
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)
-          (,(kbd "s-b") . browser)
-          (,(kbd "s-d") . helm-dmenu)
-          (,(kbd "s-p") . mpd-select)
-          (,(kbd "s-P") . mpd-queue)
-          (,(kbd "s-,") . mpd-prev)
-          (,(kbd "s-.") . mpd-next)
-          (,(kbd "s-;") . mpd-interactive)
-          (,(kbd "s-o") . mpd-toggle)
-          (,(kbd "s-O") . mpd-clear)
-          (,(kbd "s-[") . mpd-status)
-          (,(kbd "s-]") . mpd-single)
-          (,(kbd "s-{") . mpd-rewind)
-          (,(kbd "s-}") . mpd-forward))))
+          (,(kbd "H-b") . ,(sh-binding "firefox"))
+          (,(kbd "H-s") . ,(mpd-binding "select"))
+          (,(kbd "H-q") . ,(mpd-binding "queue"))
+          (,(kbd "H-w") . ,(mpd-binding "prev"))
+          (,(kbd "H-e") . ,(mpd-binding "next"))
+          (,(kbd "H-a") . ,(mpd-binding "interactive"))
+          (,(kbd "H-t") . ,(mpd-binding "toggle"))
+          (,(kbd "H-c") . ,(mpd-binding "clear"))
+          (,(kbd "H-z") . ,(mpd-binding "status"))
+          (,(kbd "H-1") . ,(mpd-binding "single"))
+          (,(kbd "H-x") . ,(mpd-binding "seek -8"))
+          (,(kbd "H-c") . ,(mpd-binding "seek +8"))
+          (,(kbd "H-2") . ,(sh-binding "mpc toggle")))))
 
 (defun exwm-update-class-actions ()
   (exwm-workspace-rename-buffer exwm-class-name))
@@ -207,8 +148,7 @@
   (exwm-systemtray-enable)
   (exwm-enable)
   (dolist (binding exwm-input-global-keys)
-    (exwm-input--set-key (car binding) (cdr binding)))
-  (exwm-input--update-global-prefix-keys))
+    (exwm-input--set-key (car binding) (cdr binding))))
 
 (when exwm-enabled
   (start-exwm)
