@@ -13,7 +13,7 @@
     (describe-symbol (symbol-at-point)))
    ((bound-and-true-p slime-mode)
     (slime-documentation (slime-symbol-at-point)))
-   ((bound-and-true-p eglot-mode)
+   ((bound-and-true-p eglot--managed-mode)
     (eglot-help-at-point))
    (t
     (message "No documentation handler found"))))
