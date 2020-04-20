@@ -128,6 +128,7 @@
   (sh "x-startup" t)
   (use-package alect-themes)
   (load-theme 'alect-black t)
+  (set-frame-font "Hack 10" nil t)
   (unbind global-map "C-z")
   (setq exwm-enabled t))
 (add-hook 'exwm-init-hook 'exwm-init-actions)
@@ -138,15 +139,13 @@
 (add-hook 'exwm-exit-hook 'exwm-exit-actions)
 
 (defun start-exwm ()
-  (scroll-bar-mode 0)
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
   (exwm-enable)
-  (dolist (binding exwm-input-global-keys)
-    (exwm-input--set-key (car binding) (cdr binding))))
+  (scroll-bar-mode 0))
 
 (when exwm-enabled
-  (start-exwm)
-  (set-frame-font "Hack 10" nil t))
+  (dolist (binding exwm-input-global-keys)
+    (exwm-input--set-key (car binding) (cdr binding))))
 
 ;;; my-exwm.el ends here
