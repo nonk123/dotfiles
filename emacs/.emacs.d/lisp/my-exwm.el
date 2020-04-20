@@ -13,11 +13,7 @@
   "Execute a command similarly to `exec', but show its output in a temp buffer."
   (interactive)
   (with-output-to-temp-buffer "*Command output*"
-    (let (output)
-      (with-temp-buffer
-        (sh (or (read-string "$ ") "") t (current-buffer))
-        (setq output (buffer-string)))
-      (princ output))))
+    (sh (or (read-shell-command "$ ") "") t standard-output)))
 
 (defun sh-binding (command)
   `(lambda () (interactive) (sh ,command)))
