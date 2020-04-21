@@ -15,11 +15,13 @@
     "mpc update; mpc clear; mpc listall | mpc add; mpc play")))
 
 ;;;###autoload
-(defun find-music (query)
-  (interactive "sQuery: ")
+(defun find-music (arg query)
+  (interactive "P\nsQuery: ")
+  (unless arg
+    (setq arg 10))
   (with-temp-buffer
     (url-insert-file-contents
-     (url-encode-url (concat "http://185.222.117.80:8080/" query "/10/")))
+     (url-encode-url (format "http://185.222.117.80:8080/%s/%i/" query arg)))
     (find-music-play
      query
      (helm :prompt "Select track: "
