@@ -22,6 +22,7 @@
                   "packages"
                   "keys"
                   "miscellaneous"
+                  "find-music"
                   "my-exwm"
                   "my-stuff"))
     (load file t)))

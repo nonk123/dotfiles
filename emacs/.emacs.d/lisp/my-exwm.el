@@ -18,8 +18,8 @@
 (defun sh-binding (command)
   `(lambda () (interactive) (sh ,command)))
 
-(defun mpd-binding (command)
-  (sh-binding (concat "mpd-control " command)))
+(defun mpd-binding (mpd-command)
+  (sh-binding (format "mpd-control %s" mpd-command)))
 
 (defun force-kill-current-buffer ()
   "Kill the current buffer even if it has a process running."
@@ -99,18 +99,16 @@
           (,(kbd "<print>") . ,(sh-binding "screenshot"))
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)
+          (,(kbd "s-P") . find-music)
           (,(kbd "s-p") . ,(mpd-binding "select"))
-          (,(kbd "s-P") . ,(mpd-binding "queue"))
           (,(kbd "s-,") . ,(mpd-binding "prev"))
           (,(kbd "s-.") . ,(mpd-binding "next"))
-          (,(kbd "s-;") . ,(mpd-binding "interactive"))
-          (,(kbd "s-O") . ,(mpd-binding "toggle"))
-          (,(kbd "s-:") . ,(mpd-binding "clear"))
+          (,(kbd "s-o") . ,(mpd-binding "toggle"))
+          (,(kbd "s-;") . ,(mpd-binding "clear"))
           (,(kbd "s-[") . ,(mpd-binding "status"))
           (,(kbd "s-]") . ,(mpd-binding "single"))
           (,(kbd "s-{") . ,(mpd-binding "seek -8"))
-          (,(kbd "s-}") . ,(mpd-binding "seek +8"))
-          (,(kbd "s-o") . ,(sh-binding "mpc toggle")))))
+          (,(kbd "s-}") . ,(mpd-binding "seek +8")))))
 
 (defun exwm-update-class-actions ()
   (exwm-workspace-rename-buffer exwm-class-name))

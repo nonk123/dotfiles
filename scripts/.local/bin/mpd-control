@@ -7,7 +7,6 @@ http_port=8000
 http="http://$host:$http_port"
 
 mpc playlist | grep $http > /dev/null || mpc add $http
-#pgrep music-status > /dev/null || music-status & disown
 
 function _mpc {
     mpc --host=$host --port=$port "$@"
@@ -65,12 +64,6 @@ select)
 queue)
     result=$(start_selection)
     [ "$result" ] && queue "$result"
-    ;;
-interactive)
-    artist=$(_mpc ls | prompt "Select an artist")
-    [ "$artist" ] && album=$(_mpc ls "$artist" | prompt "Select an album")
-    [ "$album" ] && track=$(_mpc ls "$album" | prompt "Select a track")
-    [ "$track" ] && play "$track"
     ;;
 toggle)
     _mpc | grep playing && pause || resume
