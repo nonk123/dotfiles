@@ -147,7 +147,7 @@
 
 (use-package aggressive-indent
   :delight
-  :hook ((js-mode typescript-mode c-mode-common) . aggressive-indent-mode))
+  :hook ((emacs-lisp-mode js-mode typescript-mode c-mode-common) . aggressive-indent-mode))
 
 (use-package highlight-indent-guides
   :delight
