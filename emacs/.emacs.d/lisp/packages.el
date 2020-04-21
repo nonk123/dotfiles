@@ -74,6 +74,12 @@
 (use-package eglot
   :commands (eglot eglot-ensure)
   :init
+  (setq eglot-connect-timeout 20)
+  (setq eglot-sync-connect t)
+  (setq eglot-put-doc-in-help-buffer t)
+  :config
+  (setf (cdr (assoc 'python-mode eglot-server-programs)) '("python3" "-m" "pyls"))
+  (setq eglot-server-programs (mapcar #'use-lsp-remote eglot-server-programs))
   (defun eglot--uri-to-path (uri)
     (expand-file-name
      (replace-regexp-in-string
@@ -83,12 +89,6 @@
   (defun eglot--path-to-uri (path)
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) level-up))))
-  (setq eglot-connect-timeout 10)
-  (setq eglot-sync-connect t)
-  (setq eglot-put-doc-in-help-buffer t)
-  :config
-  (setf (cdr (assoc 'python-mode eglot-server-programs)) '("python3" "-m" "pyls"))
-  (setq eglot-server-programs (mapcar #'use-lsp-remote eglot-server-programs))
   :hook ((python-mode javascript-mode js-mode mhtml-mode sgml-mode xml-mode) . eglot-ensure)
   :bind
   (:map eglot-mode-map
