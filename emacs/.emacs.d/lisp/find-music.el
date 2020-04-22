@@ -12,7 +12,7 @@
       for i from 0
       collect (format "ffmpeg -i '%s' '%s-%i.mp3'" result query i))
      "; ")
-    "mpc update; mpc clear; mpc listall | mpc add; mpc play")))
+    "mpc update")))
 
 ;;;###autoload
 (defun find-music (arg query)
