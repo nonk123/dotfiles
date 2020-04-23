@@ -89,7 +89,7 @@
   (defun eglot--path-to-uri (path)
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) level-up))))
-  :hook ((python-mode javascript-mode js-mode mhtml-mode sgml-mode xml-mode) . eglot-ensure)
+  :hook ((python-mode js-mode typescript-mode sgml-mode xml-mode) . eglot-ensure)
   :bind
   (:map eglot-mode-map
         ("C-c r" . eglot-rename)
@@ -128,7 +128,12 @@
   (:map vterm-mode-map
         ("C-c C-x" . vterm-send-C-x)))
 
+(use-package web-mode
+  :mode ("\\.html\\'" . web-mode))
+
 (use-package markdown-mode)
+
+(use-package typescript-mode)
 
 (use-package lua-mode
   ;; Incompatible with Emacs 28 as of now.
