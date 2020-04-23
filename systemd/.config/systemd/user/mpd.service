@@ -6,7 +6,6 @@ After=network.target sound.target
 
 [Service]
 Type=forking
-ExecStartPre=/usr/bin/ssh -fNR 9090 music@185.222.117.80
 ExecStart=/usr/bin/mpd --verbose --stdout
 Restart=on-failure
 StandardOutput=journal
