@@ -24,9 +24,11 @@
                   "miscellaneous"
                   "find-music"
                   "my-exwm"
+                  "my-modalka"
                   "my-stuff"))
     (load file t)))
 
 (load-init)
 
 ;;; init.el ends here
+(put 'scroll-left 'disabled nil)

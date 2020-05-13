@@ -9,13 +9,14 @@
   (dolist (key keys)
     (define-key keymap (kbd key) nil)))
 
-(defmacro bind (keymap &rest key-cons)
-  "Bind keys from a list of KEY-CONS onto a KEYMAP."
+(defun bind (keymap key-cons)
+  "Bind keys from a list of KEY-CONS onto a KEYMAP and return it."
   (dolist (key-con key-cons)
     (let ((key (kbd (car key-con))) (def (cdr key-con)))
       (when (stringp def)
         (setq def (kbd def)))
-      (define-key (eval keymap) key def))))
+      (define-key keymap key def)))
+  keymap)
 
 (defun sh (cmd &optional sync buf)
   "Run CMD using the default shell.

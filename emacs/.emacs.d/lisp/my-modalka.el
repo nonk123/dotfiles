@@ -1,0 +1,96 @@
+(defconst modalka-delete-map
+  (bind (make-sparse-keymap)
+        '(("d" . kill-whole-line)
+          ("f" . kill-word)
+          ("b" . backward-kill-word)
+          ("h" . backward-kill-sexp)
+          ("l" . kill-sexp)
+          ("k" . kill-line))))
+
+(defun beginning-of-buffer-or-goto-line (&optional arg)
+  (interactive "P")
+  (if arg
+      (goto-line arg)
+    (beginning-of-buffer)))
+
+(defun end-of-buffer-or-goto-line (&optional arg)
+  (interactive "P")
+  (if arg
+      (goto-line arg)
+    (end-of-buffer)))
+
+(defconst modalka-goto-map
+  (bind (make-sparse-keymap)
+        '(("g" . beginning-of-buffer-or-goto-line)
+          ("l" . avy-goto-line)
+          ("w" . avy-goto-word-1)
+          ("c" . avy-goto-char))))
+
+(defconst modalka-command-map
+  (bind (make-sparse-keymap)
+        '(("w" . save-buffer))))
+
+(defconst modalka-leader-map
+  (bind (make-sparse-keymap)
+        '(("g" . magit-status)
+          ("f" . eglot-code-actions)
+          ("r" . eglot-rename)
+          ("j" . flymake-goto-next-error)
+          ("k" . flymake-goto-prev-error)
+          ("e" . eval-buffer))))
+
+(defun modalka-replace ()
+  (interactive)
+  (if (use-region-p)
+      (string-rectangle)
+    (let ((char (read-char "replace with: ")))
+      (when char
+        (delete-char 1)
+        (insert-char char)))))
+
+(defconst modalka-bindings
+  '(("h" . backward-char)
+    ("j" . next-line)
+    ("k" . previous-line)
+    ("l" . forward-char)
+    ("J" . scroll-up-line)
+    ("K" . scroll-down-line)
+    ("a" . beginning-of-line)
+    ("e" . end-of-line)
+    ("G" . end-of-buffer-or-goto-line)
+    ("H" . backward-sexp)
+    ("L" . forward-sexp)
+    ("f" . forward-word)
+    ("b" . backward-word)
+    ("(" . sp-backward-sexp)
+    (")" . sp-forward-sexp)
+    ("m" . newline)
+    ("o" . open-line)
+    ("x" . delete-char)
+    ("X" . delete-backward-char)
+    ("s" . isearch-forward)
+    ("R" . isearch-backward)
+    ("S" . helm-swoop)
+    ("C-s" . helm-multi-swoop-projectile)
+    ("q" . kmacro-start-macro)
+    ("Q" . kmacro-end-macro)
+    ("@" . kmacro-end-and-call-macro)
+    ("u" . undo)
+    ("v" . set-mark-command)
+    ("C-v" . rectangle-mark-mode)
+    ("r" . modalka-replace)
+    (";" . comment-line)
+    ("c" . recenter-top-bottom)))
+
+(use-package modalka
+  :init
+  (global-set-key (kbd "<escape>") #'modalka-mode)
+  (dolist (binding modalka-bindings)
+    (define-key modalka-mode-map (kbd (car binding)) (cdr binding)))
+  (define-key modalka-mode-map (kbd "d") modalka-delete-map)
+  (define-key modalka-mode-map (kbd "g") modalka-goto-map)
+  (define-key modalka-mode-map (kbd ":") modalka-command-map)
+  (define-key modalka-mode-map (kbd "p") projectile-command-map)
+  (define-key modalka-mode-map (kbd "SPC") modalka-leader-map)
+  (dolist (number (number-sequence 0 9))
+    (modalka-define-kbd (format "%i" number) (format "C-%i" number))))

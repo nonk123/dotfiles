@@ -24,12 +24,9 @@
   :after helm)
 
 (use-package avy
-  :bind (("C-:" . avy-goto-line)
-         ("C-;" . avy-goto-word-1)
-         ("C-'" . avy-goto-char)))
+  :init (setq avy-keys '(?h ?j ?k ?l ?a ?s ?d ?f)))
 
-(use-package magit
-  :bind ("C-x g" . magit-status))
+(use-package magit)
 
 (use-package company
   :delight
@@ -89,11 +86,7 @@
   (defun eglot--path-to-uri (path)
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) level-up))))
-  :hook ((python-mode js-mode typescript-mode sgml-mode xml-mode) . eglot-ensure)
-  :bind
-  (:map eglot-mode-map
-        ("C-c r" . eglot-rename)
-        ("C-c f" . eglot-code-actions)))
+  :hook ((python-mode js-mode typescript-mode sgml-mode xml-mode) . eglot-ensure))
 
 (use-package yasnippet
   :delight yas-minor-mode
@@ -114,8 +107,7 @@
   (projectile-add-known-project "~/dotfiles")
   (setq projectile-globally-ignored-directories
         '(".git" ".hg" ".svn" "build" "target"))
-  (projectile-mode)
-  :bind-keymap ("C-c p" . projectile-command-map))
+  (projectile-mode))
 (use-package helm-projectile
   :after (helm projectile)
   :init (helm-projectile-on))
@@ -210,11 +202,7 @@
   :init (setq vc-handled-backends nil))
 
 (use-package flymake
-  :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode)
-  :bind
-  (:map flymake-mode-map
-        ("M-n" . flymake-goto-next-error)
-        ("M-p" . flymake-goto-prev-error)))
+  :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode))
 
 (use-package emacs
   :mode (("\\.bash" . sh-mode)
@@ -224,7 +212,6 @@
                        (set-fill-column 80)
                        (auto-fill-mode)))
   :bind (("C-x C-b" . ibuffer)
-         ("<S-tab>" . ff-find-other-file)
-         ("s-i" . load-init)))
+         ("<S-tab>" . ff-find-other-file)))
 
 ;;; packages.el ends here
