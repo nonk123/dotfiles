@@ -20,11 +20,10 @@
   (dolist (file '("package-init"
                   "utils"
                   "packages"
-                  "keys"
                   "miscellaneous"
                   "find-music"
                   "my-exwm"
-                  "my-modalka"
+                  "modal"
                   "my-stuff"))
     (load file t)))
 

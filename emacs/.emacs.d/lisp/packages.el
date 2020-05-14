@@ -71,6 +71,7 @@
 (use-package eglot
   :commands (eglot eglot-ensure)
   :init
+  (setq eglot-autoreconnect nil)
   (setq eglot-connect-timeout 20)
   (setq eglot-sync-connect t)
   (setq eglot-put-doc-in-help-buffer t)

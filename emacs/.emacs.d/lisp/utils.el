@@ -10,12 +10,18 @@
     (define-key keymap (kbd key) nil)))
 
 (defun bind (keymap key-cons)
-  "Bind keys from a list of KEY-CONS onto a KEYMAP and return it."
+  "Bind keys from a list of KEY-CONS onto KEYMAP and return it."
   (dolist (key-con key-cons)
-    (let ((key (kbd (car key-con))) (def (cdr key-con)))
-      (when (stringp def)
-        (setq def (kbd def)))
-      (define-key keymap key def)))
+    (let ((key (kbd (car key-con)))
+          (def (cdr key-con)))
+      (define-key keymap key
+        (cond
+         ((stringp def)
+          (kbd def))
+         ((and (sequencep def) (not (keymapp def)))
+          (bind (make-sparse-keymap) def))
+         (t
+          def)))))
   keymap)
 
 (defun sh (cmd &optional sync buf)
