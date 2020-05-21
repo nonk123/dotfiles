@@ -108,7 +108,8 @@
   (projectile-add-known-project "~/dotfiles")
   (setq projectile-globally-ignored-directories
         '(".git" ".hg" ".svn" "build" "target"))
-  (projectile-mode))
+  (projectile-mode)
+  :bind-keymap ("C-c p" . projectile-command-map))
 (use-package helm-projectile
   :after (helm projectile)
   :init (helm-projectile-on))
