@@ -77,6 +77,7 @@
   (setq eglot-put-doc-in-help-buffer t)
   :config
   (setf (cdr (assoc 'python-mode eglot-server-programs)) '("python3" "-m" "pyls"))
+  (setf (cdr (assoc 'rust-mode eglot-server-programs)) '("~/.cargo/bin/rls"))
   (setq eglot-server-programs (mapcar #'use-lsp-remote eglot-server-programs))
   (defun eglot--uri-to-path (uri)
     (expand-file-name
@@ -87,7 +88,7 @@
   (defun eglot--path-to-uri (path)
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) level-up))))
-  :hook ((python-mode js-mode typescript-mode sgml-mode xml-mode) . eglot-ensure))
+  :hook ((python-mode js-mode typescript-mode sgml-mode xml-mode rust-mode) . eglot-ensure))
 
 (use-package yasnippet
   :delight yas-minor-mode
@@ -122,6 +123,8 @@
   (:map vterm-mode-map
         ("C-c C-x" . vterm-send-C-x)))
 
+(use-package rust-mode)
+
 (use-package web-mode
   :mode ("\\.html\\'" . web-mode))
 
@@ -146,7 +149,7 @@
 
 (use-package aggressive-indent
   :delight
-  :hook ((emacs-lisp-mode js-mode typescript-mode c-mode-common) . aggressive-indent-mode))
+  :hook ((emacs-lisp-mode js-mode typescript-mode c-mode-common rust-mode) . aggressive-indent-mode))
 
 (use-package highlight-indent-guides
   :delight
