@@ -84,6 +84,8 @@
         ("y" . kill-ring-save)
         (";" . comment-line)
         ("c" . recenter-top-bottom)
+        ("," . previous-buffer)
+        ("." . next-buffer)
         ("C-n" . modal-scroll-up)
         ("C-p" . modal-scroll-down)
         ("0" . "C-0")
