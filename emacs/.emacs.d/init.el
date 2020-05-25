@@ -30,4 +30,3 @@
 (load-init)
 
 ;;; init.el ends here
-(put 'scroll-left 'disabled nil)
