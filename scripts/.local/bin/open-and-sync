@@ -1,0 +1,5 @@
+command=$1
+shift
+
+sync "$@" &
+exec $command "$@"

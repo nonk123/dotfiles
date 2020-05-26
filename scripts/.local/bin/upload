@@ -1,11 +1,6 @@
 #!/bin/sh
 
-file=$1
-
 user=nonk
-protocol=http
 addr=tilde.as205315.net
-port=2020
 
-scp "$file" "$user@$addr:~/Files/"
-echo "$protocol://$addr:$port/$(basename "$file")"
+scp "$1" "$user@$addr:~/Files/"

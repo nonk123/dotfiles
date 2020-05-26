@@ -1,0 +1,15 @@
+#!/bin/bash
+
+inotifywait -m --format $'%w\t%e' "$@" | while read out; do
+    method=$(echo "$out" | cut -f2)
+
+    case $method in
+        *DELETE_SELF*)
+            sleep 0.35
+            exec sync "$@"
+            ;;
+        *MODIFY*|*ATTRIB*)
+            upload "$(echo "$out" | cut -f1)"
+            ;;
+    esac
+done
