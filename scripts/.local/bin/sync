@@ -1,9 +1,7 @@
 #!/bin/bash
 
 inotifywait -m --format $'%w\t%e' "$@" | while read out; do
-    method=$(echo "$out" | cut -f2)
-
-    case $method in
+    case $(echo "$out" | cut -f2) in
         *DELETE_SELF*)
             sleep 0.35
             exec sync "$@"
