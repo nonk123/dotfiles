@@ -197,7 +197,13 @@
         ("C-p" . tetris-rotate-prev)
         ("C-b" . tetris-move-left)
         ("C-f" . tetris-move-right)
-        ("C-n" . tetris-move-bottom)))
+        ("C-n" . tetris-move-bottom)
+        ("k" . tetris-rotate-prev)
+        ("h" . tetris-move-left)
+        ("l" . tetris-move-right)
+        ("j" . tetris-move-bottom)
+        ("r" . tetris-reset-game)
+        ("SPC" . tetris-pause-game)))
 
 (use-package display-line-numbers
   :delight
