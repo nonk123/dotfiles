@@ -1,4 +1,4 @@
-;;; modal.el --- my modal keybindings.
+;;; modal.el --- my modal keybindings. -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -81,9 +81,10 @@
         ("@" . kmacro-end-and-call-macro)
         ("u" . undo)
         ("v" . set-mark-command)
+        ("V" . line-mark-mode)
         ("C-v" . rectangle-mark-mode)
         ("p" . yank)
-        ("y" . kill-ring-save)
+        ("y" . kill-ring-save-region-or-line)
         (";" . comment-line)
         ("c" . recenter-top-bottom)
         ("," . previous-buffer)
@@ -127,7 +128,7 @@
                   ("d" . show-documentation-at-point)
                   ("j" . flymake-goto-next-error)
                   ("k" . flymake-goto-prev-error)
-                  ("e" . eval-buffer)
+                  ("e" . eval-region-or-buffer)
                   ("i" . load-init)))))
 
 (defun modal-mode-lighter ()
@@ -142,6 +143,49 @@
   (if modal-mode
       (local-set-key (kbd "<escape>") #'modal-esc)
     (local-set-key (kbd "<escape>") esc-map)))
+
+(defvar line-mark-mode-map
+  (let ((map (make-sparse-keymap)))
+    (dolist (command '(next-line previous-line right-char left-char forward-char
+                                 backward-char))
+      (define-key map (vector 'remap command)
+        (lambda ()
+          (interactive)
+          (call-interactively command)
+          (line-mark-fix-point)
+          (line-mark-fix-mark))))
+    map))
+
+(define-minor-mode line-mark-mode
+  "Minor mode for selecting whole lines using `set-mark'."
+  nil nil nil
+  (if (not line-mark-mode)
+      (deactivate-mark)
+    (add-hook 'deactivate-mark-hook (lambda () (line-mark-mode -1)))
+    (unless (region-active-p)
+      (push-mark (line-end-position) t t)
+      (message "Mark set (line mode)"))))
+
+(defun line-mark-fix-mark ()
+  (let* ((n (- (line-number-at-pos (mark)) (current-line)))
+         (beginning (line-beginning-position n))
+         (end (line-end-position n)))
+    (cond
+     ((> (point) beginning)
+      (push-mark beginning t t))
+     ((< (point) end)
+      (push-mark end t t)))))
+
+(defun line-mark-fix-point ()
+  (cond
+   ((>= (point) (mark))
+    (move-end-of-line nil))
+   ((<= (point) (mark))
+    (move-beginning-of-line nil))))
+
+(defun eval-region-or-buffer ()
+  (interactive)
+  (call-interactively (if (use-region-p) #'eval-region #'eval-buffer)))
 
 (defun beginning-of-buffer-or-goto-line (&optional arg)
   (interactive "P")
@@ -192,7 +236,7 @@
 (defun replace-character-or-region (char)
   (interactive "creplace with: ")
   (if (use-region-p)
-      (string-rectangle)
+      (call-interactively #'string-rectangle)
     (delete-char 1)
     (insert-char char)))
 
@@ -215,6 +259,12 @@
 (defun backward-kill-line (&optional arg)
   (interactive "P")
   (kill-line (if arg (- arg) 0)))
+
+(defun kill-ring-save-region-or-line ()
+  (interactive)
+  (if (use-region-p)
+      (call-interactively #'kill-ring-save)
+    (kill-ring-save (line-beginning-position) (line-end-position))))
 
 (add-hook 'prog-mode-hook #'modal-mode)
 (add-hook 'text-mode-hook #'modal-mode)

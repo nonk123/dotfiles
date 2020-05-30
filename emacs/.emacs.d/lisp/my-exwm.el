@@ -45,19 +45,19 @@
 
 (defun exchange-left ()
   (interactive)
-  (exchange-window 'windmove-left))
+  (exchange-window #'windmove-left))
 
 (defun exchange-down ()
   (interactive)
-  (exchange-window 'windmove-down))
+  (exchange-window #'windmove-down))
 
 (defun exchange-up ()
   (interactive)
-  (exchange-window 'windmove-up))
+  (exchange-window #'windmove-up))
 
 (defun exchange-right ()
   (interactive)
-  (exchange-window 'windmove-right))
+  (exchange-window #'windmove-right))
 
 (use-package exwm
   :init

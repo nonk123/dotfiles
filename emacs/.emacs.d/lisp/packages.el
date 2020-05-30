@@ -69,12 +69,14 @@
 (defconst level-up (file-name-as-directory ".."))
 
 (use-package eglot
+  :demand
   :commands (eglot eglot-ensure)
   :init
   (setq eglot-autoreconnect nil)
-  (setq eglot-connect-timeout 20)
+  (setq eglot-connect-timeout 25)
   (setq eglot-sync-connect t)
   (setq eglot-put-doc-in-help-buffer t)
+  (setq jsonrpc-request-timeout 20)
   :config
   (setf (cdr (assoc 'python-mode eglot-server-programs)) '("python3" "-m" "pyls"))
   (setf (cdr (assoc 'rust-mode eglot-server-programs)) '("~/.cargo/bin/rls"))
@@ -121,7 +123,8 @@
   (setq vterm-shell "/bin/bash -l")
   :bind
   (:map vterm-mode-map
-        ("C-c C-x" . vterm-send-C-x)))
+        ("C-c C-x" . vterm-send-C-x)
+        ("C-c M-x" . vterm-send-M-x)))
 
 (use-package rust-mode)
 
