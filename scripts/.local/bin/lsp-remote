@@ -14,12 +14,12 @@ env_dir=env/
 
 cd $project_root
 
-function project_ls {
+project_ls() {
     git ls-files -X .gitignore
     git ls-files -X .gitignore -o
 }
 
-function mount {
+mount() {
     rm -f $archive
 
     if ssh $addr "test ! -d $dest"; then
@@ -38,9 +38,7 @@ EOF
     mainloop &
 }
 
-export addr dest
-
-function copy {
+copy() {
     file=$(echo $1 | awk '{ print $1 $3 }')
 
     if ssh $addr "mkdir -p $(dirname $dest/$file)"; then
@@ -49,28 +47,28 @@ function copy {
 }
 
 export -f copy
+export addr dest
 
-function mainloop {
+mainloop() {
     inotifywait -rm -e modify -e create -e moved_to $(project_ls) | parallel copy
 }
 
 exec 3<<EOF
-function pyls_deps {
-    (source $env_dir/bin/activate;
-     python3 -m pip install -r requirements.txt) > /dev/stderr
+suppress() {
+    eval "$@" < /dev/null > /dev/stderr
 }
 
 cd $dest
-[ -d $env_dir ] && export VIRTUAL_ENV=$env_dir && pyls_deps &
+
+if [ -d $env_dir ]; then
+    export VIRTUAL_ENV=$env_dir
+    source $env_dir/bin/activate
+    suppress python3 -m pip install -r requirements.txt
+fi
+
 exec $@
 EOF
 
-connector=/tmp/lsp_connector
+mount < /dev/null > /dev/stderr
 
-{
-    mount
-    scp /proc/$$/fd/3 $addr:$connector
-    ssh $addr chmod 744 $connector
-} < /dev/null
-
-ssh -C $addr /bin/bash -l $connector
+cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l $connector

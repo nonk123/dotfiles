@@ -1,5 +1,8 @@
+#!/bin/bash
+
 command=$1
 shift
 
-sync "$@" &
-exec $command "$@"
+for arg in "$@"; do
+    echo "$arg"
+done | parallel --halt now,success=1 -q ::: sync $command :::: -

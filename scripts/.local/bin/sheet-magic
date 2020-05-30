@@ -1,0 +1,17 @@
+#!/bin/bash
+
+input=$1
+output=$(dirname "$input")/$(basename "$input" .xlsx).pdf
+
+mainloop() {
+    while :; do
+        libreoffice --headless --convert-to pdf "$input"
+        upload "$output"
+        sleep 60
+    done
+}
+
+export -f mainloop
+export input output
+
+parallel --halt -2 ::: 'localc --norestore "$input"' 'mainloop'
