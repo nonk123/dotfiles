@@ -8,8 +8,7 @@
   "Show documentation for symbol at point in a temporary buffer."
   (interactive)
   (cond
-   ((or (equal major-mode 'emacs-lisp-mode)
-        (equal major-mode 'lisp-interaction-mode))
+   ((derived-mode-p 'emacs-lisp-mode 'lisp-interaction-mode)
     (describe-symbol (symbol-at-point)))
    ((bound-and-true-p slime-mode)
     (slime-documentation (slime-symbol-at-point)))
@@ -17,6 +16,8 @@
     (eglot-help-at-point))
    (t
     (message "No documentation handler found"))))
+
+(defvar modal-bindings '())
 
 (defvar-local modal-state 'normal)
 
@@ -45,11 +46,8 @@
 
 (defun modal-esc ()
   (interactive)
-  (when (use-region-p)
-    (keyboard-quit))
-  (modal-normal))
-
-(defvar modal-bindings '())
+  (modal-normal)
+  (keyboard-quit))
 
 (setq modal-bindings
       `(("h" . backward-char)
@@ -76,7 +74,7 @@
         ("X" . delete-backward-char)
         ("s" . helm-swoop)
         ("S" . helm-multi-swoop-projectile)
-        ("q" . kmacro-start-macro)
+        ("q" . start-macro-or-quit-window)
         ("Q" . kmacro-end-macro)
         ("@" . kmacro-end-and-call-macro)
         ("u" . undo)
@@ -87,10 +85,18 @@
         ("y" . kill-ring-save-region-or-line)
         (";" . comment-line)
         ("c" . recenter-top-bottom)
+        ("/" . modal-search)
+        ("?" . modal-search-backwards)
+        ("n" . modal-search-next)
+        ("N" . modal-search-prev)
+        ("!" . insert-command-output)
+        ("#" . insert-file)
         ("," . previous-buffer)
         ("." . next-buffer)
         ("C-n" . modal-scroll-up)
         ("C-p" . modal-scroll-down)
+        ("+" . text-scale-increase)
+        ("-" . text-scale-decrease)
         ("0" . "C-0")
         ("1" . "C-1")
         ("2" . "C-2")
@@ -104,7 +110,8 @@
         ("r" . (("r" . replace-character-or-region)
                 ("w" . replace-word)
                 ("b" . backward-replace-word)
-                ("m" . replace-line)))
+                ("m" . replace-line)
+                ("l" . replace-end-of-line)))
         ("d" . (("d" . kill-whole-line-or-region)
                 ("w" . kill-word)
                 ("b" . backward-kill-word)
@@ -117,7 +124,8 @@
                 ("w" . avy-goto-word-1)
                 ("c" . avy-goto-char)))
         (":" . (("w" . save-buffer)
-                ("q" . kill-current-buffer)))
+                ("q" . kill-current-buffer)
+                ("s" . s/)))
         ("SPC" . (("g" . magit-status)
                   ("p" . ,projectile-command-map)
                   ("f" . helm-find-files)
@@ -211,6 +219,51 @@
   (call-interactively #'open-line)
   (modal-insert))
 
+(defun start-macro-or-quit-window ()
+  (interactive)
+  (if (derived-mode-p 'help-mode)
+      (quit-window t)
+    (call-interactively #'kmacro-start-macro-or-insert-counter)))
+
+(defvar-local modal-search-query nil)
+
+(defun modal-can-search-p ()
+  (and modal-search-query (not (string-empty-p modal-search-query))))
+
+(defun modal-search (query direction)
+  "Search for QUERY and move to the next match according to DIRECTION.
+DIRECTION is a string `prev' or `next', or nil to just set the query."
+  (interactive "s/\ni")
+  (setq modal-search-query query)
+  (when (modal-can-search-p)
+    (funcall (intern (concat "modal-search-" (or direction "next"))))))
+
+(defun modal-search-backwards (query)
+  "Same as `modal-search', but with string `prev' as DIRECTION."
+  (interactive "s/")
+  (modal-search query "prev"))
+
+(defun modal-search-next ()
+  (interactive)
+  (if (modal-can-search-p)
+      (search-forward modal-search-query)
+    (call-interactively #'modal-search)))
+
+(defun modal-search-prev ()
+  (interactive)
+  (if (modal-can-search-p)
+      (search-backward modal-search-query)
+    (call-interactively #'modal-search)))
+
+(defun insert-command-output (&optional command)
+  (interactive)
+  (unless command
+    (setq command (read-shell-command "!")))
+  (insert
+   (with-temp-buffer
+     (sh command t (current-buffer))
+     (buffer-string))))
+
 (defun modal-scroll-up ()
   (interactive)
   (let ((next-screen-context-lines 0))
@@ -233,27 +286,36 @@
     (call-interactively #'scroll-down)
     (recenter-top-bottom '(4))))
 
-(defun replace-character-or-region (char)
-  (interactive "creplace with: ")
+(defun replace-character-or-region ()
+  (interactive)
   (if (use-region-p)
-      (call-interactively #'string-rectangle)
-    (delete-char 1)
-    (insert-char char)))
+      (if (bound-and-true-p rectangle-mark-mode)
+          (call-interactively #'string-rectangle)
+        (call-interactively #'kill-region)
+        (modal-insert))
+    (when-let ((char (read-char "replace with: ")))
+      (delete-char 1)
+      (insert-char char))))
 
-(defun replace-word (word)
-  (interactive "sreplace with: ")
+(defun replace-word ()
+  (interactive)
   (call-interactively #'kill-word)
-  (insert word))
+  (modal-insert))
 
 (defun backward-replace-word ()
   (interactive)
   (call-interactively #'backward-word)
-  (call-interactively #'replace-word))
+  (replace-word))
 
 (defun replace-line ()
   (interactive)
   (kill-region (line-beginning-position) (line-end-position))
   (indent-for-tab-command)
+  (modal-insert))
+
+(defun replace-end-of-line ()
+  (interactive)
+  (kill-region (point) (line-end-position))
   (modal-insert))
 
 (defun backward-kill-line (&optional arg)
@@ -266,7 +328,26 @@
       (call-interactively #'kill-ring-save)
     (kill-ring-save (line-beginning-position) (line-end-position))))
 
+(defun s/ (pattern with)
+  (interactive "ss/\nss/%s/")
+  (let ((old-point (point)))
+    (goto-char (point-min))
+    (while (re-search-forward pattern nil t)
+      (replace-match with))
+    (goto-char old-point)))
+
 (add-hook 'prog-mode-hook #'modal-mode)
 (add-hook 'text-mode-hook #'modal-mode)
+(add-hook 'conf-mode-hook #'modal-mode)
+
+(add-hook 'help-mode-hook #'modal-mode)
+
+(defun vterm-copy-mode-modal-mode-hack (_arg)
+  "An advice hack to use `vterm-copy-mode' alongside `modal-mode'."
+  (if vterm-copy-mode
+      (modal-mode 1)
+    (modal-mode -1)))
+
+(advice-add #'vterm-copy-mode :after #'vterm-copy-mode-modal-mode-hack)
 
 ;;; modal.el ends here

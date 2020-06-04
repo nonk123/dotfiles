@@ -140,7 +140,8 @@
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
   (exwm-enable)
-  (scroll-bar-mode 0))
+  (scroll-bar-mode 0)
+  (fringe-mode 0))
 
 (when exwm-enabled
   (dolist (binding exwm-input-global-keys)

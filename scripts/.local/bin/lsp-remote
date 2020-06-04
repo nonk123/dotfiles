@@ -64,6 +64,8 @@ if [ -d $env_dir ]; then
     export VIRTUAL_ENV=$env_dir
     source $env_dir/bin/activate
     suppress python3 -m pip install -r requirements.txt
+elif [ -f Cargo.toml ]; then
+    cargo build
 fi
 
 exec $@
