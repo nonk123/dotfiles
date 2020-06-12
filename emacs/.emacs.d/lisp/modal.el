@@ -139,15 +139,12 @@
                   ("e" . eval-region-or-buffer)
                   ("i" . load-init)))))
 
-(defun modal-mode-lighter ()
-  (format " M[%s]" (upcase (symbol-name modal-state))))
-
 (define-minor-mode modal-mode
   "A minor mode that forces modal keybindings."
   :init-value nil
-  :lighter (:eval (modal-mode-lighter))
+  :lighter " Modal"
   :keymap (make-sparse-keymap)
-  (modal-toggle-state 'normal)
+  (modal-normal)
   (if modal-mode
       (local-set-key (kbd "<escape>") #'modal-esc)
     (local-set-key (kbd "<escape>") esc-map)))
@@ -172,6 +169,7 @@
     (add-hook 'deactivate-mark-hook (lambda () (line-mark-mode -1)))
     (unless (region-active-p)
       (push-mark (line-end-position) t t)
+      (line-mark-fix-point)
       (message "Mark set (line mode)"))))
 
 (defun line-mark-fix-mark ()
@@ -193,7 +191,10 @@
 
 (defun eval-region-or-buffer ()
   (interactive)
-  (call-interactively (if (use-region-p) #'eval-region #'eval-buffer)))
+  (call-interactively (if (use-region-p)
+                          (prog1 #'eval-region
+                            (deactivate-mark))
+                        #'eval-buffer)))
 
 (defun beginning-of-buffer-or-goto-line (&optional arg)
   (interactive "P")
@@ -304,8 +305,8 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 
 (defun backward-replace-word ()
   (interactive)
-  (call-interactively #'backward-word)
-  (replace-word))
+  (call-interactively #'backward-kill-word)
+  (modal-insert))
 
 (defun replace-line ()
   (interactive)
@@ -343,7 +344,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 (add-hook 'help-mode-hook #'modal-mode)
 
 (defun vterm-copy-mode-modal-mode-hack (_arg)
-  "An advice hack to use `vterm-copy-mode' alongside `modal-mode'."
+  "An advice hack to use `modal-mode' alongside `vterm-copy-mode'."
   (if vterm-copy-mode
       (modal-mode 1)
     (modal-mode -1)))
