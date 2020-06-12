@@ -1,4 +1,4 @@
-;;; my-exwm.el --- my exwm config.
+;;; my-exwm.el --- my exwm config. -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -59,12 +59,71 @@
   (interactive)
   (exchange-window #'windmove-right))
 
+(defvar window-layout-defs '())
+
+(defvar window-layouts '())
+
+(defvar layout-workspace-mappings '())
+
+(setq window-layout-defs
+      '(("d" . ("discord"))
+        ("D" . (".+\\.\\(sh|el\\)"))
+        ("c" . (".+\\.\\(py|rs|[ch]\\(..\\)?\\)" right "vterm.*" below "vterm.*"))))
+
+(defun move-buffer-to-window (buffer &optional window oldwindow)
+  (setq window (window-normalize-window window))
+  (switch-to-prev-buffer oldwindow)
+  (set-window-buffer window buffer))
+
+(defun generate-layouts ()
+  "Return a keymap containing window layouts from `window-layouts'."
+  (defun repurpose-buffer-hack (buffer-or-name &rest args)
+    (dolist (window window-layouts)
+      (setq window (car window))
+      (unless (window-live-p window)
+        (setq window-layouts (remove (assoc window window-layouts) window-layouts))))
+    (let ((buffer (if (stringp buffer-or-name)
+                      (get-buffer buffer-or-name)
+                    buffer-or-name)))
+      (cl-dolist (layout window-layouts)
+        (when (string= (buffer-name (window-buffer (car layout))) "*scratch*")
+          (when (string-match (cdr layout) (buffer-name buffer))
+            (move-buffer-to-window buffer (car layout) (selected-window))
+            (exwm-workspace-switch-create (window-frame (car layout)))
+            (cl-return))))))
+  (advice-add #'rename-buffer :after #'repurpose-buffer-hack)
+  (advice-add #'pop-to-buffer :after #'repurpose-buffer-hack)
+
+  (cl-loop
+   for (letter . tokens) in window-layout-defs
+   with workspace
+   do (setq workspace (exwm-workspace-add))
+   do (dolist (token tokens)
+        (cl-typecase token
+          (symbol
+           (select-window (funcall (intern (format "split-window-%s" token)))))
+          (string
+           (add-to-list 'window-layouts (cons (selected-window) token)))))
+   do (add-to-list 'layout-workspace-mappings (cons letter workspace))))
+
+(defun select-layout (letter)
+  (interactive "clayout: ")
+  (unless window-layouts
+    (generate-layouts))
+  (if-let* ((letter (format "%c" letter))
+            (mapping (assoc letter layout-workspace-mappings))
+            (workspace (cdr mapping))
+            (workspace (and (frame-live-p workspace) workspace)))
+      (exwm-workspace-switch workspace)
+    (user-error "Not a layout")))
+
 (use-package exwm
   :init
   (setq exwm-workspace-number 10)
   (setq exwm-workspace-show-all-buffers t)
   (setq exwm-layout-show-all-buffers t)
   (setq exwm-input-simulation-keys '(([?\C-c ?\C-c] . ?\C-c)))
+  (setq exwm-debug t)
   (setq exwm-input-global-keys
         `((,(kbd "s-h") . windmove-left)
           (,(kbd "s-j") . windmove-down)
@@ -85,7 +144,6 @@
           (,(kbd "s-b") . switch-to-buffer)
           (,(kbd "s-f") . exwm-layout-toggle-fullscreen)
           (,(kbd "s-r") . exwm-floating-toggle-floating)
-          (,(kbd "s-t") . exwm-reset)
           (,(kbd "s-g") . exwm-input-toggle-keyboard)
           (,(kbd "s-i") . load-init)
           ,@(mapcar (lambda (i)
@@ -94,6 +152,7 @@
                           (interactive)
                           (exwm-workspace-switch-create ,i))))
                     (number-sequence 0 9))
+          (,(kbd "s-v") . select-layout)
           (,(kbd "C-c C-c") . exwm-input-send-next-key)
           (,(kbd "<s-return>") . my-vterm)
           (,(kbd "<print>") . ,(sh-binding "screenshot"))
@@ -121,11 +180,16 @@
 
 (defvar exwm-enabled nil)
 
+(defun exwm-update-input ()
+  (interactive)
+  (dolist (binding exwm-input-global-keys)
+    (exwm-input--set-key (car binding) (cdr binding))))
+
 (defun exwm-init-actions ()
   (interactive)
   (sh "x-startup" t)
-  (use-package alect-themes)
-  (load-theme 'alect-black t)
+  (use-package modus-vivendi-theme)
+  (load-theme 'modus-vivendi t)
   (set-frame-font "Hack 10" nil t)
   (unbind global-map "C-z")
   (setq exwm-enabled t))
@@ -144,7 +208,6 @@
   (fringe-mode 0))
 
 (when exwm-enabled
-  (dolist (binding exwm-input-global-keys)
-    (exwm-input--set-key (car binding) (cdr binding))))
+  (exwm-update-input))
 
 ;;; my-exwm.el ends here
