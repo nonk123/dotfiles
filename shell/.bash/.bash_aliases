@@ -14,8 +14,14 @@ alias vnc='vncviewer autoselect=0 lowcolorlevel=2 qualitylevel=5 -dotwhennocurso
 alias i='ip a s'
 
 alias x='xrdb ~/.Xresources'
-alias b='source ~/.bashrc'
+alias b='source ~/.profile'
 
 alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
 
 alias pipr='pip3 install -r requirements.txt'
+
+alias msg='logger -p user.emerg'
+
+function say {
+    espeak "$@" & disown
+}
