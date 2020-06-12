@@ -1,6 +1,6 @@
 #!/bin/sh
 
 user=nonk
-addr=185.222.117.1
+addr=tilde.as205315.net
 
 scp "$1" "$user@$addr:~/Files/"
