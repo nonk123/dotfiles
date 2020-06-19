@@ -7,20 +7,21 @@
 (defvar music-dir "/home/music/music/")
 
 (defun find-music-play (query results)
-  (sh
-   (format
-    "echo \"mkdir -p %s; cd %s; %s; %s\" | ssh music@185.222.117.80 bash && %s || %s"
-    music-dir
-    music-dir
-    (string-join
-     (cl-loop
-      for result in (if (listp results) results (list results))
-      for i from 0
-      collect (format "ffmpeg -i \\\"%s\\\" \\\"%s-%i.mp3\\\"" result query i))
-     "; ")
-    "mpc update"
-    "notify-send 'Download done'"
-    "notify-send 'Something went wrong!'")))
+  (when results
+    (sh
+     (format
+      "echo \"mkdir -p %s; cd %s; %s; %s\" | ssh music@185.222.117.80 bash && %s || %s"
+      music-dir
+      music-dir
+      (string-join
+       (cl-loop
+        for result in (if (listp results) results (list results))
+        for i from 0
+        collect (format "ffmpeg -i \\\"%s\\\" \\\"%s-%i.mp3\\\"" result query i))
+       "; ")
+      "mpc update"
+      "notify-send 'Download done'"
+      "notify-send 'Something went wrong!'"))))
 
 (defun find-music (query &optional arg)
   (interactive "sQuery: \nP")
