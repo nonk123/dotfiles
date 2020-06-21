@@ -24,26 +24,17 @@
           def)))))
   keymap)
 
-(defun sh (cmd &optional sync buf)
-  "Run CMD using the default shell.
-Asynchronous if SYNC is nil.  May output to BUF if it is set."
+(defun sh (cmd &optional destination)
+  "Run CMD using the default shell.  DESTINATION is passed to `call-process'."
   (interactive)
   (let ((default-directory "~"))
-    (call-process (getenv "SHELL")
-                  nil
-                  (cond (buf buf)
-                        (sync nil)
-                        (t 0))
-                  nil
-                  "-l" "-c" cmd)))
+    (call-process (getenv "SHELL") nil destination nil "-l" "-c" cmd)))
 
 (defun sh-output (cmd)
   "Call `sh' and return the output of CMD as string."
-  (let (output)
-    (with-temp-buffer
-      (sh cmd t (current-buffer))
-      (setq output (buffer-string)))
-    output))
+  (with-temp-buffer
+    (sh cmd (current-buffer))
+    (buffer-string)))
 
 (defun sh-output-lines (cmd)
   "Return the result of `sh' called with CMD as a vector of lines."

@@ -7,16 +7,16 @@
 (defun exec ()
   "Execute a command asynchronously without showing its output."
   (interactive)
-  (sh (read-shell-command "$ ")))
+  (sh (read-shell-command "$ ") 0))
 
 (defun exec-buf ()
   "Execute a command similarly to `exec', but show its output in a temp buffer."
   (interactive)
   (with-output-to-temp-buffer "*Command output*"
-    (sh (or (read-shell-command "$ ") "") t standard-output)))
+    (sh (or (read-shell-command "$ ") "") standard-output)))
 
 (defun sh-binding (command)
-  `(lambda () (interactive) (sh ,command)))
+  `(lambda () (interactive) (sh ,command 0)))
 
 (defun mpd-binding (mpd-command)
   (sh-binding (format "mpd-control %s" mpd-command)))
@@ -187,7 +187,7 @@
 
 (defun exwm-init-actions ()
   (interactive)
-  (sh "x-startup" t)
+  (sh "x-startup" nil)
   (use-package modus-vivendi-theme)
   (load-theme 'modus-vivendi t)
   (set-frame-font "Hack 10" nil t)

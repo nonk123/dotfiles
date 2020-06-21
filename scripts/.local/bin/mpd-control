@@ -12,6 +12,11 @@ function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
+function notify {
+    notify-send "$@"
+    echo "$@"
+}
+
 _mpc repeat on > /dev/null &
 
 function queue {
@@ -31,7 +36,7 @@ function play {
     mpc stop
     mpc play
 
-    notify-send "Playing"
+    notify "Playing"
 }
 
 function start_selection {
@@ -41,17 +46,19 @@ function start_selection {
 function pause {
     _mpc pause
     mpc stop
-    notify-send "Paused"
+    notify "Paused"
 }
 
 function resume {
     _mpc play
     mpc play
-    notify-send "Resumed"
+    notify "Resumed"
 }
 
 function status {
-    notify-send "Status" "$(_mpc)"
+    status=$(_mpc status)
+    notify "Status" "$status"
+    echo "$status"
 }
 
 cmd=$@
