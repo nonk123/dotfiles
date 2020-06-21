@@ -12,11 +12,14 @@
                 (case-label . +))))
 (setq c-default-style "nonk123")
 
+(setq inhibit-startup-message t)
+
 (setq-default
  indent-tabs-mode nil
  tab-stop-list nil
  epa-pinentry-mode 'loopback
- vc-follow-symlinks t)
+ vc-follow-symlinks t
+ major-mode #'prog-mode)
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)

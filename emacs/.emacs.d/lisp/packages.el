@@ -45,9 +45,7 @@
   :hook (company-mode . helm-gtags-mode))
 (use-package helm-company
   :after (helm company)
-  :bind
-  (:map company-mode-map
-        ("<M-tab>" . helm-company)))
+  :commands helm-company)
 
 (defun use-lsp-remote (con)
   (if (listp (cdr con))
@@ -121,10 +119,14 @@
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
+  (defun vterm-send-escape ()
+    (interactive)
+    (vterm-send-key "<escape>"))
   :bind
   (:map vterm-mode-map
         ("C-c C-x" . vterm-send-C-x)
-        ("C-c M-x" . vterm-send-M-x)))
+        ("C-c M-x" . vterm-send-M-x)
+        ("<escape>" . vterm-send-escape)))
 
 (use-package rust-mode)
 
