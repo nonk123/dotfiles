@@ -1,4 +1,4 @@
-;;; utils.el --- utils part of init.el.
+;;; utils.el --- utils part of init.el. -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -39,6 +39,16 @@
 (defun sh-output-lines (cmd)
   "Return the result of `sh' called with CMD as a vector of lines."
   (split-string (sh-output cmd) "\n" t))
+
+(defun fetch (action url &rest args)
+  "Run function ACTION after successfully fetching URL formatted with ARGS.
+ACTION takes one parameter - the response string without headers."
+  (with-temp-buffer
+    (url-retrieve
+     (url-encode-url (apply #'format url args))
+     (lambda (_status)
+       (forward-paragraph) ;; skip stupid HTTP headers.
+       (funcall action (buffer-substring (point) (point-max)))))))
 
 (defun prompt-actions (candidates)
   (with-temp-buffer

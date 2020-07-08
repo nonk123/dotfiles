@@ -6,41 +6,38 @@
 
 (defvar music-dir "/home/music/music/")
 
-(defun find-music-play (query results)
-  (when results
-    (sh
-     (format
-      "echo \"mkdir -p %s; cd %s; %s; %s\" | ssh music@185.222.117.80 bash && %s || %s"
-      music-dir
-      music-dir
-      (string-join
-       (cl-loop
-        for result in (if (listp results) results (list results))
-        for i from 0
-        collect (format "ffmpeg -i \\\"%s\\\" \\\"%s-%i.mp3\\\"" result query i))
-       "; ")
-      "mpc update"
-      "notify-send 'Download done'"
-      "notify-send 'Something went wrong!'"))))
+(defun find-music-download (title url)
+  (sh
+   (format
+    "%s echo -e \"mkdir -p %s; cd %s; %s; %s\" | ssh music@185.222.117.80 bash && %s || %s"
+    (format "filename=$(cat << EOF\n%s\nEOF\n)\n" title)
+    music-dir
+    music-dir
+    (format "ffmpeg -i \\\"%s\\\" \\\"$filename.mp3\\\"" url)
+    "mpc update"
+    "notify-send 'Download done'"
+    "notify-send 'Something went wrong!'")
+   0))
+
+(defun find-music--select (response)
+  (helm :prompt "Select track: "
+        :buffer "*Track selection*"
+        :sources
+        (helm-build-sync-source "find-music-source"
+          :multimatch t
+          :candidates (mapcar
+                       (lambda (x)
+                         (list (cdr (assoc 'title x)) x))
+                       (cdr (assoc 'results (json-read-from-string response)))))))
 
 (defun find-music (query &optional arg)
   (interactive "sQuery: \nP")
-  (with-temp-buffer
-    (url-retrieve
-     (url-encode-url (format "http://185.222.117.80:8080/%s/%i/" query (or arg 10)))
-     (lambda (_status)
-       (forward-paragraph)
-       (find-music-play
-        query
-        (helm :prompt "Select track: "
-              :buffer "*Track selection*"
-              :sources
-              (helm-build-sync-source "find-music-source"
-                :multimatch t
-                :candidates (mapcar
-                             (lambda (x)
-                               (cons (cdr (assoc 'title x))
-                                     (cdr (assoc 'url x))))
-                             (cdr (assoc 'results (json-read)))))))))))
+  (fetch
+   (lambda (response)
+     (when-let ((selection (find-music--select response)))
+       (dolist (result (if (listp selection) selection (list selection)))
+         (find-music-download (cdr (assoc 'title result))
+                              (cdr (assoc 'url result))))))
+   "http://music-finder.nonk.users.as205315.net/%s/%i/" query (or arg 10)))
 
 ;;; find-music.el ends here
