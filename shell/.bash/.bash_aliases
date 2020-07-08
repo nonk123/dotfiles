@@ -18,10 +18,18 @@ alias b='source ~/.profile'
 
 alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
 
-alias pipr='pip3 install -r requirements.txt'
+alias pipr='pip3 install --upgrade -r requirements.txt'
 
 alias msg='logger -p user.emerg'
 
 function say {
     espeak "$@" & disown
+}
+
+function c {
+    cat <(echo "\`\`\`") \
+        <(echo "# $1") \
+        <(echo) \
+        "$1" \
+        <(echo "\`\`\`") | xclip -in -selection cliboard
 }

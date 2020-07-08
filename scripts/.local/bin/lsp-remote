@@ -63,9 +63,9 @@ cd $dest
 if [ -d $env_dir ]; then
     export VIRTUAL_ENV=$env_dir
     source $env_dir/bin/activate
-    suppress python3 -m pip install -r requirements.txt
+    suppress python -m pip install --upgrade -r requirements.txt &
 elif [ -f Cargo.toml ]; then
-    cargo build
+    suppress cargo build &
 fi
 
 exec $@
