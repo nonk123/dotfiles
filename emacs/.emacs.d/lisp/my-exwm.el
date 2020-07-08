@@ -67,12 +67,12 @@
 
 (setq window-layout-defs
       '(("d" . ("discord"))
-        ("D" . (".+\\.\\(sh|el\\)"))
-        ("c" . (".+\\.\\(py|rs|[ch]\\(..\\)?\\)" right "vterm.*" below "vterm.*"))))
+        ("c" . (".+\\.\\(el|sh|py|rs|[ch]\\(..\\)?\\)"
+                right "vterm.*" below "vterm.*"))))
 
 (defun move-buffer-to-window (buffer &optional window oldwindow)
   (setq window (window-normalize-window window))
-  (switch-to-prev-buffer oldwindow)
+  (set-window-buffer oldwindow "*scratch*")
   (set-window-buffer window buffer))
 
 (defun generate-layouts ()

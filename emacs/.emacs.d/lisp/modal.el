@@ -19,10 +19,11 @@
 
 (defvar modal-movement-keys '())
 (defvar modal-bindings '())
+(defvar modal-modes-alist '())
 
 (defvar modal-mode-exit-key (kbd "TAB"))
 
-(defvar-local modal-state 'normal)
+(defvar modal-state 'normal)
 
 (defun modal-toggle-state (&optional state)
   (setq modal-state
@@ -30,14 +31,19 @@
                state)
               ((eq modal-state 'normal)
                'insert)
-              ((eq modal-state 'insert)
+              (t
                'normal)))
-  (use-local-map
-   (cond
-    ((eq modal-state 'insert)
-     (make-keymap))
-    ((eq modal-state 'normal)
-     (bind (make-sparse-keymap) modal-bindings))))
+  (setf (cdr (assoc 'modal-mode minor-mode-map-alist))
+        (cond
+         ((eq modal-state 'insert)
+          (make-keymap))
+         ((eq modal-state 'normal)
+          (bind (make-sparse-keymap)
+                (append
+                 modal-bindings
+                 (if-let ((mode (assoc major-mode modal-mode-specifics-alist)))
+                     (cdr mode)
+                   (list)))))))
   (local-set-key modal-mode-exit-key #'modal-exit))
 
 (defun modal-normal ()
@@ -84,7 +90,7 @@
                  (lambda ()
                    (interactive)
                    (funcall fun (cdr con)))
-               ;; Prevent settings DWIM bindings in child keymaps.
+               ;; Prevent setting DWIM bindings in child keymaps.
                (modal-take-movement-commands fun nil nil (cdr con)))))
           (or keys-alist modal-movement-keys))))
     ;; If `keys-alist' is supplied, it probably is a child keymap.
@@ -100,9 +106,9 @@
   :init-value nil
   :lighter " Modal"
   :keymap (make-sparse-keymap)
-  (modal-toggle-state modal-state)
-  (unless modal-mode
-    (local-unset-key modal-mode-exit-key)))
+  (if modal-mode
+      (modal-toggle-state modal-state)
+    (setf (cdr (assoc 'modal-mode minor-mode-map-alist)) nil)))
 
 (defvar line-mark-mode-map
   (let ((map (make-sparse-keymap)))
@@ -165,21 +171,25 @@
       (call-interactively #'kill-region)
     (kill-whole-line arg)))
 
-(defun newline-and-indent-and-insert ()
-  (interactive)
-  (call-interactively #'newline-and-indent)
-  (modal-insert))
-
 (defun open-line-and-insert ()
   (interactive)
   (call-interactively #'open-line)
   (modal-insert))
 
+(defun newline-and-insert ()
+  (interactive)
+  (call-interactively #'newline)
+  (modal-insert))
+
 (defun start-macro-or-quit-window ()
   (interactive)
-  (if (derived-mode-p 'help-mode)
-      (quit-window t)
-    (call-interactively #'kmacro-start-macro-or-insert-counter)))
+  (cond
+   ((derived-mode-p 'help-mode 'eww-mode)
+    (quit-window t))
+   ((bound-and-true-p vterm-copy-mode)
+    (vterm-copy-mode -1))
+   (t
+    (call-interactively #'kmacro-start-macro-or-insert-counter))))
 
 (defvar-local modal-search-query nil)
 
@@ -222,13 +232,20 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 
 (defun modal-scroll-up (&optional arg)
   (interactive "P")
-  (let ((lines (window-text-height)))
+  (let ((lines (/ (window-text-height) 2)))
     (recenter (if (and arg (< arg 0)) -1 0))
-    (scroll-up-line (if arg (* lines arg) lines))))
+    (next-line (if arg (* lines arg) lines))))
 
 (defun modal-scroll-down (&optional arg)
   (interactive "P")
   (modal-scroll-up (if arg (- arg) -1)))
+
+(defun modal-save-buffer (&optional arg)
+  (interactive "p")
+  (if (or (eq arg 4) (not (derived-mode-p 'special-mode)))
+      (save-buffer 0)
+    (message (format "Run with prefix arg to %s save the buffer."
+                     (propertize "really" 'face 'italic)))))
 
 (defun replace-character-or-region ()
   (interactive)
@@ -251,14 +268,19 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
   (call-interactively #'beginning-of-line)
   (modal-insert))
 
-(defun move-and-delete (move-fun)
+(defun move-and-kill (move-fun)
   (let ((start (point)))
     (call-interactively move-fun)
-    (delete-region start (point))))
+    (kill-region start (point))))
 
 (defun move-and-replace (move-fun)
-  (move-and-delete move-fun)
+  (move-and-kill move-fun)
   (modal-insert))
+
+(defun move-and-yank (move-fun)
+  (let ((start (point)))
+    (call-interactively move-fun)
+    (kill-ring-save start (point))))
 
 (defun kill-ring-save-region-or-line ()
   (interactive)
@@ -277,12 +299,13 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 (setq modal-bindings
       `(,@modal-movement-keys
         ("i" . modal-insert)
-        ("m" . newline-and-indent-and-insert)
         ("A" . beginning-of-line-and-insert)
         ("E" . end-of-line-and-insert)
         ("o" . open-line-and-insert)
+        ("m" . newline-and-insert)
         ("x" . delete-char)
         ("X" . delete-backward-char)
+        ("f" . delete-indentation)
         ("s" . helm-swoop)
         ("S" . helm-multi-swoop-projectile)
         ("q" . start-macro-or-quit-window)
@@ -293,7 +316,6 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("V" . line-mark-mode)
         ("C-v" . rectangle-mark-mode)
         ("p" . yank)
-        ("y" . kill-ring-save-region-or-line)
         (";" . comment-line)
         ("t" . indent-for-tab-command)
         ("c" . recenter-top-bottom)
@@ -305,7 +327,6 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("#" . insert-file)
         ("," . previous-buffer)
         ("." . next-buffer)
-        ("z" . helm-company)
         ("C-n" . modal-scroll-up)
         ("C-p" . modal-scroll-down)
         ("+" . text-scale-increase)
@@ -321,13 +342,15 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("7" . "C-7")
         ("8" . "C-8")
         ("9" . "C-9")
-        ,(modal-take-movement-commands "d" #'move-and-delete #'kill-whole-line-or-region)
+        ,(modal-take-movement-commands "d" #'move-and-kill #'kill-whole-line-or-region)
         ,(modal-take-movement-commands "r" #'move-and-replace #'replace-character-or-region)
-        (":" . (("w" . save-buffer)
+        ,(modal-take-movement-commands "y" #'move-and-yank #'kill-ring-save-region-or-line)
+        (":" . (("w" . modal-save-buffer)
                 ("q" . kill-current-buffer)
                 ("s" . s/)
                 ("x" . helm-M-x)))
         ("SPC" . (("g" . magit-status)
+                  ("u" . list-packages)
                   ("p" . ,projectile-command-map)
                   ("f" . helm-find-files)
                   ("b" . helm-buffers-list)
@@ -335,16 +358,25 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("F" . eglot-code-actions)
                   ("r" . eglot-rename)
                   ("d" . show-documentation-at-point)
+                  ("w" . eww)
                   ("j" . flymake-goto-next-error)
                   ("k" . flymake-goto-prev-error)
                   ("e" . eval-region-or-buffer)
-                  ("i" . load-init)))))
+                  ("/" . dabbrev-expand)))))
+
+(setq modal-mode-specifics-alist
+      '((eww-mode . (("H" . eww-back-url)
+                     ("L" . eww-forward-url)
+                     ("t" . eww)
+                     ("z" . eww-copy-page-url)
+                     ("<M-return>" . eww-open-in-new-buffer)))))
 
 (add-hook 'prog-mode-hook #'modal-mode)
 (add-hook 'text-mode-hook #'modal-mode)
 (add-hook 'conf-mode-hook #'modal-mode)
 
 (add-hook 'help-mode-hook #'modal-mode)
+(add-hook 'eww-mode-hook #'modal-mode)
 
 (defun vterm-copy-mode-modal-mode-hack (_arg)
   "An advice hack to use `modal-mode' alongside `vterm-copy-mode'."

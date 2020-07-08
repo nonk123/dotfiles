@@ -45,7 +45,9 @@
   :hook (company-mode . helm-gtags-mode))
 (use-package helm-company
   :after (helm company)
-  :commands helm-company)
+  :bind
+  (:map company-mode-map
+        ("<M-tab>" . helm-company)))
 
 (defun use-lsp-remote (con)
   (if (listp (cdr con))
@@ -103,6 +105,7 @@
     (and root (cons 'transient root))))
 
 (use-package projectile
+  :delight
   :init
   (add-to-list 'project-find-functions 'my-projectile-project-find-function)
   (setq projectile-project-search-path '("~/Sources"))
@@ -119,6 +122,7 @@
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
+  (setq vterm-timer-delay (/ 1 30))
   (defun vterm-send-escape ()
     (interactive)
     (vterm-send-key "<escape>"))
@@ -137,9 +141,9 @@
 
 (use-package typescript-mode)
 
-(use-package lua-mode
-  ;; Incompatible with Emacs 28 as of now.
-  :disabled)
+(use-package lua-mode)
+
+(use-package yaml-mode)
 
 (use-package slime
   :disabled
@@ -171,6 +175,10 @@
 (use-package elisp-slime-nav
   :delight
   :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
+
+(use-package dtrt-indent
+  :delight
+  :init (dtrt-indent-global-mode))
 
 (use-package sokoban
   :bind
@@ -221,6 +229,7 @@
   :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode))
 
 (use-package emacs
+  :delight auto-revert-mode
   :mode (("\\.bash" . sh-mode)
          ("\\.gitignore" . prog-mode))
   :hook (text-mode . (lambda ()
