@@ -23,3 +23,7 @@ c.url.start_pages = ["https://google.com/"]
 c.url.searchengines["DEFAULT"] = "https://google.com/search?q={}"
 
 c.tabs.title.format = "{index}. {current_title} ({perc_raw}%, {protocol})"
+
+config.bind("<Tab>", "enter-mode normal", mode="insert")
+
+config.bind("<space>d", "spawn mpd-control download {url}")

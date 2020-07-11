@@ -5,91 +5,95 @@ port=6600
 
 http="https://mpd.nonk.users.as205315.net"
 
-mpc playlist | grep $http > /dev/null || mpc add $http
-
 function _mpc {
     mpc --host=$host --port=$port "$@"
 }
 
-function notify {
-    notify-send "$@"
-    echo "$@"
-}
-
+mpc playlist | grep $http > /dev/null || mpc add $http
 _mpc repeat on > /dev/null &
 
-function queue {
-    echo "$1" | while read track; do
-        _mpc search filename "$track" | _mpc add
-    done
+function self {
+    command=$1
 
-    _mpc play
+    [ $# -gt 1 ] && shift
+
+    case "$command" in
+    play)
+        [ "$1" ] || exit 1
+
+        _mpc stop; _mpc clear
+
+        self queue "$1"
+
+        mpc stop; mpc play
+
+        notify-send "Playing"
+        ;;
+    prompt)
+        _mpc listall | prompt "Select a track"
+        ;;
+    select)
+        result=$(self prompt)
+        [ "$result" ] && self play "$result"
+        ;;
+    queue)
+        if [ $# -gt 0 ]; then
+            result=$(for track in "$@"; do echo "$track"; done)
+        else
+            result=$(self prompt)
+        fi
+
+        if [ "$result" ]; then
+            echo "$result" | while read track; do
+                _mpc search filename "$track" | _mpc add
+            done
+
+            _mpc play
+        fi
+        ;;
+    toggle)
+        _mpc | grep "^\[playing]" && self pause || self resume
+        ;;
+    pause)
+        _mpc pause
+        mpc stop
+        notify-send "Paused"
+        ;;
+    resume)
+        _mpc play
+        mpc play
+        notify-send "Resumed"
+        ;;
+    status)
+        status=$(_mpc status)
+        notify-send "Status" "$status"
+        echo "$status"
+        ;;
+    http)
+        echo "$http"
+        ;;
+    next|prev|single)
+        _mpc "$command" && status
+        ;;
+    download)
+        if [ $# -eq 1 ]; then
+            cmd="cd ~/music/ && youtube-dl -x \"$1\" && mpc update"
+
+            if echo "$cmd" | ssh -T "music@$host"; then
+                notify-send-send "Done" "$1"
+            else
+                notify-send-send "Failed" "$1"
+            fi
+        else
+            while read url; do
+                self download "$url"
+            done
+        fi
+        ;;
+    *)
+        _mpc "$@"
+        ;;
+    esac
 }
 
-function play {
-    _mpc stop
-    _mpc clear
-
-    queue "$1"
-
-    mpc stop
-    mpc play
-
-    notify "Playing"
-}
-
-function start_selection {
-    _mpc listall | prompt "Select a track"
-}
-
-function pause {
-    _mpc pause
-    mpc stop
-    notify "Paused"
-}
-
-function resume {
-    _mpc play
-    mpc play
-    notify "Resumed"
-}
-
-function status {
-    status=$(_mpc status)
-    notify "Status" "$status"
-    echo "$status"
-}
-
-cmd=$@
-
-case "$cmd" in
-select)
-    result=$(start_selection)
-    [ "$result" ] && play "$result"
-    ;;
-queue)
-    result=$(start_selection)
-    [ "$result" ] && queue "$result"
-    ;;
-toggle)
-    _mpc | grep playing && pause || resume
-    ;;
-status)
-    status
-    ;;
-http)
-    echo "$http"
-    ;;
-next)
-    _mpc next && status
-    ;;
-prev)
-    _mpc prev && status
-    ;;
-single)
-    _mpc single && status
-    ;;
-*)
-    _mpc "$@"
-    ;;
-esac
+self "$@"

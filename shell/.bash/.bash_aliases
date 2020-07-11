@@ -20,7 +20,9 @@ alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
 
 alias pipr='pip3 install --upgrade -r requirements.txt'
 
-alias msg='logger -p user.emerg'
+function msg {
+    logger -p user.emerg "$@"
+}
 
 function say {
     espeak "$@" & disown
@@ -32,4 +34,19 @@ function c {
         <(echo) \
         "$1" \
         <(echo "\`\`\`") | xclip -in -selection cliboard
+}
+
+function failsafe {
+    timeout -t 3 -s 9 /usr/bin/env "$@"
+}
+
+function xmodmap {
+    failsafe xmodmap "$@"
+}
+
+function notify-send {
+    failsafe notify-send "$@" && \
+        for line in "$@"; do
+            echo "$line"
+        done
 }
