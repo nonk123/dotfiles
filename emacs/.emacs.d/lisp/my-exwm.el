@@ -18,8 +18,16 @@
 (defun sh-binding (command)
   `(lambda () (interactive) (sh ,command 0)))
 
-(defun mpd-binding (mpd-command)
-  (sh-binding (format "mpd-control %s" mpd-command)))
+(defun mpd-binding (mpd-command &rest args)
+  (sh-binding
+   (format "mpd-control %s %s"
+           mpd-command
+           (string-join (mapcar (lambda (arg) (format "'%s'" arg)) args) " "))))
+
+(defun download-track (url)
+  "Download a music track with specified URL using `mpd-control'."
+  (interactive "sURL: ")
+  (funcall (mpd-binding "download" url)))
 
 (defun force-kill-current-buffer ()
   "Kill the current buffer even if it has a process running."
@@ -36,6 +44,22 @@
     (funcall move-function args)
     (set-window-buffer old-window (current-buffer))
     (set-window-buffer (selected-window) old-buffer)))
+
+(defun launch ()
+  "Launch a program from a `helm' listing."
+  (interactive)
+  (when-let* ((items '(("Browser" . "qutebrowser")
+                       ("Discord" . "discord")
+                       ("Parsec"  . "parsecd app_daemon=1")
+                       ("Steam"   . "steam")
+                       ("Aria"    . "aria")))
+              (command (helm
+                        :prompt "Launch: "
+                        :buffer "*Program selection*"
+                        :sources (helm-build-sync-source "launch-source"
+                                   :multimatch nil
+                                   :candidates items))))
+    (sh command 0)))
 
 (defun my-vterm ()
   "Call `vterm' in project root or home directory."
@@ -159,6 +183,7 @@
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)
           (,(kbd "s-P") . find-music)
+          (,(kbd "s-d") . launch)
           (,(kbd "s-p") . ,(mpd-binding "select"))
           (,(kbd "s-,") . ,(mpd-binding "prev"))
           (,(kbd "s-.") . ,(mpd-binding "next"))
