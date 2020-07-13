@@ -24,6 +24,21 @@ c.url.searchengines["DEFAULT"] = "https://google.com/search?q={}"
 
 c.tabs.title.format = "{index}. {current_title} ({perc_raw}%, {protocol})"
 
-config.bind("<Tab>", "enter-mode normal", mode="insert")
+config.bind("<Tab>", "leave-mode", mode="insert")
+config.bind("<Tab>", "leave-mode", mode="caret")
 
+config.bind("<Ctrl-g>", "leave-mode", mode="command")
+
+config.bind("<Ctrl-n>", "scroll-page 0  0.5")
+config.bind("<Ctrl-p>", "scroll-page 0 -0.5")
+
+config.bind("<Ctrl-n>", "completion-item-focus next", mode="command")
+config.bind("<Ctrl-p>", "completion-item-focus prev", mode="command")
+config.bind("<Alt-n>", "command-history-next", mode="command")
+config.bind("<Alt-p>", "command-history-prev", mode="command")
+
+config.bind("<space>c", "config-source")
 config.bind("<space>d", "spawn mpd-control download {url}")
+config.bind("<space>g", "open -t google.com")
+config.bind("<space>y", "open -t youtube.com")
+config.bind("<space>w", "set-cmd-text :open -t en.wiktionary.org/wiki/")
