@@ -14,20 +14,18 @@ _mpc repeat on > /dev/null &
 
 function self {
     command=$1
-
-    [ $# -gt 1 ] && shift
+    shift
 
     case "$command" in
     play)
-        [ "$1" ] || exit 1
-
-        _mpc stop; _mpc clear
-
-        self queue "$1"
-
-        mpc stop; mpc play
-
-        notify-send "Playing"
+        if [ $# -eq 0 ]; then
+            mpc stop; mpc play
+            notify-send "Playing"
+        else
+            _mpc stop; _mpc clear
+            self queue "$@"
+            self play
+        fi
         ;;
     prompt)
         _mpc listall | prompt "Select a track"
@@ -37,10 +35,10 @@ function self {
         [ "$result" ] && self play "$result"
         ;;
     queue)
-        if [ $# -gt 0 ]; then
-            result=$(for track in "$@"; do echo "$track"; done)
-        else
+        if [ $# -eq 0 ]; then
             result=$(self prompt)
+        else
+            result=$(for track in "$@"; do echo "$track"; done)
         fi
 
         if [ "$result" ]; then
@@ -73,16 +71,17 @@ function self {
         echo "$http"
         ;;
     next|prev|single)
-        _mpc "$command" && status
+        _mpc "$command" && self status
         ;;
     download)
         if [ $# -eq 1 ]; then
-            cmd="cd ~/music/ && youtube-dl -x \"$1\" && mpc update"
-
-            if echo "$cmd" | ssh -T "music@$host"; then
-                notify-send-send "Done" "$1"
+            if ssh -T "music@$host" << EOF
+youtube-dl --no-playlist -o "~/music/%(title)s.%(ext)s" -x "$1" && mpc update
+EOF
+            then
+                notify-send Done "$1"
             else
-                notify-send-send "Failed" "$1"
+                notify-send Failed "$1"
             fi
         else
             while read url; do
