@@ -32,10 +32,9 @@
 (defun force-kill-current-buffer ()
   "Kill the current buffer even if it has a process running."
   (interactive)
-  (let ((process (get-buffer-process (current-buffer))))
-    (when (processp process)
-      (kill-process process))
-    (kill-current-buffer)))
+  (when (get-buffer-process (current-buffer))
+    (kill-process))
+  (kill-current-buffer))
 
 (defun exchange-window (move-function &rest args)
   "Exchange buffers in windows using MOVE-FUNCTION with optional ARGS."
@@ -45,20 +44,30 @@
     (set-window-buffer old-window (current-buffer))
     (set-window-buffer (selected-window) old-buffer)))
 
-(defun launch ()
-  "Launch a program from a `helm' listing."
+(defun quick ()
+  "Launch a program or utility from a `helm' listing."
   (interactive)
-  (when-let* ((items '(("Browser" . "qutebrowser")
-                       ("Discord" . "discord")
-                       ("Parsec"  . "parsecd app_daemon=1")
-                       ("Steam"   . "steam")
-                       ("Aria"    . "aria")))
-              (command (helm
-                        :prompt "Launch: "
-                        :buffer "*Program selection*"
-                        :sources (helm-build-sync-source "launch-source"
-                                   :multimatch nil
-                                   :candidates items))))
+  (when-let*
+      ((quick '(("Browser"    . "qutebrowser")
+                ("Discord"    . "discord")
+                ("Parsec"     . "parsecd app_daemon=1")
+                ("Moonlight"  . "moonlight")
+                ("Steam"      . "steam")
+                ("Doomseeker" . "doomseeker")
+                ("Aria"       . "Aria")))
+       (utils '(("Restart fluidsynth" . "systemctl --user restart fluidsynth")
+                ("Restart mpd"        . "systemctl --user restart mpd")))
+       (command (helm
+                 :prompt "Launch: "
+                 :buffer "*Program selection*"
+                 :sources
+                 (vector
+                  (helm-build-sync-source "Quick launch"
+                    :multimatch nil
+                    :candidates quick)
+                  (helm-build-sync-source "Utilities"
+                    :multimatch nil
+                    :candidates utils)))))
     (sh command 0)))
 
 (defun my-vterm ()
@@ -91,8 +100,13 @@
 
 (setq window-layout-defs
       '(("d" . ("discord"))
-        ("c" . (".+\\.\\(el|sh|py|rs|[ch]\\(..\\)?\\)"
-                right "vterm.*" below "vterm.*"))))
+        ("b" . ("qutebrowser"))
+        ("c" . (".*\\..*" :right vterm :below vterm))
+        ("t" . (vterm))
+        ("i" . ("\\*info\\*"))
+        ("1" . ())
+        ("2" . ())
+        ("3" . ())))
 
 (defun move-buffer-to-window (buffer &optional window oldwindow)
   (setq window (window-normalize-window window))
@@ -100,7 +114,7 @@
   (set-window-buffer window buffer))
 
 (defun generate-layouts ()
-  "Return a keymap containing window layouts from `window-layouts'."
+  "Generate EXWM frames from `window-layout-defs'."
   (defun repurpose-buffer-hack (buffer-or-name &rest args)
     (dolist (window window-layouts)
       (setq window (car window))
@@ -121,11 +135,22 @@
   (cl-loop
    for (letter . tokens) in window-layout-defs
    with workspace
+   do (set-buffer "*scratch*")
    do (setq workspace (exwm-workspace-add))
    do (dolist (token tokens)
         (cl-typecase token
+          (keyword
+           (select-window
+            (cond
+             ((eq token :right)
+              (split-window-right))
+             ((eq token :below)
+              (split-window-below))
+             (t
+              (user-error "Unrecognized token: %s" token)))))
           (symbol
-           (select-window (funcall (intern (format "split-window-%s" token)))))
+           (funcall token)
+           (add-to-list 'window-layouts (cons (selected-window) (buffer-name))))
           (string
            (add-to-list 'window-layouts (cons (selected-window) token)))))
    do (add-to-list 'layout-workspace-mappings (cons letter workspace))))
@@ -170,12 +195,6 @@
           (,(kbd "s-r") . exwm-floating-toggle-floating)
           (,(kbd "s-g") . exwm-input-toggle-keyboard)
           (,(kbd "s-i") . load-init)
-          ,@(mapcar (lambda (i)
-                      `(,(kbd (format "s-%d" i)) .
-                        (lambda ()
-                          (interactive)
-                          (exwm-workspace-switch-create ,i))))
-                    (number-sequence 0 9))
           (,(kbd "s-v") . select-layout)
           (,(kbd "C-c C-c") . exwm-input-send-next-key)
           (,(kbd "<s-return>") . my-vterm)
@@ -183,7 +202,7 @@
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)
           (,(kbd "s-P") . find-music)
-          (,(kbd "s-d") . launch)
+          (,(kbd "s-d") . quick)
           (,(kbd "s-p") . ,(mpd-binding "select"))
           (,(kbd "s-,") . ,(mpd-binding "prev"))
           (,(kbd "s-.") . ,(mpd-binding "next"))

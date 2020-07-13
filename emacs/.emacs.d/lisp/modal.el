@@ -23,7 +23,7 @@
 
 (defvar modal-mode-exit-key (kbd "TAB"))
 
-(defvar modal-state 'normal)
+(defvar-local modal-state 'normal)
 
 (defun modal-toggle-state (&optional state)
   (setq modal-state
@@ -354,7 +354,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("p" . ,projectile-command-map)
                   ("f" . helm-find-files)
                   ("b" . helm-buffers-list)
-                  ("h" . help)
+                  ("h" . ,help-map)
                   ("F" . eglot-code-actions)
                   ("r" . eglot-rename)
                   ("d" . show-documentation-at-point)
