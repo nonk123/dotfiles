@@ -205,7 +205,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
     (funcall (intern (concat "modal-search-" (or direction "next"))))))
 
 (defun modal-search-backwards (query)
-  "Same as `modal-search', but with string `prev' as DIRECTION."
+  "Call `modal-search' with QUERY and string `prev' as DIRECTION."
   (interactive "s/")
   (modal-search query "prev"))
 
@@ -220,6 +220,17 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
   (if (modal-can-search-p)
       (search-backward modal-search-query)
     (call-interactively #'modal-search)))
+
+(defun better-rename-file (newname)
+  (interactive "FNew name: ")
+  (rename-file (buffer-file-name) newname)
+  (kill-buffer)
+  (find-file newname))
+
+(defun delete-current-file ()
+  (interactive)
+  (delete-file (buffer-file-name) t)
+  (kill-buffer))
 
 (defun insert-command-output (&optional command)
   (interactive)
@@ -362,7 +373,9 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("j" . flymake-goto-next-error)
                   ("k" . flymake-goto-prev-error)
                   ("e" . eval-region-or-buffer)
-                  ("/" . dabbrev-expand)))))
+                  ("/" . dabbrev-expand)
+                  ("C-r" . better-rename-file)
+                  ("C-d" . delete-current-file)))))
 
 (setq modal-mode-specifics-alist
       '((eww-mode . (("H" . eww-back-url)
