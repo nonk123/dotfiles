@@ -65,7 +65,6 @@ function self {
     status)
         status=$(_mpc status)
         notify-send "Status" "$status"
-        echo "$status"
         ;;
     http)
         echo "$http"
@@ -90,7 +89,7 @@ EOF
         fi
         ;;
     *)
-        _mpc "$@"
+        _mpc "$command" "$@"
         ;;
     esac
 }
