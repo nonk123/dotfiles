@@ -37,18 +37,20 @@
   (kill-current-buffer))
 
 (defun exchange-window (move-function &rest args)
-  "Exchange buffers in windows using MOVE-FUNCTION with optional ARGS."
-  (let ((old-buffer (current-buffer))
-        (old-window (selected-window)))
-    (funcall move-function args)
-    (set-window-buffer old-window (current-buffer))
-    (set-window-buffer (selected-window) old-buffer)))
+  "Return an exchange buffers function calling MOVE-FUNCTION with optional ARGS."
+  (lambda ()
+    (interactive)
+    (let ((old-buffer (current-buffer))
+          (old-window (selected-window)))
+      (funcall move-function args)
+      (set-window-buffer old-window (current-buffer))
+      (set-window-buffer (selected-window) old-buffer))))
 
 (defun quick ()
   "Launch a program or utility from a `helm' listing."
   (interactive)
   (when-let*
-      ((quick '(("Browser"    . "qutebrowser")
+      ((quick '(("Browser"    . "qutebrowser --no-err-windows")
                 ("Discord"    . "discord")
                 ("Parsec"     . "parsecd app_daemon=1")
                 ("Moonlight"  . "moonlight")
@@ -56,7 +58,9 @@
                 ("Doomseeker" . "doomseeker")
                 ("Aria"       . "Aria")))
        (utils '(("Restart fluidsynth" . "systemctl --user restart fluidsynth")
-                ("Restart mpd"        . "systemctl --user restart mpd")))
+                ("Restart mpd" . "systemctl --user restart mpd && mpd-control play")
+                ("SSH proxy to tilde" . "ssh -ND 9090 nonk@tilde.as205315.net")
+                ("Kill all SSH connections" . "pkill ssh")))
        (command (helm
                  :prompt "Launch: "
                  :buffer "*Program selection*"
@@ -76,37 +80,19 @@
   (let ((default-directory (or (projectile-project-root) (expand-file-name "~"))))
     (vterm)))
 
-(defun exchange-left ()
-  (interactive)
-  (exchange-window #'windmove-left))
-
-(defun exchange-down ()
-  (interactive)
-  (exchange-window #'windmove-down))
-
-(defun exchange-up ()
-  (interactive)
-  (exchange-window #'windmove-up))
-
-(defun exchange-right ()
-  (interactive)
-  (exchange-window #'windmove-right))
-
-(defvar window-layout-defs '())
+(defvar window-layout-defs
+  '(("d" . ("discord"))
+    ("b" . ("qutebrowser"))
+    ("c" . (".*\\..*" :right vterm :below vterm))
+    ("t" . (vterm))
+    ("i" . ("\\*info\\*"))
+    ("1" . ())
+    ("2" . ())
+    ("3" . ())))
 
 (defvar window-layouts '())
 
 (defvar layout-workspace-mappings '())
-
-(setq window-layout-defs
-      '(("d" . ("discord"))
-        ("b" . ("qutebrowser"))
-        ("c" . (".*\\..*" :right vterm :below vterm))
-        ("t" . (vterm))
-        ("i" . ("\\*info\\*"))
-        ("1" . ())
-        ("2" . ())
-        ("3" . ())))
 
 (defun move-buffer-to-window (buffer &optional window oldwindow)
   (setq window (window-normalize-window window))
@@ -155,16 +141,22 @@
            (add-to-list 'window-layouts (cons (selected-window) token)))))
    do (add-to-list 'layout-workspace-mappings (cons letter workspace))))
 
-(defun select-layout (letter)
-  (interactive "clayout: ")
+(defun select-layout (&optional show-layouts)
+  (interactive)
   (unless window-layouts
     (generate-layouts))
-  (if-let* ((letter (format "%c" letter))
+  (if-let* ((layouts (string-join (mapcar #'car window-layout-defs) " "))
+            (layouts (format " (%s)" layouts))
+            (prompt (format "Layout%s: " (if show-layouts layouts "")))
+            (letter (read-char prompt))
+            (letter (format "%c" letter))
             (mapping (assoc letter layout-workspace-mappings))
             (workspace (cdr mapping))
             (workspace (and (frame-live-p workspace) workspace)))
       (exwm-workspace-switch workspace)
-    (user-error "Not a layout")))
+    (if (and (string= letter "?") (not show-layouts))
+        (select-layout t)
+      (user-error "Not a layout"))))
 
 (use-package exwm
   :init
@@ -178,10 +170,10 @@
           (,(kbd "s-j") . windmove-down)
           (,(kbd "s-k") . windmove-up)
           (,(kbd "s-l") . windmove-right)
-          (,(kbd "C-s-h") . exchange-left)
-          (,(kbd "C-s-j") . exchange-down)
-          (,(kbd "C-s-k") . exchange-up)
-          (,(kbd "C-s-l") . exchange-right)
+          (,(kbd "C-s-h") . ,(exchange-window #'windmove-left))
+          (,(kbd "C-s-j") . ,(exchange-window #'windmove-down))
+          (,(kbd "C-s-k") . ,(exchange-window #'windmove-up))
+          (,(kbd "C-s-l") . ,(exchange-window #'windmove-right))
           (,(kbd "M-s-h") . shrink-window-horizontally)
           (,(kbd "M-s-j") . enlarge-window)
           (,(kbd "M-s-k") . shrink-window)
