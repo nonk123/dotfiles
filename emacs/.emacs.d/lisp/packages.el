@@ -7,7 +7,7 @@
 (use-package delight)
 
 (use-package helm
-  :delight
+  :delight (helm-mode) (helm-ff-cache-mode)
   :init (require 'helm-config)
   :config (helm-mode 1)
   :bind (("M-x"     . helm-M-x)
@@ -178,7 +178,7 @@
 
 (use-package dtrt-indent
   :delight
-  :init (dtrt-indent-global-mode))
+  :hook (prog-mode . dtrt-indent-mode))
 
 (use-package sokoban
   :bind
@@ -202,7 +202,9 @@
   :hook ((prog-mode sgml-mode) . whitespace-mode))
 
 (use-package eldoc
-  :delight)
+  :delight
+  :hook (prog-mode . eldoc-mode)
+  :init (setq eldoc-idle-delay 0))
 
 (use-package tetris
   :bind

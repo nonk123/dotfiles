@@ -4,19 +4,6 @@
 
 ;;; Code:
 
-(defun show-documentation-at-point ()
-  "Show documentation for symbol at point in a temporary buffer."
-  (interactive)
-  (cond
-   ((derived-mode-p 'emacs-lisp-mode 'lisp-interaction-mode)
-    (describe-symbol (symbol-at-point)))
-   ((bound-and-true-p slime-mode)
-    (slime-documentation (slime-symbol-at-point)))
-   ((bound-and-true-p eglot--managed-mode)
-    (eglot-help-at-point))
-   (t
-    (message "No documentation handler found"))))
-
 (defvar modal-movement-keys '())
 (defvar modal-bindings '())
 (defvar modal-modes-alist '())
@@ -368,7 +355,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("h" . ,help-map)
                   ("F" . eglot-code-actions)
                   ("r" . eglot-rename)
-                  ("d" . show-documentation-at-point)
+                  ("d" . eldoc-doc-buffer)
                   ("w" . eww)
                   ("j" . flymake-goto-next-error)
                   ("k" . flymake-goto-prev-error)
