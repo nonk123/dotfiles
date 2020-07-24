@@ -6,11 +6,11 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-if [ "$TERM" = "eterm-color" ]; then
-    export PS1='\w\$ '
-else
-    export PS1='\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-fi
+function color {
+    echo "\e[0;$1m$2\e[m"
+}
+
+export PS1="[$(color 34 \\A)] $(color 36 \\w) $(color 32 \\u@\\h)$ "
 
 export VISUAL="emacsclient"
 export EDITOR="emacsclient"

@@ -119,6 +119,7 @@
   :init (helm-projectile-on))
 
 (use-package vterm
+  :disabled
   :init
   (setq vterm-kill-buffer-on-exit t)
   (setq vterm-shell "/bin/bash -l")
@@ -232,8 +233,9 @@
 
 (use-package emacs
   :delight auto-revert-mode
-  :mode (("\\.bash" . sh-mode)
-         ("\\.gitignore" . prog-mode))
+  :mode (("\\.bash.*" . sh-mode)
+         ("\\.gitignore" . prog-mode)
+         ("\\.crisp$" . lisp-mode))
   :hook (text-mode . (lambda ()
                        (interactive)
                        (set-fill-column 80)

@@ -50,3 +50,5 @@ function notify-send {
             echo "$line"
         done
 }
+
+export -f failsafe xmodmap notify-send

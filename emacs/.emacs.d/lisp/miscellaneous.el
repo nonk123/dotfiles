@@ -37,4 +37,21 @@
 
 (column-number-mode 1)
 
+(defun temp-path (name)
+  (concat (temporary-file-directory) name))
+
+(defun my-term (&optional command &rest args)
+  "Call `ansi-term' in project root or home directory."
+  (interactive)
+  (let ((default-directory (or (projectile-project-root) (expand-file-name "~")))
+        (shell (getenv "SHELL"))
+        (program (temp-path "my-term")))
+    (if command
+        (progn
+          (with-temp-file program
+            (insert command (string-join args " ")))
+          (chmod program #o744)
+          (ansi-term program))
+      (ansi-term shell))))
+
 ;;; misc.el ends here

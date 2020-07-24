@@ -34,17 +34,8 @@
   (interactive)
   (when (get-buffer-process (current-buffer))
     (kill-process))
-  (kill-current-buffer))
-
-(defun exchange-window (move-function &rest args)
-  "Return an exchange buffers function calling MOVE-FUNCTION with optional ARGS."
-  (lambda ()
-    (interactive)
-    (let ((old-buffer (current-buffer))
-          (old-window (selected-window)))
-      (funcall move-function args)
-      (set-window-buffer old-window (current-buffer))
-      (set-window-buffer (selected-window) old-buffer))))
+  (let ((kill-buffer-query-functions '()))
+    (kill-this-buffer)))
 
 (defun quick ()
   "Launch a program or utility from a `helm' listing."
@@ -67,24 +58,16 @@
                  :sources
                  (vector
                   (helm-build-sync-source "Quick launch"
-                    :multimatch nil
                     :candidates quick)
                   (helm-build-sync-source "Utilities"
-                    :multimatch nil
                     :candidates utils)))))
     (sh command 0)))
-
-(defun my-vterm ()
-  "Call `vterm' in project root or home directory."
-  (interactive)
-  (let ((default-directory (or (projectile-project-root) (expand-file-name "~"))))
-    (vterm)))
 
 (defvar window-layout-defs
   '(("d" . ("discord"))
     ("b" . ("qutebrowser"))
-    ("c" . (".*\\..*" :right vterm :below vterm))
-    ("t" . (vterm))
+    ("c" . (".*\\..*" :right my-term :below my-term))
+    ("t" . (my-term))
     ("i" . ("\\*info\\*"))
     ("1" . ())
     ("2" . ())
@@ -189,7 +172,7 @@
           (,(kbd "s-i") . load-init)
           (,(kbd "s-v") . select-layout)
           (,(kbd "C-c C-c") . exwm-input-send-next-key)
-          (,(kbd "<s-return>") . my-vterm)
+          (,(kbd "<s-return>") . my-term)
           (,(kbd "<print>") . ,(sh-binding "screenshot"))
           (,(kbd "s-e") . exec)
           (,(kbd "s-E") . exec-buf)

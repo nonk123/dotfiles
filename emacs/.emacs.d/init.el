@@ -22,6 +22,7 @@
                   "packages"
                   "miscellaneous"
                   "find-music"
+                  "emux"
                   "my-exwm"
                   "modal"
                   "my-stuff"))
