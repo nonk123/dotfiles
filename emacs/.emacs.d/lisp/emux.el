@@ -1,3 +1,9 @@
+;;; emux.el --- terminal multiplexing for SSH. -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;;; Code:
+
 (defun exchange-window (move-function &rest args)
   "Return an exchange buffers function calling MOVE-FUNCTION with optional ARGS."
   (lambda ()
@@ -8,15 +14,52 @@
       (set-window-buffer old-window (current-buffer))
       (set-window-buffer (selected-window) old-buffer))))
 
+(defvar emux-map
+  `(("C-t" . (("c" . emux-connect)
+              ("t" . my-term)
+              ("q" . force-kill-buffer)
+              ("x" . delete-window)
+              ("b" . switch-to-buffer)
+              ("h" . windmove-left)
+              ("j" . windmove-down)
+              ("k" . windmove-up)
+              ("l" . windmove-right)
+              ("C-h" . ,(exchange-window #'windmove-left))
+              ("C-j" . ,(exchange-window #'windmove-down))
+              ("C-k" . ,(exchange-window #'windmove-up))
+              ("C-l" . ,(exchange-window #'windmove-right))
+              ("%" . split-window-right)
+              ("\"" . split-window-below)
+              ("," . previous-buffer)
+              ("." . next-buffer)))))
+
+(defun my-term (&optional command &rest args)
+  "Call `ansi-term' in project root or home directory."
+  (interactive)
+  (let ((default-directory (or (projectile-project-root) (expand-file-name "~")))
+        (shell (getenv "SHELL"))
+        (program (temp-path "my-term")))
+    (if command
+        (progn
+          (with-temp-file program
+            (insert command (string-join args " ")))
+          (chmod program #o744)
+          (ansi-term program))
+      (ansi-term shell))))
+
 (defun emux-ssh (hostname)
   (let ((connector (temp-path "emux-connector")))
     (with-temp-file connector
       (insert
-       "eval \$(ssh-agent)\n"
-       (format "ssh -AY %s\n" hostname)
-       "kill \$SSH_AGENT_PID\n"))
+       (string-join
+        (list
+         "eval \$(ssh-agent)"
+         (format "ssh -tAY %s \"emacsclient -c\"" hostname)
+         "kill \$SSH_AGENT_PID")
+        "\n")))
     (chmod connector #o744)
-    (my-term connector)))
+    (my-term connector)
+    (emux-mode -1)))
 
 (defun emux-connect ()
   (interactive)
@@ -26,18 +69,17 @@
                                :candidates hosts))))
     (emux-ssh hostname)))
 
-(defvar emux-prefix-keymap
-  (bind (make-sparse-keymap)
-        `(("t" . emux-connect)
-          ("h" . windmove-left)
-          ("j" . windmove-down)
-          ("k" . windmove-up)
-          ("l" . windmove-right)
-          ("C-h" . ,(exchange-window #'windmove-left))
-          ("C-j" . ,(exchange-window #'windmove-down))
-          ("C-k" . ,(exchange-window #'windmove-up))
-          ("C-l" . ,(exchange-window #'windmove-right))
-          ("," . previous-buffer)
-          ("." . next-buffer))))
+(defun force-kill-buffer ()
+  "Kill this buffer even if it has a process running."
+  (interactive)
+  (let ((kill-buffer-query-functions
+         (delq 'process-kill-buffer-query-function kill-buffer-query-functions)))
+    (kill-this-buffer)))
 
-(bind global-map `(("C-t" . ,emux-prefix-keymap)))
+(define-minor-mode emux-mode
+  "Emux keybindings mode."
+  :init-value t
+  :lighter " Emux"
+  :keymap (bind (make-sparse-keymap) emux-map))
+
+;;; emux.el ends here

@@ -29,14 +29,6 @@
   (interactive "sURL: ")
   (funcall (mpd-binding "download" url)))
 
-(defun force-kill-current-buffer ()
-  "Kill the current buffer even if it has a process running."
-  (interactive)
-  (when (get-buffer-process (current-buffer))
-    (kill-process))
-  (let ((kill-buffer-query-functions '()))
-    (kill-this-buffer)))
-
 (defun quick ()
   "Launch a program or utility from a `helm' listing."
   (interactive)
@@ -164,7 +156,7 @@
           (,(kbd "s-n") . split-window-below)
           (,(kbd "s-m") . split-window-right)
           (,(kbd "s-w") . delete-window)
-          (,(kbd "s-q") . force-kill-current-buffer)
+          (,(kbd "s-q") . force-kill-buffer)
           (,(kbd "s-b") . switch-to-buffer)
           (,(kbd "s-f") . exwm-layout-toggle-fullscreen)
           (,(kbd "s-r") . exwm-floating-toggle-floating)

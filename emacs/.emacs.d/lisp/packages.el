@@ -108,7 +108,8 @@
   :delight
   :init
   (add-to-list 'project-find-functions 'my-projectile-project-find-function)
-  (setq projectile-project-search-path '("~/Sources"))
+  (setq projectile-project-search-path
+        (when (file-exists-p "~/Sources/") '("~/Sources/")))
   (projectile-add-known-project "~/dotfiles")
   (setq projectile-globally-ignored-directories
         '(".git" ".hg" ".svn" "build" "target"))
@@ -160,11 +161,6 @@
 (use-package aggressive-indent
   :delight
   :hook ((emacs-lisp-mode js-mode typescript-mode c-mode-common rust-mode) . aggressive-indent-mode))
-
-(use-package highlight-indent-guides
-  :delight
-  :init (setq highlight-indent-guides-method 'bitmap)
-  :hook ((prog-mode html-mode mhtml-mode smgl-mode) . highlight-indent-guides-mode))
 
 (use-package smartparens
   :delight

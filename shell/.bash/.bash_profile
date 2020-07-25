@@ -10,7 +10,14 @@ function color {
     echo "\e[0;$1m$2\e[m"
 }
 
-export PS1="[$(color 34 \\A)] $(color 36 \\w) $(color 32 \\u@\\h)$ "
+left="[$(color 34 '\D{%d.%m.%Y}')]"
+left="$left [$(color 34 '\D{%I:%M}')]"
+left="$left j\\j"
+left="$left\n$(color 36 \\w)\\$ "
+
+right="$(color 32 \\u@\\H)"
+
+export PS1="\e7$(printf "%*s" $COLUMNS "$right")\e8$left"
 
 export VISUAL="emacsclient"
 export EDITOR="emacsclient"

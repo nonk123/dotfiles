@@ -4,6 +4,9 @@
 
 ;;; Code:
 
+(defun temp-path (name)
+  (concat (temporary-file-directory) name))
+
 (defun unbind (keymap &rest keys)
   "Unbind KEYS from a KEYMAP."
   (dolist (key keys)
