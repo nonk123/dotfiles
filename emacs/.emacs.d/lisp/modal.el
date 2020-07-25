@@ -294,6 +294,17 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
       (replace-match with))
     (goto-char old-point)))
 
+(defun indent-left (count)
+  (interactive "p")
+  (indent-right (- count)))
+
+(defun indent-right (count)
+  (interactive "p")
+  (setq count (* count standard-indent))
+  (if (use-region-p)
+      (indent-rigidly (region-beginning) (region-end) count)
+    (indent-rigidly (line-beginning-position) (line-end-position) count)))
+
 (setq modal-bindings
       `(,@modal-movement-keys
         ("i" . modal-insert)
@@ -323,8 +334,8 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("N" . modal-search-prev)
         ("!" . insert-command-output)
         ("#" . insert-file)
-        ("," . previous-buffer)
-        ("." . next-buffer)
+        ("," . indent-left)
+        ("." . indent-right)
         ("C-n" . modal-scroll-up)
         ("C-p" . modal-scroll-down)
         ("+" . text-scale-increase)
