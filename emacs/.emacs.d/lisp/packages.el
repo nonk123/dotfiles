@@ -234,7 +234,7 @@
          ("\\.crisp$" . lisp-mode))
   :hook (text-mode . (lambda ()
                        (interactive)
-                       (set-fill-column 80)
+                       (set-fill-column 72)
                        (auto-fill-mode)))
   :bind (("C-x C-b" . ibuffer)
          ("<S-tab>" . ff-find-other-file)))
