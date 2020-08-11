@@ -31,6 +31,9 @@
 (use-package company
   :delight
   :init (setq company-idle-delay nil)
+  :config
+  (dolist (disabled '(company-eclim company-clang company-xcode))
+    (setq company-backends (delete disabled company-backends)))
   :hook ((prog-mode sgml-mode xml-mode) . company-mode))
 (use-package company-c-headers
   :after company
@@ -237,6 +240,6 @@
                        (set-fill-column 72)
                        (auto-fill-mode)))
   :bind (("C-x C-b" . ibuffer)
-         ("<S-tab>" . ff-find-other-file)))
+         ("<backtab>" . ff-find-other-file)))
 
 ;;; packages.el ends here
