@@ -36,16 +36,16 @@
 (defun my-term (&optional command &rest args)
   "Call `ansi-term' in project root or home directory."
   (interactive)
-  (let ((default-directory (or (projectile-project-root) (expand-file-name "~")))
-        (shell (getenv "SHELL"))
-        (program (temp-path "my-term")))
-    (if command
-        (progn
-          (with-temp-file program
-            (insert command (string-join args " ")))
-          (chmod program #o744)
-          (ansi-term program))
-      (ansi-term shell))))
+  (let* ((default-directory (or (projectile-project-root) (expand-file-name "~")))
+         (shell (getenv "SHELL"))
+         (shell (concat shell " -l"))
+         (program (temp-path "my-term")))
+    (with-temp-file program
+      (if command
+          (insert command (string-join args " "))
+        (insert shell)))
+    (chmod program #o744)
+    (ansi-term program)))
 
 (defun emux-ssh (hostname)
   (let ((connector (temp-path "emux-connector")))
