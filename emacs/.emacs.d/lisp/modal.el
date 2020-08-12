@@ -59,10 +59,11 @@
         ("L" . forward-sexp)
         ("w" . forward-word)
         ("b" . backward-word)
-        ("(" . sp-backward-sexp)
-        (")" . sp-forward-sexp)
+        ("(" . modal-sp-backward-sexp)
+        (")" . modal-sp-forward-sexp)
         ("G" . end-of-buffer-or-goto-line)
         ("g" . (("g" . beginning-of-buffer-or-goto-line)
+                ("a" . back-to-indentation)
                 ("l" . avy-goto-line)
                 ("w" . avy-goto-word-1)
                 ("c" . avy-goto-char)))))
@@ -184,6 +185,18 @@
   (add-hook 'yas-before-expand-snippet-hook 'modal-insert)
   (yas-expand))
 
+(defun modal-sp-backward-sexp ()
+  (interactive)
+  (call-interactively (if (derived-mode-p 'Info-mode)
+                          #'Info-prev
+                        #'sp-backward-sexp)))
+
+(defun modal-sp-forward-sexp ()
+  (interactive)
+  (call-interactively (if (derived-mode-p 'Info-mode)
+                          #'Info-next
+                        #'sp-forward-sexp)))
+
 (defvar-local modal-search-query nil)
 
 (defun modal-can-search-p ()
@@ -238,7 +251,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
   (interactive "P")
   (let ((lines (/ (window-text-height) 2)))
     (recenter (if (and arg (< arg 0)) -1 0))
-    (next-line (if arg (* lines arg) lines))))
+    (forward-line (if arg (* lines arg) lines))))
 
 (defun modal-scroll-down (&optional arg)
   (interactive "P")
@@ -333,6 +346,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("p" . yank)
         (";" . comment-line)
         ("t" . indent-and-expand)
+        ("F" . fill-paragraph)
         ("c" . recenter-top-bottom)
         ("/" . modal-search)
         ("?" . modal-search-backwards)
@@ -393,6 +407,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 (add-hook 'conf-mode-hook #'modal-mode)
 
 (add-hook 'help-mode-hook #'modal-mode)
+(add-hook 'Info-mode-hook #'modal-mode)
 (add-hook 'eww-mode-hook #'modal-mode)
 
 (defun vterm-copy-mode-modal-mode-hack (_arg)
