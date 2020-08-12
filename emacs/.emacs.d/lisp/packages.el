@@ -7,6 +7,7 @@
 (use-package delight)
 
 (use-package helm
+  :demand
   :delight (helm-mode) (helm-ff-cache-mode)
   :init (require 'helm-config)
   :config (helm-mode 1)
@@ -15,9 +16,7 @@
          ("C-c M-x" . execute-extended-command)
          ("C-x C-f" . helm-find-files)))
 (use-package helm-swoop
-  :after (helm projectile)
-  :bind (("C-c s"   . helm-swoop)
-         ("C-c C-s" . helm-multi-swoop-projectile)))
+  :after (helm projectile))
 (use-package helm-ag
   :after helm)
 (use-package helm-xref
