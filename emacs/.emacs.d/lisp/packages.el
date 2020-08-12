@@ -153,6 +153,11 @@
   :delight
   :hook (prog-mode . dtrt-indent-mode))
 
+(use-package olivetti
+  :delight
+  :init (setq-default olivetti-body-width 72)
+  :hook (Info-mode . olivetti-mode))
+
 (use-package sokoban
   :bind
   (:map sokoban-mode-map

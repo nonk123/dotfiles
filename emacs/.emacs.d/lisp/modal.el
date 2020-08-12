@@ -55,8 +55,8 @@
         ("K" . scroll-down-line)
         ("a" . beginning-of-line)
         ("e" . end-of-line)
-        ("H" . backward-sexp)
-        ("L" . forward-sexp)
+        ("H" . modal-backward-sexp)
+        ("L" . modal-forward-sexp)
         ("w" . forward-word)
         ("b" . backward-word)
         ("(" . modal-sp-backward-sexp)
@@ -185,16 +185,28 @@
   (add-hook 'yas-before-expand-snippet-hook 'modal-insert)
   (yas-expand))
 
-(defun modal-sp-backward-sexp ()
+(defun modal-backward-sexp ()
   (interactive)
   (call-interactively (if (derived-mode-p 'Info-mode)
                           #'Info-prev
+                        #'backward-sexp)))
+
+(defun modal-forward-sexp ()
+  (interactive)
+  (call-interactively (if (derived-mode-p 'Info-mode)
+                          #'Info-next
+                        #'forward-sexp)))
+
+(defun modal-sp-backward-sexp ()
+  (interactive)
+  (call-interactively (if (derived-mode-p 'Info-mode)
+                          #'Info-history-back
                         #'sp-backward-sexp)))
 
 (defun modal-sp-forward-sexp ()
   (interactive)
   (call-interactively (if (derived-mode-p 'Info-mode)
-                          #'Info-next
+                          #'Info-history-forward
                         #'sp-forward-sexp)))
 
 (defvar-local modal-search-query nil)
