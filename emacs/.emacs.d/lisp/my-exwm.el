@@ -56,49 +56,23 @@
     (sh command 0)))
 
 (defvar window-layout-defs
-  '(("d" . ("discord"))
-    ("b" . ("qutebrowser"))
-    ("c" . (".*\\..*" :right my-term :below my-term))
+  '(("d" . ())
+    ("b" . ())
+    ("c" . (:right my-term :below my-term))
     ("t" . (my-term))
-    ("i" . ("\\*info\\*"))
+    ("i" . ())
     ("1" . ())
     ("2" . ())
     ("3" . ())))
 
-(defvar window-layouts '())
-
-(defvar layout-workspace-mappings '())
-
-(defun move-buffer-to-window (buffer &optional window oldwindow)
-  (setq window (window-normalize-window window))
-  (set-window-buffer oldwindow "*scratch*")
-  (set-window-buffer window buffer))
+(defvar layout-mappings '())
 
 (defun generate-layouts ()
   "Generate EXWM frames from `window-layout-defs'."
-  (defun repurpose-buffer-hack (buffer-or-name &rest args)
-    (dolist (window window-layouts)
-      (setq window (car window))
-      (unless (window-live-p window)
-        (setq window-layouts (remove (assoc window window-layouts) window-layouts))))
-    (let ((buffer (if (stringp buffer-or-name)
-                      (get-buffer buffer-or-name)
-                    buffer-or-name)))
-      (cl-dolist (layout window-layouts)
-        (when (string= (buffer-name (window-buffer (car layout))) "*scratch*")
-          (when (string-match (cdr layout) (buffer-name buffer))
-            (move-buffer-to-window buffer (car layout) (selected-window))
-            (exwm-workspace-switch-create (window-frame (car layout)))
-            (cl-return))))))
-  (advice-add #'rename-buffer :after #'repurpose-buffer-hack)
-  (advice-add #'pop-to-buffer :after #'repurpose-buffer-hack)
-
-  (cl-loop
-   for (letter . tokens) in window-layout-defs
-   with workspace
-   do (set-buffer "*scratch*")
-   do (setq workspace (exwm-workspace-add))
-   do (dolist (token tokens)
+  (dolist (def window-layout-defs)
+    (set-buffer "*scratch*")
+    (let ((workspace (exwm-workspace-add)))
+      (dolist (token (cdr def))
         (cl-typecase token
           (keyword
            (select-window
@@ -110,22 +84,19 @@
              (t
               (user-error "Unrecognized token: %s" token)))))
           (symbol
-           (funcall token)
-           (add-to-list 'window-layouts (cons (selected-window) (buffer-name))))
-          (string
-           (add-to-list 'window-layouts (cons (selected-window) token)))))
-   do (add-to-list 'layout-workspace-mappings (cons letter workspace))))
+           (funcall token))))
+      (add-to-list 'layout-mappings (cons (car def) workspace)))))
 
 (defun select-layout (&optional show-layouts)
   (interactive)
-  (unless window-layouts
+  (unless layout-mappings
     (generate-layouts))
   (if-let* ((layouts (string-join (mapcar #'car window-layout-defs) " "))
             (layouts (format " (%s)" layouts))
             (prompt (format "Layout%s: " (if show-layouts layouts "")))
             (letter (read-char prompt))
             (letter (format "%c" letter))
-            (mapping (assoc letter layout-workspace-mappings))
+            (mapping (assoc letter layout-mappings))
             (workspace (cdr mapping))
             (workspace (and (frame-live-p workspace) workspace)))
       (exwm-workspace-switch workspace)
@@ -181,12 +152,12 @@
           (,(kbd "s-}") . ,(mpd-binding "seek +8")))))
 
 (defun exwm-update-class-actions ()
-  (exwm-workspace-rename-buffer exwm-class-name))
+  (unless exwm-title
+    (exwm-workspace-rename-buffer exwm-class-name)))
 (add-hook 'exwm-update-class-hook 'exwm-update-class-actions)
 
 (defun exwm-update-title-actions ()
-  (unless exwm-instance-name
-    (exwm-workspace-rename-buffer exwm-title)))
+  (exwm-workspace-rename-buffer exwm-title))
 (add-hook 'exwm-update-title-hook 'exwm-update-title-actions)
 
 (defvar exwm-enabled nil)
