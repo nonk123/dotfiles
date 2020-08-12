@@ -13,6 +13,9 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+(unless (require 'use-package nil t)
+  (package-install 'use-package))
+
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
