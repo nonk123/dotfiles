@@ -161,10 +161,6 @@
       (setq inferior-lisp-program inferior-lisp)))
   (setq slime-contribs '(slime-fancy)))
 
-(use-package aggressive-indent
-  :delight
-  :hook ((emacs-lisp-mode js-mode typescript-mode c-mode-common rust-mode) . aggressive-indent-mode))
-
 (use-package smartparens
   :delight
   :init
