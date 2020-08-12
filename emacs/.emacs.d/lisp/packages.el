@@ -126,21 +126,6 @@
   :after (helm projectile)
   :init (helm-projectile-on))
 
-(use-package vterm
-  :disabled
-  :init
-  (setq vterm-kill-buffer-on-exit t)
-  (setq vterm-shell "/bin/bash -l")
-  (setq vterm-timer-delay (/ 1 30))
-  (defun vterm-send-escape ()
-    (interactive)
-    (vterm-send-key "<escape>"))
-  :bind
-  (:map vterm-mode-map
-        ("C-c C-x" . vterm-send-C-x)
-        ("C-c M-x" . vterm-send-M-x)
-        ("<escape>" . vterm-send-escape)))
-
 (use-package rust-mode)
 
 (use-package web-mode
@@ -153,17 +138,6 @@
 (use-package lua-mode)
 
 (use-package yaml-mode)
-
-(use-package slime
-  :disabled
-  :init
-  (let ((slime-helper "~/quicklisp/slime-helper.el")
-        (inferior-lisp "/usr/local/bin/sbcl"))
-    (when (file-exists-p slime-helper)
-      (load slime-helper))
-    (when (file-exists-p inferior-lisp)
-      (setq inferior-lisp-program inferior-lisp)))
-  (setq slime-contribs '(slime-fancy)))
 
 (use-package smartparens
   :delight
@@ -233,8 +207,7 @@
 (use-package emacs
   :delight auto-revert-mode
   :mode (("\\.bash.*" . sh-mode)
-         ("\\.gitignore" . prog-mode)
-         ("\\.crisp$" . lisp-mode))
+         ("\\.gitignore" . prog-mode))
   :hook (text-mode . (lambda ()
                        (interactive)
                        (set-fill-column 72)
