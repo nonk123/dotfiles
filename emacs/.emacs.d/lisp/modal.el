@@ -178,6 +178,12 @@
    (t
     (call-interactively #'kmacro-start-macro-or-insert-counter))))
 
+(defun indent-and-expand ()
+  (interactive)
+  (indent-for-tab-command)
+  (add-hook 'yas-before-expand-snippet-hook 'modal-insert)
+  (yas-expand))
+
 (defvar-local modal-search-query nil)
 
 (defun modal-can-search-p ()
@@ -326,7 +332,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("C-v" . rectangle-mark-mode)
         ("p" . yank)
         (";" . comment-line)
-        ("t" . indent-for-tab-command)
+        ("t" . indent-and-expand)
         ("c" . recenter-top-bottom)
         ("/" . modal-search)
         ("?" . modal-search-backwards)

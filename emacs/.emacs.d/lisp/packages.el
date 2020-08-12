@@ -100,7 +100,11 @@
   :init
   (setq yas-triggers-in-field t)
   (setq yas-indent-line 'auto)
-  :config (yas-global-mode 1))
+  :config
+  (define-key yas-minor-mode-map [(tab)] nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (yas-global-mode 1))
 
 (defun my-projectile-project-find-function (dir)
   "Bridge between projectile and project.el.  Used in eglot."
