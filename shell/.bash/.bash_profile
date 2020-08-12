@@ -3,7 +3,7 @@ export HISTSIZE=
 export HISTFILESIZE=
 
 function color {
-    echo "\e[0;$1m$2\e[m"
+    echo "\\[\\e[0;$1m\\]$2\\[\\e[m\\]"
 }
 
 export PS1="$(color 32 \\u@\\H):$(color 36 \\w)\\$ "
