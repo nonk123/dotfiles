@@ -7,7 +7,6 @@
 (defvar extra-font-lock-mode-keywords
   '(("\\<\\(TODO\\|FIXME\\):" 1 font-lock-warning-face t)
     ("^;;; \\(.+?\\.el\\) --- .+" 1 font-lock-warning-face t)
-    ("^;;; .+?\\.el --- \\(.+\\)" 1 font-lock-warning-face t)
     ("^;;;? \\(.+?\\):" 1 font-lock-warning-face t)
     ("^;;; \\(.+?\\.el ends here\\)" 1 font-lock-warning-face t)))
 

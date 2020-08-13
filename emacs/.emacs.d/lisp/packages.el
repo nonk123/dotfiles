@@ -217,6 +217,9 @@
                        (set-fill-column 72)
                        (auto-fill-mode)))
   :bind (("C-x C-b" . ibuffer)
-         ("<backtab>" . ff-find-other-file)))
+         ("<backtab>" . ff-find-other-file))
+  :init
+  (setq confirm-kill-emacs #'yes-or-no-p)
+  (setq confirm-kill-processes nil))
 
 ;;; packages.el ends here

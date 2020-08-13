@@ -33,8 +33,6 @@
 
 (show-paren-mode 1)
 
-(electric-indent-mode 0)
-
 (column-number-mode 1)
 
 ;;; misc.el ends here
