@@ -37,14 +37,33 @@
   (interactive)
   (modal-toggle-state 'normal))
 
-(defun modal-insert ()
-  (interactive)
-  (modal-toggle-state 'insert))
+(defun modal-insert (&optional arg)
+  (interactive "P")
+  (modal-toggle-state 'insert)
+  ;; Emulate Vi's insert mode with count.
+  (when arg
+    (when-let ((string (read-string (format "Repeat x%d: " arg)))
+               (starting-size (buffer-size)))
+      (dotimes (_ arg)
+        (insert string))
+      ;; In case `string' ends with whitespaces, delete them.
+      ;; This check prevents accidental trimming if the buffer didn't change, or
+      ;; `string' consists entirely of whitespace characters (e.g. inserting
+      ;; `arg' spaces was intentional.)
+      (unless (or (= (buffer-size) starting-size)
+                  (string-match "^[[:space:]]+$" string))
+        (delete-horizontal-space t)))))
 
 (defun modal-exit ()
   (interactive)
-  (modal-normal)
-  (keyboard-quit))
+  (when (eq modal-state 'normal)
+    ;; Act similarly to `keyboard-quit', without stopping the execution.
+    (deactivate-mark)
+    (kmacro-keyboard-quit)
+    (when defining-kbd-macro
+      (force-mode-line-update t))
+    (setq defining-kbd-macro nil))
+  (modal-normal))
 
 (setq modal-movement-keys
       '(("h" . backward-char)
@@ -55,6 +74,7 @@
         ("K" . scroll-down-line)
         ("a" . beginning-of-line)
         ("e" . end-of-line)
+        ("T" . back-to-indentation)
         ("H" . modal-backward-sexp)
         ("L" . modal-forward-sexp)
         ("w" . forward-word)
@@ -63,7 +83,6 @@
         (")" . modal-sp-forward-sexp)
         ("G" . end-of-buffer-or-goto-line)
         ("g" . (("g" . beginning-of-buffer-or-goto-line)
-                ("a" . back-to-indentation)
                 ("l" . avy-goto-line)
                 ("w" . avy-goto-word-1)
                 ("c" . avy-goto-char)))))
@@ -171,19 +190,20 @@
 
 (defun start-macro-or-quit-window ()
   (interactive)
-  (cond
-   ((derived-mode-p 'help-mode 'eww-mode)
-    (quit-window t))
-   ((bound-and-true-p vterm-copy-mode)
-    (vterm-copy-mode -1))
-   (t
-    (call-interactively #'kmacro-start-macro-or-insert-counter))))
+  (if (derived-mode-p 'special-mode 'Info-mode)
+      (quit-window t)
+    (call-interactively #'kmacro-start-macro-or-insert-counter)))
 
 (defun indent-and-expand ()
   (interactive)
   (indent-for-tab-command)
   (add-hook 'yas-before-expand-snippet-hook 'modal-insert)
   (yas-expand))
+
+(defun repeat-region (arg start end)
+  (interactive "p\nr")
+  (dotimes (_ arg)
+    (insert (buffer-substring start end))))
 
 (defun modal-backward-sexp ()
   (interactive)
@@ -199,15 +219,21 @@
 
 (defun modal-sp-backward-sexp ()
   (interactive)
-  (call-interactively (if (derived-mode-p 'Info-mode)
-                          #'Info-history-back
-                        #'sp-backward-sexp)))
+  (call-interactively
+   (cond ((derived-mode-p 'Info-mode)
+          #'Info-history-back)
+         ((derived-mode-p 'help-mode)
+          #'help-go-back)
+         (t #'sp-backward-sexp))))
 
 (defun modal-sp-forward-sexp ()
   (interactive)
-  (call-interactively (if (derived-mode-p 'Info-mode)
-                          #'Info-history-forward
-                        #'sp-forward-sexp)))
+  (call-interactively
+   (cond ((derived-mode-p 'Info-mode)
+          #'Info-history-forward)
+         ((derived-mode-p 'help-mode)
+          #'help-go-forward)
+         (t #'sp-forward-sexp))))
 
 (defvar-local modal-search-query nil)
 
@@ -283,7 +309,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
           (call-interactively #'string-rectangle)
         (call-interactively #'kill-region)
         (modal-insert))
-    (when-let ((char (read-char "replace with: ")))
+    (when-let ((char (read-char "Replace with: ")))
       (delete-char 1)
       (insert-char char))))
 
@@ -359,7 +385,9 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         (";" . comment-line)
         ("t" . indent-and-expand)
         ("F" . fill-paragraph)
+        ("R" . repeat-region)
         ("c" . recenter-top-bottom)
+        ("z" . cycle-spacing)
         ("/" . modal-search)
         ("?" . modal-search-backwards)
         ("n" . modal-search-next)
@@ -419,6 +447,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 (add-hook 'conf-mode-hook #'modal-mode)
 
 (add-hook 'help-mode-hook #'modal-mode)
+(add-hook 'apropos-mode-hook #'modal-mode)
 (add-hook 'Info-mode-hook #'modal-mode)
 (add-hook 'eww-mode-hook #'modal-mode)
 
