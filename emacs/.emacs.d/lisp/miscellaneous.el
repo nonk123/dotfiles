@@ -7,10 +7,11 @@
 (c-add-style "nonk123"
              '("java"
                (c-basic-offset . 4)
-               (c-offsets-alist
-                (access-label . /)
-                (case-label . +))))
-(setq c-default-style "nonk123")
+               (c-offsets-alist ((access-label . /)
+                                 (case-label . +)))))
+(setq c-default-style '((java-mode . "java")
+                        (awk-mode . "awk")
+                        (other . "nonk123")))
 
 (setq inhibit-startup-message t)
 

@@ -31,9 +31,27 @@
   :delight
   :init (setq company-idle-delay nil)
   :config
-  (dolist (disabled '(company-eclim company-clang company-xcode))
+  (define-global-minor-mode company-global-mode
+    company-mode company-mode)
+  (defun company-flyspell (command &optional value &rest args)
+    (pcase command
+      ('prefix (when-let ((word (car (ispell-get-word nil)))) word))
+      ('candidates
+       (ispell-send-string "%\n")
+       (ispell-send-string (concat "^" value "\n"))
+       (while (progn
+                (ispell-accept-output)
+                (not (string= "" (car ispell-filter)))))
+       (setq ispell-filter (cdr ispell-filter))
+       (when (and ispell-filter (listp ispell-filter))
+         (let ((result (ispell-parse-output (car ispell-filter))))
+           (if (listp result)
+               (append (caddr result) (caddr result))
+             '()))))))
+  (dolist (disabled '(company-eclim company-clang company-xcode company-dabbrev))
     (setq company-backends (delete disabled company-backends)))
-  :hook ((prog-mode sgml-mode xml-mode) . company-mode))
+  (add-to-list 'company-backends 'company-flyspell t)
+  (company-global-mode))
 (use-package company-c-headers
   :after company
   :config (add-to-list 'company-backends 'company-c-headers))
@@ -208,17 +226,20 @@
 (use-package flymake
   :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode))
 
+(use-package flyspell
+  :delight
+  :hook ((text-mode . flyspell-mode)
+         (prog-mode . flyspell-prog-mode)))
+
 (use-package emacs
   :delight (auto-revert-mode) (auto-fill-function)
   :mode (("\\.bash.*" . sh-mode)
          ("\\.gitignore" . prog-mode))
-  :hook (text-mode . (lambda ()
-                       (interactive)
-                       (set-fill-column 72)
-                       (auto-fill-mode)))
+  :hook (text-mode . auto-fill-mode)
   :bind (("C-x C-b" . ibuffer)
          ("<backtab>" . ff-find-other-file))
   :init
+  (setq-default fill-column 72)
   (setq confirm-kill-emacs #'yes-or-no-p)
   (setq confirm-kill-processes nil))
 
