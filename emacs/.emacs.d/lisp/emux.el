@@ -79,7 +79,7 @@
 (define-minor-mode emux-mode
   "Emux keybindings mode."
   :init-value t
-  :lighter " Emux"
+  :lighter " ε"
   :keymap (bind (make-sparse-keymap) emux-map))
 
 ;;; emux.el ends here

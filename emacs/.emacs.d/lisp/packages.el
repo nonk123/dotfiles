@@ -209,7 +209,7 @@
   :hook ((prog-mode sgml-mode xml-mode markdown-mode) . flymake-mode))
 
 (use-package emacs
-  :delight auto-revert-mode
+  :delight (auto-revert-mode) (auto-fill-function)
   :mode (("\\.bash.*" . sh-mode)
          ("\\.gitignore" . prog-mode))
   :hook (text-mode . (lambda ()

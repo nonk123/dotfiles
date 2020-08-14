@@ -111,7 +111,7 @@
 (define-minor-mode modal-mode
   "A minor mode that forces modal keybindings."
   :init-value nil
-  :lighter " Modal"
+  :lighter " μ"
   :keymap (make-sparse-keymap)
   (if modal-mode
       (modal-toggle-state modal-state)
@@ -431,6 +431,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("j" . flymake-goto-next-error)
                   ("k" . flymake-goto-prev-error)
                   ("e" . eval-region-or-buffer)
+                  ("E" . eval-defun)
                   ("/" . dabbrev-expand)
                   ("C-r" . better-rename-file)
                   ("C-d" . delete-current-file)))))
