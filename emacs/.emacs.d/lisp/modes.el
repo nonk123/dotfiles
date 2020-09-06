@@ -31,7 +31,7 @@
   "Toggle a small fringe on the left of the selected window.
 Currently used by Flymake."
   :init-value nil
-  :lighter "φ"
+  :lighter " φ"
   (setq left-fringe-mode--is-managed left-fringe-mode)
   (left-fringe-mode--set-fringe)
   (add-hook 'window-configuration-change-hook #'left-fringe-mode--set-fringe))

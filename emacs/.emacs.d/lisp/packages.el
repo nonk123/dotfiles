@@ -231,6 +231,11 @@
   :hook ((text-mode . flyspell-mode)
          (prog-mode . flyspell-prog-mode)))
 
+(use-package org
+  :init
+  (dolist (key (list [(tab)] (kbd "TAB") (kbd "<tab>")))
+    (define-key org-mode-map key nil)))
+
 (use-package emacs
   :delight (auto-revert-mode) (auto-fill-function)
   :mode (("\\.bash.*" . sh-mode)

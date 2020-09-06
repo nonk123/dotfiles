@@ -54,15 +54,17 @@
                   (string-match "^[[:space:]]+$" string))
         (delete-horizontal-space t)))))
 
-(defun modal-exit ()
-  (interactive)
+(defun modal-exit (&optional arg)
+  (interactive "P")
   (when (eq modal-state 'normal)
     ;; Act similarly to `keyboard-quit', without stopping the execution.
     (deactivate-mark)
     (kmacro-keyboard-quit)
     (when defining-kbd-macro
       (force-mode-line-update t))
-    (setq defining-kbd-macro nil))
+    (setq defining-kbd-macro nil)
+    (when (derived-mode-p 'org-mode)
+      (org-cycle arg)))
   (modal-normal))
 
 (setq modal-movement-keys
@@ -464,13 +466,5 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
 (add-hook 'apropos-mode-hook #'modal-mode)
 (add-hook 'Info-mode-hook #'modal-mode)
 (add-hook 'eww-mode-hook #'modal-mode)
-
-(defun vterm-copy-mode-modal-mode-hack (_arg)
-  "An advice hack to use `modal-mode' alongside `vterm-copy-mode'."
-  (if vterm-copy-mode
-      (modal-mode 1)
-    (modal-mode -1)))
-
-(advice-add #'vterm-copy-mode :after #'vterm-copy-mode-modal-mode-hack)
 
 ;;; modal.el ends here
