@@ -85,7 +85,9 @@
         ("g" . (("g" . beginning-of-buffer-or-goto-line)
                 ("l" . avy-goto-line)
                 ("w" . avy-goto-word-1)
-                ("c" . avy-goto-char)))))
+                ("c" . avy-goto-char)
+                ("m" . goto-mark)
+                ("M" . pop-global-mark)))))
 
 (defun modal-take-movement-commands (key fun &optional dwim-fun keys-alist)
   (let ((bindings
@@ -234,6 +236,16 @@
          ((derived-mode-p 'help-mode)
           #'help-go-forward)
          (t #'sp-forward-sexp))))
+
+(defun remember-mark ()
+  (interactive)
+  (push-mark))
+
+(defun goto-mark (arg)
+  (interactive "p")
+  (dotimes (_ arg)
+    (let ((last-command 'set-mark-command))
+      (set-mark-command 4))))
 
 (defvar-local modal-search-query nil)
 
@@ -396,6 +408,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
         ("#" . insert-file)
         ("," . indent-left)
         ("." . indent-right)
+        ("M" . remember-mark)
         ("C-n" . modal-scroll-up)
         ("C-p" . modal-scroll-down)
         ("+" . text-scale-increase)
