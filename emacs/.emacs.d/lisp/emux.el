@@ -54,7 +54,7 @@
        (string-join
         (list
          "eval \$(ssh-agent)"
-         (format "ssh -tAY %s \"emacsclient -c\"" hostname)
+         (format "ssh -tAY %s emacsclient -c" hostname)
          "kill \$SSH_AGENT_PID")
         "\n")))
     (chmod connector #o744)
