@@ -173,8 +173,7 @@
 
 (use-package olivetti
   :delight
-  :init (setq-default olivetti-body-width 72)
-  :hook (Info-mode . olivetti-mode))
+  :hook ((Info-mode text-mode org-mode markdown-mode) . olivetti-mode))
 
 (use-package sokoban
   :bind
@@ -233,8 +232,39 @@
 
 (use-package org
   :init
+  (setq org-table-auto-blank-field nil)
+  (setq org-entities-user
+        '(("Emacr" "\\bar{E}" nil "&Emacr;" "E" "Ē" "Ē")
+          ("emacr" "\\bar{e}" nil "&emacr;" "e" "ē" "ē")
+          ("Ebreve" "\\u{E}" nil "&#276;" "E" "Ĕ" "Ĕ")
+          ("ebreve" "\\u{e}" nil "&#277;" "e" "ĕ" "ĕ")
+          ("Omacr" "\\bar{O}" nil "&Omacr;" "O" "Ō" "Ō")
+          ("omacr" "\\bar{o}" nil "&omacr;" "o" "ō" "ō")
+          ("Lacute" "\\'{L}" nil "&Lacute;" "L" "Ĺ" "Ĺ")
+          ("lacute" "\\'{l}" nil "&lacute;" "l" "ĺ" "ĺ")
+          ("Kacute" "\\'{K}" nil "&#7728;" "K" "Ḱ" "Ḱ")
+          ("kacute" "\\'{k}" nil "&#7729;" "k" "ḱ" "ḱ")
+          ("Kw" "K^{w}" nil "K&#695;" "Kw" "Kʷ" "Kʷ")
+          ("kw" "k^{w}" nil "k&#695;" "kw" "kʷ" "kʷ")
+          ("Hi" "H_{1}" nil "H&#8321;" "H1" "H₁" "H₁")
+          ("hi" "h_{1}" nil "h&#8321;" "h1" "h₁" "h₁")
+          ("hii" "h_{2}" nil "h&#8322;" "h2" "h₂" "h₂")
+          ("hiii" "h_{3}" nil "h&#8323;" "h3" "h₃" "h₃")
+          ("cbr" "_{o}" nil "&#805;" "." "̥" "̥")))
+  :config
+  (setq org-confirm-babel-evaluate (lambda (lang body)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ditaa . t)))
+  (setq org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((plantuml . t)))
+  (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
   (dolist (key (list [(tab)] (kbd "TAB") (kbd "<tab>")))
     (define-key org-mode-map key nil)))
+
+(use-package org-preview-html)
 
 (use-package emacs
   :delight (auto-revert-mode) (auto-fill-function)

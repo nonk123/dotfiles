@@ -448,6 +448,8 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("e" . eval-region-or-buffer)
                   ("E" . eval-defun)
                   ("/" . dabbrev-expand)
+                  ("o" . org-preview-html-mode)
+                  ("x" . org-html-export-to-html)
                   ("C-r" . better-rename-file)
                   ("C-d" . delete-current-file)))))
 
