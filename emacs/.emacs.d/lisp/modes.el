@@ -13,7 +13,6 @@
 (define-minor-mode extra-font-lock-minor-mode
   "Toggle extra syntax highlighting in `font-lock-mode'."
   :init-value nil
-  :lighter " EFL"
   (if extra-font-lock-minor-mode
       (font-lock-add-keywords nil extra-font-lock-mode-keywords)
     (font-lock-remove-keywords nil extra-font-lock-mode-keywords))
@@ -31,7 +30,6 @@
   "Toggle a small fringe on the left of the selected window.
 Currently used by Flymake."
   :init-value nil
-  :lighter " φ"
   (setq left-fringe-mode--is-managed left-fringe-mode)
   (left-fringe-mode--set-fringe)
   (add-hook 'window-configuration-change-hook #'left-fringe-mode--set-fringe))
@@ -44,5 +42,28 @@ Currently used by Flymake."
      0)))
 
 (add-hook 'prog-mode-hook #'left-fringe-mode)
+
+(defvar column-width-alist
+  '(("COMMIT_EDITMSG$" . 72)
+    (".org$" . 72)
+    ("\\*info\\*" . 74)
+    (".*" . 80)))
+
+(defvar fill-column-vars '(fill-column olivetti-body-width))
+
+(define-minor-mode auto-fill-column-mode
+  "Automatically adjust `fill-column' and others, according to the buffer name."
+  :init-value nil
+  (pcase-let* ((buffer-name (or buffer-file-name (buffer-name (current-buffer))))
+               (`(,pattern . ,column)
+                (assoc buffer-name column-width-alist #'string-match)))
+    (message "%s %d" buffer-name column)
+    (dolist (var fill-column-vars)
+      (set var (if auto-fill-column-mode
+                   column
+                 (default-value var))))))
+
+(dolist (mode '(Info-mode-hook org-mode-hook text-mode-hook))
+  (add-hook mode #'auto-fill-column-mode))
 
 ;;; modes.el ends here
