@@ -37,18 +37,24 @@ function c {
 }
 
 function failsafe {
-    timeout -t 3 -s 9 /usr/bin/env "$@"
+    timelimit -q -t 3 -T 5 /usr/bin/env "$@"
 }
 
+# TODO: still freezes without dying.
 function xmodmap {
     failsafe xmodmap "$@"
 }
 
 function notify-send {
-    failsafe notify-send "$@" && \
-        for line in "$@"; do
-            echo "$line"
-        done
+    failsafe notify-send "$@"
+
+    for line in "$@"; do
+        echo "$line"
+    done
 }
 
-export -f failsafe xmodmap notify-send
+function clip {
+    xclip -selection clipboard
+}
+
+export -f failsafe xmodmap notify-send clip
