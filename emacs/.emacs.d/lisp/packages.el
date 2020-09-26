@@ -168,6 +168,7 @@
 
 (use-package olivetti
   :delight
+  :demand
   :hook ((Info-mode text-mode org-mode markdown-mode) . olivetti-mode))
 
 (use-package sokoban

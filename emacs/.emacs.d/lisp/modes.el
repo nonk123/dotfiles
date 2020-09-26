@@ -49,19 +49,18 @@ Currently used by Flymake."
     ("\\*info\\*" . 74)
     (".*" . 80)))
 
-(defvar fill-column-vars '(fill-column olivetti-body-width))
-
 (define-minor-mode auto-fill-column-mode
   "Automatically adjust `fill-column' and others, according to the buffer name."
   :init-value nil
   (pcase-let* ((buffer-name (or buffer-file-name (buffer-name (current-buffer))))
-               (`(,pattern . ,column)
-                (assoc buffer-name column-width-alist #'string-match)))
-    (message "%s %d" buffer-name column)
-    (dolist (var fill-column-vars)
-      (set var (if auto-fill-column-mode
-                   column
-                 (default-value var))))))
+               (entry (assoc buffer-name column-width-alist #'string-match))
+               (`(,pattern . ,column) entry))
+    (if auto-fill-column-mode
+        (progn
+          (setq fill-column column)
+          (setq olivetti-body-width (+ column 2)))
+      (setq-to-default fill-column)
+      (setq-to-default olivetti-body-width))))
 
 (dolist (mode '(Info-mode-hook org-mode-hook text-mode-hook))
   (add-hook mode #'auto-fill-column-mode))
