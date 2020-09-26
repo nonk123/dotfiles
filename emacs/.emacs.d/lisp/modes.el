@@ -24,7 +24,9 @@
 (extra-font-lock-global-mode 1)
 
 (defvar-local left-fringe-mode--is-managed nil
-  "Non-nil if this buffer should have a fringe on the left.")
+  "Non-nil if this buffer should have a fringe on the left.
+`left-fringe-mode' isn't available in `left-fringe-mode--set-fringe', and this
+variable serves as a workaround: it is set by the mode internally.")
 
 (define-minor-mode left-fringe-mode
   "Toggle a small fringe on the left of the selected window.
@@ -37,7 +39,7 @@ Currently used by Flymake."
 (defun left-fringe-mode--set-fringe ()
   (set-window-fringes
    nil
-   (if (and left-fringe-mode left-fringe-mode--is-managed)
+   (if left-fringe-mode--is-managed
        (window-font-width)
      0)))
 
