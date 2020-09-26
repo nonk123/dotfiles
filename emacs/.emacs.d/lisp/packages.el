@@ -69,24 +69,12 @@
   (:map company-mode-map
         ("<M-tab>" . helm-company)))
 
-(defun use-lsp-remote (con)
-  (if (listp (cdr con))
-      (let ((shell "bash")
-            (server-command (cadr con))
-            (server-args (string-join
-                          (mapcar
-                           (lambda (x)
-                             (if (eq x :autoport) "1337" x))
-                           (cddr con))
-                          " ")))
-        (if (and (stringp server-command)
-                 (not (string-suffix-p "lsp-remote" server-command)))
-            (cons (car con)
-                  `("~/.local/bin/lsp-remote" ,server-command ,server-args))
-          con))
-    con))
-
 (defconst level-up (file-name-as-directory ".."))
+
+(defvar eglot-custom-server-programs
+  '((python-mode "python3" "-m" "pyls")
+    (rust-mode "~/.cargo/bin/rls"))
+  "Drop-in replacements for eglot's default server-program commands.")
 
 (use-package eglot
   :demand
@@ -98,9 +86,16 @@
   (setq eglot-put-doc-in-help-buffer t)
   (setq jsonrpc-request-timeout 20)
   :config
-  (setf (cdr (assoc 'python-mode eglot-server-programs)) '("python3" "-m" "pyls"))
-  (setf (cdr (assoc 'rust-mode eglot-server-programs)) '("~/.cargo/bin/rls"))
-  (setq eglot-server-programs (mapcar #'use-lsp-remote eglot-server-programs))
+  ;; Replace eglot's unreasonable defaults.
+  (pcase-dolist (`(,mode . ,command) eglot-custom-server-programs)
+    (if-let ((entry (assoc mode eglot-server-programs)))
+        (setf (cdr entry) command)
+      (push (append (list mode) command) eglot-server-programs)))
+  ;; Inject `lsp-remote' into all server commands.
+  (dolist (cell eglot-server-programs)
+    (when (listp (cdr cell))
+      (unless (string-suffix-p "lsp-remote" (cadr cell))
+        (push "~/.local/bin/lsp-remote" (cdr cell)))))
   (defun eglot--uri-to-path (uri)
     (expand-file-name
      (replace-regexp-in-string
