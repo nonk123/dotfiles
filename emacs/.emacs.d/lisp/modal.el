@@ -280,7 +280,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
     (call-interactively #'modal-search)))
 
 (defun better-rename-file (newname)
-  (interactive "FNew name: ")
+  (interactive "GNew name: ")
   (rename-file (buffer-file-name) newname)
   (kill-buffer)
   (find-file newname))
@@ -443,6 +443,7 @@ DIRECTION is a string `prev' or `next', or nil to just set the query."
                   ("r" . eglot-rename)
                   ("d" . eldoc-doc-buffer)
                   ("w" . eww)
+                  ("v" . reset-variable)
                   ("j" . flymake-goto-next-error)
                   ("k" . flymake-goto-prev-error)
                   ("e" . eval-region-or-buffer)

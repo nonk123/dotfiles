@@ -76,4 +76,24 @@ ACTION takes one parameter - the response string without headers."
                      :action 'prompt-actions
                      :candidates candidates))))
 
+(defun set-to-default (variable)
+  "Reset VARIABLE (a symbol) to its default value."
+  (set variable (default-value variable)))
+
+(defmacro setq-to-default (variable)
+  "Call `set-to-default' with VARIABLE, but in `setq'-like macro form."
+  (set-to-default variable))
+
+(defun reset-variable ()
+  "Interactive version of `set-to-default' (which see)."
+  (interactive)
+  (when-let* ((symbol (completing-read
+                       "Rest value of: "
+                       #'help--symbol-completion-table
+                       ;; Taken straight from help-fns.el:
+                       (lambda (var)
+                         (or (get var 'variable-documentation)
+                             (and (boundp var) (not (keywordp var))))))))
+    (set-to-default (intern symbol))))
+
 ;;; utils.el ends here
