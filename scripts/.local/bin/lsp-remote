@@ -1,76 +1,86 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-user=lsp
-host=185.222.117.73
-reverse=2000
+# A utility for running language servers on a remote machine.
 
-addr=$user@$host
+# $@ - language server command.
 
-project_root=$(pwd)
+# Most of the script's functionality works over SSH.
+SSH_USER=lsp
+SSH_HOST=185.222.117.73
 
-dest="/tmp/$(basename $project_root)"
-archive=/tmp/transfer.tar
-env_dir=env/
+SSH_ADDR=$SSH_USER@$SSH_HOST
 
-cd $project_root
+# Current project's root directory.
+LOCAL_PROJECT_ROOT=$PWD
 
-project_ls() {
-    git ls-files -X .gitignore
-    git ls-files -X .gitignore -o
+# The project's path on the remote machine.
+REMOTE_PROJECT_ROOT=/tmp/${LOCAL_PROJECT_ROOT##*/}
+
+# FIFO used for communication between `inotifywait` and `mainloop`.
+MAINLOOP_FIFO=$(mktemp -u /tmp/lsp-remote-XXXXX)
+
+# Connect to the remote machine over SSH.
+function ssh() {
+    env ssh -T $SSH_ADDR "$@"
 }
 
-mount() {
-    rm -f $archive
+# Run a helper script on the remote machine.
+function run-helper() {
+    local helper_basename=$1.sh
+    local destination=/tmp/
 
-    if ssh $addr "test ! -d $dest"; then
-        tar -czf $archive -T <(project_ls; [ -d $env_dir ] && echo $env_dir)
+    shift
 
-        scp $archive $addr:$archive
-
-        ssh $addr << EOF
-mkdir -p $dest
-cd $dest
-tar -xf $archive
-echo > .projectile
-EOF
-    fi
-
-    mainloop &
+    # Copy the script over, and start it with supplied arguments.
+    scp ~/.local/bin/helpers/$helper_basename $SSH_ADDR:$destination
+    ssh $destination/$helper_basename "$@"
 }
 
-copy() {
-    file=$(echo $1 | awk '{ print $1 $3 }')
+# List all files in the local project.
+function project-tree() {
+    local flag
 
-    if ssh $addr "mkdir -p $(dirname $dest/$file)"; then
-        scp $file $addr:$dest/$file
-    fi
+    # -c outputs the tracked files, and -o the untracked.
+    for flag in -c -o; do
+        git -C "$LOCAL_PROJECT_ROOT" ls-files $flag --exclude-standard
+    done
 }
 
-export -f copy
-export addr dest
+# File-sync mainloop.
+function start-mainloop() {
+    mkfifo "$MAINLOOP_FIFO"
 
-mainloop() {
-    inotifywait -rm -e modify -e create -e moved_to $(project_ls) | parallel copy
+    # Listen for file-events in the background, sending them to the FIFO.
+    # This ensures that `inotifywait` _will_ be killed upon exit: Bash functions
+    # don't have a PID and cannot be stopped with `kill`.
+    inotifywait -rm --format $'%w%f\t%e' "$LOCAL_PROJECT_ROOT" \
+                -e modify,attrib,move,create > "$MAINLOOP_FIFO" &
+
+    sleep 2
+
+    local line
+
+    # This will run until the mainloop FIFO is exhausted.
+    while read line; do
+        local local_file=$(echo "$line" | cut -f1)
+        local_file=$(realpath --relative-to "$LOCAL_PROJECT_ROOT" "$local_file")
+
+        local remote_file=$REMOTE_PROJECT_ROOT/${local_file#$LOCAL_PROJECT_ROOT}
+
+        # Re-upload the file unless it's completely ignored by Git.
+        if project-tree | grep -qFx "$local_file"; then
+            run-helper lsp-copy "$remote_file" < "$local_file"
+        fi
+    done < "$MAINLOOP_FIFO" &
 }
 
-exec 3<<EOF
-suppress() {
-    eval "$@" < /dev/null > /dev/stderr
-}
+# Kill children in the background on exit.
+trap 'kill $(jobs -p)' SIGINT SIGTERM SIGKILL EXIT
 
-cd $dest
+# Upload the project in its current state to the remote machine.
+tar -czT <(project-tree) | run-helper lsp-untar "$REMOTE_PROJECT_ROOT"
 
-if [ -d $env_dir ]; then
-    export VIRTUAL_ENV=$env_dir
-    source $env_dir/bin/activate
-    suppress python -m pip install --upgrade -r requirements.txt &
-elif [ -f Cargo.toml ]; then
-    suppress cargo build &
-fi
+start-mainloop
 
-exec $@
-EOF
-
-mount < /dev/null > /dev/stderr
-
-cat /proc/$$/fd/{3,0} | ssh -C $addr /bin/bash -l $connector
+# Finally, run the language server on the remote machine.
+run-helper lsp-run "$REMOTE_PROJECT_ROOT" "$@"
