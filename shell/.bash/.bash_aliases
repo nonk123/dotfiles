@@ -54,7 +54,8 @@ function notify-send {
 }
 
 function clip {
-    xclip -selection clipboard
+    # Remove trailing newline from the output.
+    sed -z '$ s/\n$//' | xclip -selection clipboard
 }
 
 export -f failsafe xmodmap notify-send clip

@@ -1,97 +1,138 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-host=185.222.117.80
-port=6600
+# A utility script for controlling the remote (streaming) and the local
+# (listening) MPD instances.
 
-http="https://mpd.nonk.users.as205315.net"
+# $@ - `mpc` command with its arguments.
+# Custom commands are available, too: see the `case` arms in `self`.
 
-function _mpc {
-    mpc --host=$host --port=$port "$@"
+# SSH/MPD hostname.
+HOST=185.222.117.80
+
+# Port for MPD connection.
+PORT=6600
+
+# Username for SSH connection.
+SSH_USER=music
+
+# HTTP stream URL.
+HTTP="https://mpd.nonk.users.as205315.net"
+
+# How many files in the music directory root until re-sorting.
+SORT_THRESHOLD=10
+
+# Run `mpc` on the remote MPD instance.
+function -mpc() {
+    mpc --host=$HOST --port=$PORT "$@"
 }
 
-mpc playlist | grep $http > /dev/null || mpc add $http
-_mpc repeat on > /dev/null &
+# Queue the HTTP stream unless it is already queued.
+if ! mpc playlist | grep -q $HTTP; then
+    mpc -q add $HTTP
+fi
 
-function self {
-    command=$1
+-mpc -q repeat on &
+mpc -q play
+
+function self() {
+    local command=$1
     shift
 
+    # This overrides `mpc`s default commands and adds new ones.
     case "$command" in
-    play)
-        if [ $# -eq 0 ]; then
-            mpc stop; mpc play
-            notify-send "Playing"
+    playnow) # force playing a specific track immediately
+        -mpc -q stop; -mpc -q clear
+        mpc -q stop # makes it feel like the track is "loading"
+        self queue "$@"
+        -mpc -q play
+        mpc -q play
+
+        local track=$(-mpc status | sed q) # the first line is the track name
+        local track=${track##*/} # get its base name
+        notify-send "Now playing" "${track%.*}" # and remove the extension
+        ;;
+    prompt) # prompt for a track selection
+        -mpc listall | prompt "Select a track"
+        ;;
+    select) # prompt and play
+        local result=$(self prompt)
+        [[ "$result" ]] && self playnow "$result"
+        ;;
+    queue) # queue tracks from the command line or a prompt
+        if (($# == 0)); then
+            local result=$(self prompt)
         else
-            _mpc stop; _mpc clear
-            self queue "$@"
-            self play
-        fi
-        ;;
-    prompt)
-        _mpc listall | prompt "Select a track"
-        ;;
-    select)
-        result=$(self prompt)
-        [ "$result" ] && self play "$result"
-        ;;
-    queue)
-        if [ $# -eq 0 ]; then
-            result=$(self prompt)
-        else
-            result=$(for track in "$@"; do echo "$track"; done)
+            local result=$(for track in "$@"; do echo "$track"; done)
         fi
 
-        if [ "$result" ]; then
-            echo "$result" | while read track; do
-                _mpc search filename "$track" | _mpc add
+        if [[ "$result" ]]; then # track(s) selected
+            local track
+
+            for track in "$result"; do
+                -mpc search filename "$track" | -mpc add
             done
-
-            _mpc play
         fi
         ;;
     toggle)
-        _mpc | grep "^\[playing]" && self pause || self resume
+        -mpc status | grep -q "^\[playing] #" && self pause || self play
         ;;
-    pause)
-        _mpc pause
-        mpc stop
+    pause) # `mpc play/pause` with notifications
+        -mpc -q pause
+        mpc -q stop # don't wait for the stream to end
         notify-send "Paused"
         ;;
-    resume)
-        _mpc play
-        mpc play
+    play)
+        -mpc -q play
+        mpc -q play # resume playing the stream
         notify-send "Resumed"
         ;;
-    status)
-        status=$(_mpc status)
-        notify-send "Status" "$status"
+    http) # return the HTTP-stream URL
+        echo "$HTTP"
         ;;
-    http)
-        echo "$http"
-        ;;
-    next|prev|single)
-        _mpc "$command" && self status
+    next|prev)
+        mpc -q stop
+        -mpc -q "$command" "$@" && self play
         ;;
     download)
-        if [ $# -eq 1 ]; then
-            if ssh -T "music@$host" << EOF
-youtube-dl --no-playlist -o "~/music/%(title)s.%(ext)s" -x "$1" && mpc update
-EOF
-            then
-                notify-send Done "$1"
-            else
-                notify-send Failed "$1"
-            fi
-        else
+        if (($# == 0)); then # read from stdin if no args were given
             while read url; do
                 self download "$url"
             done
+        elif (($# == 1)); then # if there's only one URL, download it
+            # Save ugly `youtube-dl` call in a file descriptor.
+            exec 3<<EOF
+youtube-dl --no-playlist -o "~/music/%(title)s.%(ext)s" -x "$1" && mpc update
+EOF
+
+            if ssh -q "$SSH_USER@$HOST" < /dev/fd/3 > /dev/null; then
+                # No slash in the filename = it's lying in the music directory.
+                # Such files should be sorted out to child folders immediately.
+                if -mpc listall | sed ${SORT_TRESHOLD}q | grep -q /; then
+                    notify-send "Download complete"
+                else
+                    # Otherwise, ask the user to sort his stuff or receive a
+                    # punishment in form of death.
+                    notify-send "Download complete" "Sort your stuff or die"
+                fi
+            else
+                notify-send Failed "$1"
+            fi
+        else # if there are multiple URLs, download each one individually
+            while (($# > 0)); do
+                self download "$1"
+                shift
+            done
         fi
         ;;
-    *)
-        _mpc "$command" "$@"
+    status) # send `mpc status` as a notification
+        notify-send "Status" "$(-mpc status)"
+        ;;
+    *) # and redirect everything else
+        -mpc "$command" "$@"
         ;;
     esac
 }
 
 self "$@"
+
+wait
