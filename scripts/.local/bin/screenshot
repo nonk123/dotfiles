@@ -1,12 +1,9 @@
 #!/bin/sh
 
-format=png
+# Take a screenshot with `maim`, and copy it to clipboard.
 
-name="`whoami`@screenshot-`date +%d.%m.%Y-%H:%M:%S`.$format"
-dir=/tmp/screenshots/
-file="$dir/$name"
+# No args.
 
-mkdir -p $dir
+IMAGE_FORMAT=png
 
-maim "$@" -sf $format /dev/stdout | tee $file | xclip -t image/$format -sel clip
-#upload "$file" | xclip -sel sec
+maim "$@" -sf $IMAGE_FORMAT | xclip -t image/$IMAGE_FORMAT -sel clip

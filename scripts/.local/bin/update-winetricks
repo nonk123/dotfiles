@@ -1,7 +1,11 @@
 #!/bin/sh
 
-file=/tmp/winetricks
+# Download the git-latest version of `winetricks`, and install it in PATH.
 
-wget -O$file https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-chmod +x $file
-sudo mv $file /usr/local/bin/winetricks
+# No args.
+
+INSTALL_PATH=~/.local/bin/winetricks
+DOWNLOAD_URL=https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+
+wget -O $INSTALL_PATH $DOWNLOAD_URL
+chmod +x $INSTALL_PATH
