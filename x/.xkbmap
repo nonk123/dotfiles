@@ -1,0 +1,19 @@
+xkb_keymap {
+    xkb_keycodes { include "evdev+aliases(qwerty)" };
+    xkb_types    { include "complete" };
+    xkb_compat   { include "complete" };
+    xkb_symbols  {
+        // Swissgerman layout and some magic from `setxkbmap -print`.
+        include "pc+ch(de)+keypad(pointerkeys)+inet(evdev)"
+        // IPA characters.
+        key <AD05> { [ t, T,            Greek_theta, Greek_THETA ] };
+        key <AD02> { [ w, W,            U02B7,       Greek_omega ] };
+        // Punctuation.
+        key <AE04> { [ 4, nobreakspace, endash,      emdash      ] };
+        // Rebind the missing key to the left of Y. Can't type ch(de) otherwise.
+        key <MENU> { [ less, greater, backslash, brokenbar ] };
+        // Add Russian layout and Caps Lock toggle.
+        include "ru:2+group(shift_caps_toggle)"
+    };
+    xkb_geometry { include "pc(pc105)" };
+};

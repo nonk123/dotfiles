@@ -1,9 +1,0 @@
-#!/bin/sh
-
-xset r rate 250 60
-xsetroot -cursor_name left_ptr
-
-setxkbmap -option 'grp:shift_caps_toggle' -layout 'ch(de),ru'
-
-xmodmap -e 'keycode 105 = Mode_switch'
-xmodmap -e 'keysym Menu = less greater backslash bar less greater'

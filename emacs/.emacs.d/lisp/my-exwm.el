@@ -191,7 +191,6 @@
 
 (defun exwm-init-actions ()
   (interactive)
-  (sh "x-startup" nil)
   (use-package humanoid-themes)
   (load-theme 'humanoid-dark t)
   (set-frame-font "Hack 10" nil t)
