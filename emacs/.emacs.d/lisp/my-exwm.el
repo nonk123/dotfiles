@@ -176,11 +176,11 @@
 (defun exwm-update-class-actions ()
   (unless exwm-title
     (exwm-workspace-rename-buffer exwm-class-name)))
-(add-hook 'exwm-update-class-hook 'exwm-update-class-actions)
+(add-hook 'exwm-update-class-hook #'exwm-update-class-actions)
 
 (defun exwm-update-title-actions ()
   (exwm-workspace-rename-buffer exwm-title))
-(add-hook 'exwm-update-title-hook 'exwm-update-title-actions)
+(add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
 
 (defvar exwm-enabled nil)
 
@@ -196,12 +196,12 @@
   (set-frame-font "Hack 10" nil t)
   (unbind global-map "C-z")
   (setq exwm-enabled t))
-(add-hook 'exwm-init-hook 'exwm-init-actions)
+(add-hook 'exwm-init-hook #'exwm-init-actions)
 
 (defun exwm-exit-actions ()
   (interactive)
   (setq exwm-enabled nil))
-(add-hook 'exwm-exit-hook 'exwm-exit-actions)
+(add-hook 'exwm-exit-hook #'exwm-exit-actions)
 
 (defun start-exwm ()
   (require 'exwm-systemtray)

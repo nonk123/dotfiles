@@ -37,26 +37,22 @@
   "Call `ansi-term' in project root or home directory."
   (interactive)
   (let* ((default-directory (or (projectile-project-root) (expand-file-name "~")))
-         (shell (getenv "SHELL"))
-         (shell (concat shell " -l"))
-         (program (temp-path "my-term")))
-    (with-temp-file program
-      (if command
-          (insert command (string-join args " "))
-        (insert shell)))
+         (command (if command
+                      (concat command " " (string-join args " "))
+                    (concat (getenv "SHELL") " -l")))
+         (program (mktemp "my-term" command)))
     (chmod program #o744)
     (ansi-term program)))
 
 (defun emux-ssh (hostname)
-  (let ((connector (temp-path "emux-connector")))
-    (with-temp-file connector
-      (insert
-       (string-join
-        (list
-         "eval \$(ssh-agent)"
-         (format "ssh -tAY %s emacsclient -c" hostname)
-         "kill \$SSH_AGENT_PID")
-        "\n")))
+  (let ((connector
+         (mktemp "emux-connector"
+                 (string-join
+                  (list
+                   "eval \$(ssh-agent)"
+                   (format "ssh -tAY %s emacsclient -c" hostname)
+                   "kill \$SSH_AGENT_PID")
+                  "\n"))))
     (chmod connector #o744)
     (my-term connector)
     (emux-mode -1)))
