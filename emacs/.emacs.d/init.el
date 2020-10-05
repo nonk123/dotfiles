@@ -5,29 +5,25 @@
 ;;; Code:
 
 (setq custom-file "~/.emacs.d/custom.el")
+
+;; Create the custom file unless it's already there. Vital for a new install.
 (unless (file-exists-p custom-file)
-  (write-region "" "" custom-file))
+  (write-region "" nil custom-file))
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-(let ((default-directory "~/.emacs.d/my-stuff/"))
-  (when (file-exists-p default-directory)
-    (normal-top-level-add-subdirs-to-load-path)))
 
 (defun load-init ()
   "Load all parts of the init file."
   (interactive)
   (load-file custom-file)
-  (dolist (file '("package-init"
-                  "utils"
-                  "packages"
-                  "miscellaneous"
-                  "find-music"
-                  "modes"
-                  "emux"
-                  "my-exwm"
-                  "modal"
-                  "my-stuff"))
-    (load file t)))
+  (mapc #'load '("package-init"
+                 "utils"
+                 "packages"
+                 "miscellaneous"
+                 "modes"
+                 "emux"
+                 "my-exwm"
+                 "modal")))
 
 (load-init)
 
