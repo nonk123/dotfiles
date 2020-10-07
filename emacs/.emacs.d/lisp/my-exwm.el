@@ -4,30 +4,32 @@
 
 ;;; Code:
 
+;;;; Keybindings.
+
 (defun exec ()
-  "Execute a command asynchronously without showing its output."
+  "Execute a command asynchronously."
   (interactive)
   (sh (read-shell-command "$ ") 0))
 
 (defun exec-buf ()
-  "Execute a command similarly to `exec', but show its output in a temp buffer."
+  "Execute a command similarly to `exec', showing its output in a buffer."
   (interactive)
   (with-output-to-temp-buffer "*Command output*"
-    (sh (or (read-shell-command "$ ") "") standard-output)))
+    (sh (read-shell-command "$ ") standard-output)))
 
 (defun sh-binding (command)
+  "Return a lambda running `sh' with COMMAND.  Useful for setting up keys."
   `(lambda () (interactive) (sh ,command 0)))
 
-(defun mpd-binding (mpd-command &rest args)
-  (sh-binding
-   (format "mpd-control %s %s"
-           mpd-command
-           (string-join (mapcar (lambda (arg) (format "'%s'" arg)) args) " "))))
+(defun mpd-binding (command &rest args)
+  "Like `sh-binding', but call `mpd-control' with COMMAND and ARGS."
+  (sh-binding (format "mpd-control %s %s" command (string-join args " "))))
 
 (defun download-track (url)
-  "Download a music track with specified URL using `mpd-control'."
+  "Download a music track from URL, using `mpd-control'."
   (interactive "sURL: ")
-  (funcall (mpd-binding "download" url)))
+  ;; Quote the URL in case it contains weird characters.
+  (funcall (mpd-binding "download" (format "'%s'" url))))
 
 (defun quick ()
   "Launch a program or utility from a `helm' listing."
@@ -45,7 +47,7 @@
                 ("Aria"       . "Aria")))
        (utils '(("Restart fluidsynth" . "systemctl --user restart fluidsynth")
                 ("Restart mpd" . "systemctl --user restart mpd && mpd-control play")
-                ("SSH proxy to tilde" . "ssh -ND 9090 nonk@tilde.as205315.net")
+                ("SSH proxy to tilde" . "ssh -ND 9050 nonk@tilde.as205315.net")
                 ("Kill all SSH connections" . "pkill ssh")))
        (command (helm
                  :prompt "Launch: "
@@ -58,6 +60,8 @@
                     :candidates utils)))))
     (sh command 0)))
 
+;;;; Window layouts.
+
 (defvar window-layout-defs
   '(("d" . ())
     ("b" . ())
@@ -66,19 +70,20 @@
     ("i" . ())
     ("1" . ())
     ("2" . ())
-    ("3" . ())))
+    ("3" . ()))
+  "Description of window layouts created on EXWM startup.")
 
 (defvar layout-mappings '())
 
 (defun generate-layouts ()
   "Generate EXWM frames from `window-layout-defs'."
   (dolist (def window-layout-defs)
-    (set-buffer "*scratch*")
+    (set-buffer "*scratch*") ; *scratch* is the starting buffer
     (let ((workspace (exwm-workspace-add)))
       (dolist (token (cdr def))
         (cl-typecase token
-          (keyword
-           (select-window
+          (keyword        ; :right and :below just split the current window
+           (select-window ; this makes the split window current
             (cond
              ((eq token :right)
               (split-window-right))
@@ -86,92 +91,94 @@
               (split-window-below))
              (t
               (user-error "Unrecognized token: %s" token)))))
-          (symbol
-           (funcall token))))
+          (t
+           (funcall token)))) ; call symbols and lambdas (untested)
+      ;; Save the frame for use in `select-layout'.
       (add-to-list 'layout-mappings (cons (car def) workspace)))))
 
-(defun select-layout (&optional show-layouts)
+(defun select-layout ()
+  "Ask user to select a layout from `layout-mappings'."
   (interactive)
-  (unless layout-mappings
+  (unless layout-mappings ; create the frames on first call
     (generate-layouts))
-  (if-let* ((layouts (string-join (mapcar #'car window-layout-defs) " "))
-            (layouts (format " (%s)" layouts))
-            (prompt (format "Layout%s: " (if show-layouts layouts "")))
-            (letter (read-char prompt))
-            (letter (format "%c" letter))
+  (if-let* ((letter (read-key "Layout: "))
+            (letter (key-description (list letter))) ; strings are used as keys
             (mapping (assoc letter layout-mappings))
             (workspace (cdr mapping))
-            (workspace (and (frame-live-p workspace) workspace)))
+            ;; Bail out if the frame is dead.
+            (workspace (when (frame-live-p workspace) workspace)))
       (exwm-workspace-switch workspace)
-    (if (and (string= letter "?") (not show-layouts))
-        (select-layout t)
-      (user-error "Not a layout"))))
+    (user-error "Not a layout")))
 
-(defun input-and-copy-quoted ()
+(defun copy-10 ()
+  "Enter a Unicode character's base-10 value and copy it to clipboard."
   (interactive)
   (with-temp-buffer
     (let ((read-quoted-char-radix 10))
       (quoted-insert 1)
       (clipboard-kill-ring-save (point-min) (point-max)))))
 
-(defun insert-and-copy-char ()
+(defun copy-unicode ()
+  "Search for a Unicode character and copy it to clipboard."
   (interactive)
   (with-temp-buffer
     (call-interactively #'insert-char)
     (clipboard-kill-ring-save (point-min) (point-max))))
 
+;;;; `use-package' declaration.
+
 (use-package exwm
   :init
-  (setq exwm-workspace-number 10)
+  ;; Easy window-switching with s-b.
   (setq exwm-workspace-show-all-buffers t)
   (setq exwm-layout-show-all-buffers t)
+  ;; C-c is a prefix key; send ^C with C-c C-c.
   (setq exwm-input-simulation-keys '(([?\C-c ?\C-c] . ?\C-c)))
-  (setq exwm-debug t)
   (setq exwm-input-global-keys
         (mapcar
          (lambda (binding)
-           (setf (car binding) (kbd (car binding)))
-           binding)
-         `(("s-h" . windmove-left)
+           (cons (kbd (car binding)) (cdr binding)))
+         `(("s-h" . windmove-left) ; basic movement keys
            ("s-j" . windmove-down)
            ("s-k" . windmove-up)
            ("s-l" . windmove-right)
-           ("C-s-h" . ,(exchange-window #'windmove-left))
+           ("C-s-h" . ,(exchange-window #'windmove-left)) ; swap buffers
            ("C-s-j" . ,(exchange-window #'windmove-down))
            ("C-s-k" . ,(exchange-window #'windmove-up))
            ("C-s-l" . ,(exchange-window #'windmove-right))
-           ("M-s-h" . shrink-window-horizontally)
+           ("M-s-h" . shrink-window-horizontally) ; weird resize
            ("M-s-j" . enlarge-window)
            ("M-s-k" . shrink-window)
            ("M-s-l" . enlarge-window-horizontally)
-           ("s-n" . split-window-below)
+           ("s-n" . split-window-below) ; obviously, window-splits
            ("s-m" . split-window-right)
-           ("s-w" . delete-window)
-           ("s-q" . force-kill-buffer)
-           ("s-b" . switch-to-buffer)
-           ("s-f" . exwm-layout-toggle-fullscreen)
+           ("s-w" . delete-window)     ; kill a window (buffer is left behind)
+           ("s-q" . force-kill-buffer) ; kill a buffer
+           ("s-b" . switch-to-buffer)  ; select a buffer
+           ("s-f" . exwm-layout-toggle-fullscreen) ; window modes
            ("s-r" . exwm-floating-toggle-floating)
-           ("s-g" . exwm-input-toggle-keyboard)
-           ("s-i" . load-init)
-           ("s-v" . select-layout)
-           ("s-c" . insert-and-copy-char)
-           ("s-C" . input-and-copy-quoted)
-           ("C-c C-c" . exwm-input-send-next-key)
-           ("<s-return>" . my-term)
-           ("<print>" . ,(sh-binding "screenshot"))
+           ("s-g" . exwm-input-toggle-keyboard) ; char and line mode switch
+           ("s-i" . load-init)     ; reload init file
+           ("s-v" . select-layout) ; change workspace
+           ("s-'" . copy-unicode)  ; weird stuff
+           ("s-0" . copy-10)
+           ("s-s" . exwm-input-send-next-key)
            ("s-e" . exec)
            ("s-E" . exec-buf)
-           ("s-P" . find-music)
-           ("s-d" . quick)
-           ("s-p" . ,(mpd-binding "select"))
+           ("<s-return>" . my-term) ; common programs
+           ("<print>" . ,(sh-binding "screenshot"))
+           ("s-d" . quick) ; dmenu-like prompt
+           ("s-p" . ,(mpd-binding "select")) ; music
            ("s-," . ,(mpd-binding "prev"))
            ("s-." . ,(mpd-binding "next"))
            ("s-o" . ,(mpd-binding "toggle"))
            ("s-;" . ,(mpd-binding "clear"))
            ("s-[" . ,(mpd-binding "status"))
            ("s-]" . ,(mpd-binding "single"))
-           ("s-{" . ,(mpd-binding "seek -8"))
-           ("s-}" . ,(mpd-binding "seek +8"))))))
+           ("s-ä" . ,(mpd-binding "seek -8"))
+           ("s-$" . ,(mpd-binding "seek +8"))))))
+
+;;;; EXWM magic.
 
 (defun exwm-update-class-actions ()
   (unless exwm-title
@@ -182,34 +189,36 @@
   (exwm-workspace-rename-buffer exwm-title))
 (add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
 
-(defvar exwm-enabled nil)
+(defvar exwm-enabled nil
+  "Non-nil if `start-exwm' was run.")
 
 (defun exwm-update-input ()
-  (interactive)
+  "Re-bind EXWM keys after `exwm-input-global-keys' update."
   (dolist (binding exwm-input-global-keys)
     (exwm-input--set-key (car binding) (cdr binding))))
 
 (defun exwm-init-actions ()
-  (interactive)
+  "Run when the EXWM session is initialized."
   (use-package humanoid-themes)
   (load-theme 'humanoid-dark t)
   (set-frame-font "Hack 10" nil t)
-  (unbind global-map "C-z")
+  (unbind global-map "C-z") ; can't hide EXWM frames
   (setq exwm-enabled t))
 (add-hook 'exwm-init-hook #'exwm-init-actions)
 
 (defun exwm-exit-actions ()
-  (interactive)
   (setq exwm-enabled nil))
 (add-hook 'exwm-exit-hook #'exwm-exit-actions)
 
 (defun start-exwm ()
+  "Start EXWM session.  Used in .xinitrc."
   (require 'exwm-systemtray)
   (exwm-systemtray-enable)
   (exwm-enable)
   (scroll-bar-mode 0)
   (fringe-mode 0))
 
+;; If EXWM is still running, re-bind the keys.
 (when exwm-enabled
   (exwm-update-input))
 
