@@ -4,32 +4,15 @@
 
 ;;; Code:
 
-(defvar extra-font-lock-mode-keywords
-  '(("\\<\\(TODO\\|FIXME\\):" 1 font-lock-warning-face t)
-    ("^;;; \\(.+?\\.el\\) --- .+" 1 font-lock-warning-face t)
-    ("^;;;? \\(.+?\\):" 1 font-lock-warning-face t)
-    ("^;;; \\(.+?\\.el ends here\\)" 1 font-lock-warning-face t)))
-
-(define-minor-mode extra-font-lock-minor-mode
-  "Toggle extra syntax highlighting in `font-lock-mode'."
-  :init-value nil
-  (if extra-font-lock-minor-mode
-      (font-lock-add-keywords nil extra-font-lock-mode-keywords)
-    (font-lock-remove-keywords nil extra-font-lock-mode-keywords))
-  (font-lock-flush))
-
-(define-global-minor-mode extra-font-lock-global-mode
-  extra-font-lock-minor-mode extra-font-lock-minor-mode)
-
-(extra-font-lock-global-mode 1)
-
 (defvar-local left-fringe-mode--is-managed nil
   "Non-nil if this buffer should have a fringe on the left.
+
 `left-fringe-mode' isn't available in `left-fringe-mode--set-fringe', and this
-variable serves as a workaround: it is set by the mode internally.")
+variable serves as a workaround: it is set internally.")
 
 (define-minor-mode left-fringe-mode
   "Toggle a small fringe on the left of the selected window.
+
 Currently used by Flymake."
   :init-value nil
   (setq left-fringe-mode--is-managed left-fringe-mode)
@@ -38,12 +21,12 @@ Currently used by Flymake."
 
 (defun left-fringe-mode--set-fringe ()
   (set-window-fringes
-   nil
+   (selected-window)
    (if left-fringe-mode--is-managed
-       (window-font-width)
+       (window-font-width) ; just enough for a '!'
      0)))
 
-(add-hook 'prog-mode-hook #'left-fringe-mode)
+(add-hook 'flymake-mode-hook #'left-fringe-mode)
 
 (defvar column-width-alist
   '(("COMMIT_EDITMSG$" . 72)
