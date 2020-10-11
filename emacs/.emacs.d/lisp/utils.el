@@ -10,26 +10,31 @@
     (define-key keymap (kbd key) nil)))
 
 (defun bind (keymap keys-alist)
-  "Bind keys from KEYS-ALIST onto KEYMAP, and return the modified keymap.
+  "Bind keys from KEYS-ALIST onto KEYMAP and return it.
 
-KEYS-ALIST contains `(key . binding)', where `key' is a string passed to `kbd',
-and `binding' is either a symbol, string, keymap, or another keys-alist."
+CAR is a key description.  CDR is one of the following:
+ * Command name as a symbol, or a lambda (CAR is bound to CDR).
+ * A key description (CAR is an alias to CDR).
+ * Another keys-alist (CAR is a prefix key)."
   (pcase-dolist (`(,key . ,def) keys-alist keymap)
-    (define-key keymap (kbd key) ; `key' comes in string form
-      (cl-typecase def
-       (string ; key alias
-        (kbd def))
-       ((or symbol function keymap)
-        def)
-       (t
-        (bind (make-sparse-keymap) def))))))
+    (setq key (kbd key))
+    (cl-typecase def
+      (string ; key description
+       (define-key keymap key (kbd def)))
+      ((or symbol function keymap) ; command
+       (define-key keymap key def))
+      (t ; keys-alist (a prefix)
+       (let* ((prefix (lookup-key keymap key))
+              (prefix (or (and (keymapp prefix) prefix)
+                          (make-sparse-keymap))))
+         (define-key keymap key (bind prefix def)))))))
 
 (defun sh (cmd &optional destination pwd)
   "Run CMD using the default shell.
 
 DESTINATION is passed to `call-process'.
 
-If PWD is specified, use that as the `default-directory', instead of `~'."
+If PWD is specified, use that as the `default-directory', instead of \"~\"."
   (interactive)
   (let ((default-directory (or pwd "~")))
     (call-process (getenv "SHELL") nil destination nil "-l" "-c" cmd)))
@@ -88,6 +93,26 @@ Used internally in `prompt' script; avoid calling this, at all cost."
                          ;; Each candidate on a separate line.
                          (split-string (buffer-string) "\n" t))
                      (error (format "File doesn't exist: %s" file))))))
+
+(defun symbol-to-string (x)
+  "Convert X (a symbol) to string unless it already is a string."
+  (if (stringp x)
+      x
+    (symbol-name x)))
+
+(defun s-concat (&rest symbols)
+  "Concatenate SYMBOLS into one big symbol.
+
+Each entry in SYMBOLS is either a string or a symbol."
+  (intern (string-join (mapcar #'symbol-to-string symbols) "")))
+
+(defun append-nested (&rest sequences)
+  "Join the nested lists inside each element of SEQUENCES, akin to `append'."
+  (let ((result (list)))
+    (dolist (sequence sequences (reverse result))
+      (dolist (nested sequence)
+        (dolist (elt nested)
+          (push elt result))))))
 
 (defun set-to-default (variable)
   "Reset VARIABLE (a symbol) to its default value."
