@@ -23,26 +23,27 @@
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
-(setq custom-file "~/.emacs.d/custom.el")
+(defun emacs.d (file)
+  "Return FILE relative to `user-emacs-directory'."
+  (expand-file-name file user-emacs-directory))
 
-;; Create the custom file unless it's already there. Vital for a new install.
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
+(defun ensure (file)
+  "Ensure FILE exists.  If it doesn't, \"touch\" it."
+  (unless (file-exists-p file)
+    (write-region "" nil file)))
 
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+(setq custom-file (emacs.d "custom.el"))
+(ensure custom-file)
 
 (defun load-init ()
-  "Load all parts of the init file."
+  "Load emacs-init.org."
   (interactive)
   (load-file custom-file)
-  (mapc #'load '("package-init"
-                 "utils"
-                 "packages"
-                 "miscellaneous"
-                 "modes"
-                 "emux"
-                 "my-exwm"
-                 "modal")))
+  (let* ((init (emacs.d "emacs-init"))
+         (el (concat init ".el"))
+         (org (concat init ".org")))
+    (and (file-exists-p el) (delete-file el))
+    (org-babel-load-file org)))
 
 (load-init)
 

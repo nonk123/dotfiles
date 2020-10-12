@@ -1,9 +1,12 @@
-elpa/
-auto-save-list/
-my-stuff/
-
 custom.el
-lisp/my-stuff.el
+
+# Tangled copy.
+emacs-init.el
+# HTML export to check formatting.
+emacs-init.html
 
 *.eld
 tramp
+
+*/
+!snippets/
