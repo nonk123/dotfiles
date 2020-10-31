@@ -3,10 +3,9 @@
 
 * Initialization
 
-Due to lambda abuse, lexical binding is a requirement for this
-configuration to work. As such, =modal-combo= and similar functions
-break when a lexical argument (i.e. =key=) is not available within the
-closure.
+Functions like =modal-combo= break when a lexical argument (=key=) is
+not available within the closure, which is why this configuration
+requires lexical binding.
 
 #+BEGIN_SRC emacs-lisp
 ;;; -*- lexical-binding: t -*-
@@ -14,14 +13,12 @@ closure.
 
 * Utilities
 
-Various utilities need to be initialized before loading the necessary
-packages.
+Various utilities must be defined before loading external packages.
 
 ** Keymap Functions
 
-Out of keymap utilities, =bind= is, by far, the most sophisticated. A
-big part of its complexity comes from multiple types of bindings:
-commands, key aliases, and other keymaps.
+There is not much to explain: =bind= and =unbind= modify keymaps. See
+documentation for more info.
 
 #+BEGIN_SRC emacs-lisp
 (defun unbind (keymap &rest keys)
@@ -52,8 +49,8 @@ CAR is a key description.  CDR is one of the following:
 
 ** Shell
 
-Not much explanation is needed: =sh= runs shell commands. Interestingly
-enough, it starts a /login/ shell in order to execute =~/.bashrc=.
+=sh= runs shell commands, starting a _login_ shell. This ensures the
+execution of =~/.bashrc=.
 
 #+BEGIN_SRC emacs-lisp
   (defun sh (cmd &optional destination pwd)
@@ -69,11 +66,7 @@ enough, it starts a /login/ shell in order to execute =~/.bashrc=.
 
 ** Prompt
 
-=prompt= is used as an Elisp backend for the shell script with the same
-name.
-
-In short, =prompt= displays a =helm= listing with candidates from stdin,
-much like suckless's =dmenu=.
+Elisp backend for the =prompt= script.
 
 #+BEGIN_SRC emacs-lisp
   (defun prompt--action (_candidates)
@@ -101,9 +94,9 @@ much like suckless's =dmenu=.
                        (error (format "File doesn't exist: %s" file))))))
 #+END_SRC
 
-** Miscellaneous
+** Symbol Concat
 
-These are various utility functions used in other parts of the file.
+Function =s-concat= allows concatenating symbols like strings.
 
 #+BEGIN_SRC emacs-lisp
   (defun symbol-to-string (x)
@@ -117,19 +110,14 @@ These are various utility functions used in other parts of the file.
 
   Each entry in SYMBOLS is either a string or a symbol."
     (intern (string-join (mapcar #'symbol-to-string symbols) "")))
+#+END_SRC
 
-  (defun list-directories-recursively (start)
-    "List all directories in directory START recursively."
-    (seq-filter #'file-directory-p (directory-files-recursively start ".+" t)))
+** Make Temporary Files
 
-  (defun append-nested (&rest sequences)
-    "Join the nested lists inside each element of SEQUENCES, akin to `append'."
-    (let ((result (list)))
-      (dolist (sequence sequences (reverse result))
-        (dolist (nested sequence)
-          (dolist (elt nested)
-            (push elt result))))))
+=mktemp= is a shorthand for =make-temp-file=. The name is derived from
+=mktemp= command.
 
+#+BEGIN_SRC emacs-lisp
   (defun mktemp (filename &optional contents)
     "Create FILENAME in temporary directory, suffixed with random garbage.
 
@@ -137,7 +125,14 @@ These are various utility functions used in other parts of the file.
 
   Return the created file's name like `make-temp-file' (which see)."
     (make-temp-file filename nil nil contents))
+#+END_SRC
 
+** Set to Default
+
+=set-to-default= resets buffer-local variables. =reset-variable= is its
+interactive counterpart.
+
+#+BEGIN_SRC emacs-lisp
   (defun set-to-default (&rest variables)
     "Reset VARIABLES to their default values."
     (dolist (variable variables)
@@ -161,19 +156,32 @@ These are various utility functions used in other parts of the file.
       (set-to-default (intern symbol))))
 #+END_SRC
 
+** Miscellaneous
+
+Not much to say here. These functions are used exactly once.
+
+#+BEGIN_SRC emacs-lisp
+  (defun list-directories-recursively (start)
+    "List all directories in directory START recursively."
+    (seq-filter #'file-directory-p (directory-files-recursively start ".+" t)))
+
+  (defun append-nested (&rest sequences)
+    "Join the nested lists inside each element of SEQUENCES, akin to `append'."
+    (let ((result (list)))
+      (dolist (sequence sequences (reverse result))
+        (dolist (nested sequence)
+          (dolist (elt nested)
+            (push elt result))))))
+#+END_SRC
+
 * Packages
 
-All external packages are loaded here with =use-package=. Details of its
-automatic installation are described in [[./init.el][init.el]].
+External packages are loaded with =use-package=. It is installed on
+first run in =init.el=.
 
 ** Delight
 
-Delight is a package for "de-lighting" modes; that is, modifying or
-hiding their lighter, which is very useful for uncluttering the
-modeline.
-
-There is nothing special about loading =delight= as it's primarily seen
-in =use-package= declarations.
+Delight modifies modes' lighters. Only useful for =use-package=.
 
 #+BEGIN_SRC emacs-lisp
   (use-package delight)
@@ -181,12 +189,8 @@ in =use-package= declarations.
 
 ** Helm
 
-Helm is a great completion framework. It allows choosing candidates in a
-separate buffer using =C-p= & =C-n= selection and regexp matching.
-
-Many commands are replaced with Helm equivalents, which can also be seen
-in =:bind= declaration. This package comes with many supplements; some
-are loaded later in the file.
+Helm introduces interactive selection prompts and comes with various
+supplement packages.
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm
@@ -208,8 +212,8 @@ are loaded later in the file.
 
 ** Avy
 
-Avy is a package I rarely use. It allows jumping to any place in the
-buffer in only a few keypresses.
+Avy allows jumping anywhere in the buffer in few keystrokes. Seldom
+used, but is fun.
 
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -218,10 +222,8 @@ buffer in only a few keypresses.
 
 ** Magit
 
-Magit is a Git portmanteau, which I only use for improved diff, rebase,
-commit message, etc. editing.
-
-No special configuration is required.
+A Git portmanteau. Currently used for rebasing and editing commit
+messages.
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit)
@@ -229,19 +231,12 @@ No special configuration is required.
 
 ** Company
 
-Company ("complete anything") is a text completion framework. In this
-configuration, it's mainly used as the connector between different
-completion engines available.
+"Complete anything" framework, the glue for many of the available
+backends.
 
-Also included in this section are global tags packages: =gxref= and
-=helm-gtags=. Completion candidate selection is done via =helm-company=.
+=company-flyspell= is one hell of a homebrew; seldom used.
 
-=:config= section defines an homebrewn =company= backend:
-=company-flyspell=. Though rarely used, it served as a nice way of
-practicing Elisp.
-
-Several default backends have been disabled for either being nonsensical
-(=company-dabbrev=), or relying on external software (=company-clang=).
+External program backends are disabled for performance reasons.
 
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -288,7 +283,7 @@ Several default backends have been disabled for either being nonsensical
 
 ** Projectile
 
-
+The project manager. Used in Eglot. #1 feature: find files in a project.
 
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
@@ -306,6 +301,11 @@ Several default backends have been disabled for either being nonsensical
     :after (helm projectile)
     :init (helm-projectile-on))
 #+END_SRC
+
+** Eglot
+
+The language server client. Includes a piece of glue for Projectile and
+=lsp-remote= script, which see.
 
 #+BEGIN_SRC emacs-lisp
   (defun my-projectile-project-find-function (dir)
@@ -352,6 +352,10 @@ Several default backends have been disabled for either being nonsensical
     :hook ((python-mode js-mode typescript-mode sgml-mode xml-mode rust-mode) . eglot-ensure))
 #+END_SRC
 
+** Yasnippet
+
+Epic snippets for epic people.
+
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :delight yas-minor-mode
@@ -359,20 +363,82 @@ Several default backends have been disabled for either being nonsensical
     (setq yas-triggers-in-field t)
     (setq yas-indent-line 'auto)
     :config
-    (define-key yas-minor-mode-map [(tab)] nil)
-    (define-key yas-minor-mode-map (kbd "TAB") nil)
-    (define-key yas-minor-mode-map (kbd "<tab>") nil)
+    ;; Tab is reserved in modal-mode.
+    (dolist (key (list [(tab)] (kbd "TAB") (kbd "<tab>")))
+      (define-key yas-minor-mode-map key nil))
     (yas-global-mode 1))
 #+END_SRC
+
+** Org-Mode
+
+The beast born from Emacs. All this configuration is aimed at fixing
+external program paths.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :config
+    (setq org-table-auto-blank-field nil)
+    (setq org-confirm-babel-evaluate #'ignore)
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((ditaa . t)))
+    (setq org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((plantuml . t)))
+    (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+    ;; Tab is reserved.
+    (dolist (key (list [(tab)] (kbd "TAB") (kbd "<tab>")))
+      (define-key org-mode-map key nil))
+    (setq org-latex-to-mathml-convert-command
+          "latexmlmath \"%i\" --presentationmathml=%o"))
+
+  (use-package org-preview-html)
+
+  (use-package htmlize)
+#+END_SRC
+
+** Mini Modeline
+
+Displays important information in the echo area. Very useful to
+completely hide the modeline in EXWM buffers.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package mini-modeline
+    :delight
+    :init
+    (setq display-time-default-load-average nil)
+    (setq display-time-day-and-date t)
+    (display-time-mode 1)
+    ;; Display the `display-time-string' entirely in mini-modeline.
+    (setq global-mode-string (delq 'display-time-string global-mode-string))
+    (setq mini-modeline-r-format '("%b | " display-time-string))
+    ;; Disable strange visuals.
+    (setq mini-modeline-display-gui-line nil)
+    (setq mini-modeline-enhance-visual nil)
+    (defun mini-modeline-mode--restore-modeline-hack (&rest _args)
+      "Restore original modeline after it is removed by `mini-modeline-mode'."
+      (when mini-modeline-mode
+        (setq-default mode-line-format mini-modeline--orig-mode-line)))
+    (advice-add #'mini-modeline-mode :after #'mini-modeline-mode--restore-modeline-hack)
+    (mini-modeline-mode 1))
+#+END_SRC
+
+** Smartparens
+
+Isn't it nice to have auto-closing parenthesis pairs?
 
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
     :delight
-    :init
-    (require 'smartparens-config)
-    (setq sp-highlight-pair-overlay nil)
+    :init (require 'smartparens-config)
     :hook ((prog-mode html-mode mhtml-mode smgl-mode) . smartparens-mode))
 #+END_SRC
+
+** Olivetti
+
+A very nice package for centering text. Only used for plain-text
+buffers.
 
 #+BEGIN_SRC emacs-lisp
   (use-package olivetti
@@ -381,68 +447,10 @@ Several default backends have been disabled for either being nonsensical
     :hook ((Info-mode text-mode org-mode markdown-mode) . olivetti-mode))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-  (use-package org
-    :init
-    (setq org-table-auto-blank-field nil)
-    (setq org-entities-user
-          '(("Emacr" "\\bar{E}" nil "&Emacr;" "E" "Ē" "Ē")
-            ("emacr" "\\bar{e}" nil "&emacr;" "e" "ē" "ē")
-            ("Ebreve" "\\u{E}" nil "&#276;" "E" "Ĕ" "Ĕ")
-            ("ebreve" "\\u{e}" nil "&#277;" "e" "ĕ" "ĕ")
-            ("Omacr" "\\bar{O}" nil "&Omacr;" "O" "Ō" "Ō")
-            ("omacr" "\\bar{o}" nil "&omacr;" "o" "ō" "ō")
-            ("Lacute" "\\'{L}" nil "&Lacute;" "L" "Ĺ" "Ĺ")
-            ("lacute" "\\'{l}" nil "&lacute;" "l" "ĺ" "ĺ")
-            ("Kacute" "\\'{K}" nil "&#7728;" "K" "Ḱ" "Ḱ")
-            ("kacute" "\\'{k}" nil "&#7729;" "k" "ḱ" "ḱ")
-            ("Kw" "K^{w}" nil "K&#695;" "Kw" "Kʷ" "Kʷ")
-            ("kw" "k^{w}" nil "k&#695;" "kw" "kʷ" "kʷ")
-            ("Hi" "H_{1}" nil "H&#8321;" "H1" "H₁" "H₁")
-            ("hi" "h_{1}" nil "h&#8321;" "h1" "h₁" "h₁")
-            ("hii" "h_{2}" nil "h&#8322;" "h2" "h₂" "h₂")
-            ("hiii" "h_{3}" nil "h&#8323;" "h3" "h₃" "h₃")
-            ("cbr" "_{o}" nil "&#805;" "." "̥" "̥")))
-    :config
-    (setq org-confirm-babel-evaluate #'ignore)
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((ditaa . t)))
-    (defvar org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((plantuml . t)))
-    (defvar org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
-    (dolist (key (list [(tab)] (kbd "TAB") (kbd "<tab>")))
-      (define-key org-mode-map key nil)))
+** Flymake
 
-  (use-package org-preview-html)
-
-  (use-package htmlize)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (use-package elisp-slime-nav
-    :delight
-    :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
-
-  (use-package dtrt-indent
-    :delight
-    :hook (prog-mode . dtrt-indent-mode))
-
-  (use-package rust-mode)
-
-  (use-package web-mode
-    :mode ("\\.html\\'" . web-mode))
-
-  (use-package markdown-mode)
-
-  (use-package typescript-mode)
-
-  (use-package lua-mode)
-
-  (use-package yaml-mode)
-#+END_SRC
+The only reason to use this over Flycheck is because Eglot doesn't
+support it.
 
 #+BEGIN_SRC emacs-lisp
   (use-package flymake
@@ -456,6 +464,42 @@ Several default backends have been disabled for either being nonsensical
     :hook ((text-mode . flyspell-mode)
            (prog-mode . flyspell-prog-mode)))
 #+END_SRC
+
+** Small packages
+
+Mostly major-modes for unsupported languages.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elisp-slime-nav
+    :delight
+    :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
+
+  (use-package dtrt-indent
+    :delight
+    :hook (prog-mode . dtrt-indent-mode))
+
+  (use-package rust-mode
+    :init
+    (when-let* ((file "~/.cargo/bin/rustfmt")
+                ((file-exists-p file)))
+      (setq rust-rustfmt-bin file)
+      (setq rust-format-on-save t)))
+
+  (use-package web-mode
+    :mode ("\\.html\\'" . web-mode))
+
+  (use-package markdown-mode)
+
+  (use-package typescript-mode)
+
+  (use-package lua-mode)
+
+  (use-package yaml-mode)
+#+END_SRC
+
+** Standard Packages
+
+Various hooks and variables. Not much to say here.
 
 #+BEGIN_SRC emacs-lisp
   (use-package display-line-numbers
@@ -1164,6 +1208,7 @@ Currently used by Flymake."
                     ("/" . dabbrev-expand)
                     ("o" . org-preview-html-mode)
                     ("x" . org-html-export-to-html)
+                    ("X" . org-odt-export-to-odt)
                     ("'" . org-edit-src-exit)
                     ("C-r" . rename-buffer-file)
                     ("C-d" . delete-buffer-file)))))
@@ -1194,262 +1239,264 @@ Currently used by Flymake."
 
   ;;;; Hooks.
 
-  (dolist (mode '(prog text conf help apropos Info eww))
+  (dolist (mode '(prog text conf help apropos Info eww picture))
     (add-hook (s-concat mode "-mode-hook") #'modal-mode))
 #+END_SRC
 
 * EXWM Configuration
 
 #+BEGIN_SRC emacs-lisp
-;;;; Keybindings.
+  ;;;; Keybindings.
 
-(defun exec ()
-  "Execute a command asynchronously."
-  (interactive)
-  (sh (read-shell-command "$ ") 0))
+  (defun exec ()
+    "Execute a command asynchronously."
+    (interactive)
+    (sh (read-shell-command "$ ") 0))
 
-(defun exec-buf ()
-  "Execute a command similarly to `exec', showing its output in a buffer."
-  (interactive)
-  (with-output-to-temp-buffer "*Command output*"
-    (sh (read-shell-command "$ ") standard-output)))
+  (defun exec-buf ()
+    "Execute a command similarly to `exec', showing its output in a buffer."
+    (interactive)
+    (with-output-to-temp-buffer "*Command output*"
+      (sh (read-shell-command "$ ") standard-output)))
 
-(defun sh-binding (command)
-  "Return a lambda running `sh' with COMMAND.  Useful for setting up keys."
-  `(lambda () (interactive) (sh ,command 0)))
+  (defun sh-binding (command)
+    "Return a lambda running `sh' with COMMAND.  Useful for setting up keys."
+    `(lambda () (interactive) (sh ,command 0)))
 
-(defun mpd-binding (command &rest args)
-  "Like `sh-binding', but call `mpd-control' with COMMAND and ARGS."
-  (sh-binding (format "mpd-control %s %s" command (string-join args " "))))
+  (defun mpd-binding (command &rest args)
+    "Like `sh-binding', but call `mpd-control' with COMMAND and ARGS."
+    (sh-binding (format "mpd-control %s %s" command (string-join args " "))))
 
-(defun download-track (url)
-  "Download a music track from URL, using `mpd-control'."
-  (interactive "sURL: ")
-  ;; Quote the URL in case it contains weird characters.
-  (funcall (mpd-binding "download" (format "'%s'" url))))
+  (defun download-track (url)
+    "Download a music track from URL, using `mpd-control'."
+    (interactive "sURL: ")
+    ;; Quote the URL in case it contains weird characters.
+    (funcall (mpd-binding "download" (format "'%s'" url))))
 
-(defun quick ()
-  "Launch a program or utility from a `helm' listing."
-  (interactive)
-  (when-let*
-      ((quick '(("Browser"    . "qutebrowser --no-err-windows")
-                ("Discord"    . "discord")
-                ("Parsec"     . "parsecd app_daemon=1")
-                ("Moonlight"  . "moonlight")
-                ("Steam"      . "steam")
-                ("Doomseeker" . "doomseeker")
-                ("Torrent"    . "transmission-gtk")
-                ("PA Volume"  . "pavucontrol")
-                ("Zoom"       . "zoom")
-                ("Aria"       . "Aria")))
-       (utils '(("Restart fluidsynth" . "systemctl --user restart fluidsynth")
-                ("Restart mpd" . "systemctl --user restart mpd && mpd-control play")
-                ("SSH proxy to tilde" . "ssh -ND 9050 nonk@tilde.as205315.net")
-                ("Kill all SSH connections" . "pkill ssh")))
-       (command (helm
-                 :prompt "Launch: "
-                 :buffer "*Program selection*"
-                 :sources
-                 (vector
-                  (helm-build-sync-source "Quick launch"
-                    :candidates quick)
-                  (helm-build-sync-source "Utilities"
-                    :candidates utils)))))
-    (sh command 0)))
+  (defun quick ()
+    "Launch a program or utility from a `helm' listing."
+    (interactive)
+    (when-let*
+        ((quick '(("Browser"    . "qutebrowser --no-err-windows")
+                  ("Discord"    . "discord")
+                  ("Parsec"     . "parsecd app_daemon=1")
+                  ("Moonlight"  . "moonlight")
+                  ("Steam"      . "steam")
+                  ("Doomseeker" . "doomseeker")
+                  ("Torrent"    . "transmission-gtk")
+                  ("PA Volume"  . "pavucontrol")
+                  ("Zoom"       . "zoom")
+                  ("Aria"       . "Aria")))
+         (utils '(("Restart fluidsynth" . "systemctl --user restart fluidsynth")
+                  ("Restart mpd" . "systemctl --user restart mpd && mpd-control play")
+                  ("SSH proxy to tilde" . "ssh -ND 9050 nonk@tilde.as205315.net")
+                  ("Kill all SSH connections" . "pkill ssh")))
+         (command (helm
+                   :prompt "Launch: "
+                   :buffer "*Program selection*"
+                   :sources
+                   (vector
+                    (helm-build-sync-source "Quick launch"
+                      :candidates quick)
+                    (helm-build-sync-source "Utilities"
+                      :candidates utils)))))
+      (sh command 0)))
 
-;;;; Window layouts.
+  ;;;; Window layouts.
 
-(defvar window-layout-defs
-  '(("d" . ())
-    ("b" . ())
-    ("c" . (:right my-term :below my-term))
-    ("t" . (my-term))
-    ("i" . ())
-    ("1" . ())
-    ("2" . ())
-    ("3" . ()))
-  "Description of window layouts created on EXWM startup.")
+  (defvar window-layout-defs
+    '(("d" . ())
+      ("b" . ())
+      ("c" . (:right my-term :below my-term))
+      ("t" . (my-term))
+      ("i" . ())
+      ("1" . ())
+      ("2" . ())
+      ("3" . ()))
+    "Description of window layouts created on EXWM startup.")
 
-(defvar layout-mappings '())
+  (defvar layout-mappings '())
 
-(defun generate-layouts ()
-  "Generate EXWM frames from `window-layout-defs'."
-  (dolist (def window-layout-defs)
-    (set-buffer "*scratch*") ; *scratch* is the starting buffer
-    (let ((workspace (exwm-workspace-add)))
-      (dolist (token (cdr def))
-        (cl-typecase token
-          (keyword        ; :right and :below just split the current window
-           (select-window ; this makes the split window current
-            (cond
-             ((eq token :right)
-              (split-window-right))
-             ((eq token :below)
-              (split-window-below))
-             (t
-              (user-error "Unrecognized token: %s" token)))))
-          (t
-           (funcall token)))) ; call symbols and lambdas (untested)
-      ;; Save the frame for use in `select-layout'.
-      (add-to-list 'layout-mappings (cons (car def) workspace)))))
+  (defun generate-layouts ()
+    "Generate EXWM frames from `window-layout-defs'."
+    (dolist (def window-layout-defs)
+      (set-buffer "*scratch*") ; *scratch* is the starting buffer
+      (let ((workspace (exwm-workspace-add)))
+        (dolist (token (cdr def))
+          (cl-typecase token
+            (keyword        ; :right and :below just split the current window
+             (select-window ; this makes the split window current
+              (cond
+               ((eq token :right)
+                (split-window-right))
+               ((eq token :below)
+                (split-window-below))
+               (t
+                (user-error "Unrecognized token: %s" token)))))
+            (t
+             (funcall token)))) ; call symbols and lambdas (untested)
+        ;; Save the frame for use in `select-layout'.
+        (add-to-list 'layout-mappings (cons (car def) workspace)))))
 
-(defun select-layout ()
-  "Ask user to select a layout from `layout-mappings'."
-  (interactive)
-  (unless layout-mappings ; create the frames on first call
-    (generate-layouts))
-  (if-let* ((letter (read-key "Layout: "))
-            (letter (key-description (list letter))) ; strings are used as keys
-            (mapping (assoc letter layout-mappings))
-            (workspace (cdr mapping))
-            ;; Bail out if the frame is dead.
-            (workspace (when (frame-live-p workspace) workspace)))
-      (exwm-workspace-switch workspace)
-    (user-error "Not a layout")))
+  (defun select-layout ()
+    "Ask user to select a layout from `layout-mappings'."
+    (interactive)
+    (unless layout-mappings ; create the frames on first call
+      (generate-layouts))
+    (if-let* ((letter (read-key "Layout: "))
+              (letter (key-description (list letter))) ; strings are used as keys
+              (mapping (assoc letter layout-mappings))
+              (workspace (cdr mapping))
+              ;; Bail out if the frame is dead.
+              (workspace (when (frame-live-p workspace) workspace)))
+        (exwm-workspace-switch workspace)
+      (user-error "Not a layout")))
 
-(defun copy-10 ()
-  "Enter a Unicode character's base-10 value and copy it to clipboard."
-  (interactive)
-  (with-temp-buffer
-    (let ((read-quoted-char-radix 10))
-      (quoted-insert 1)
-      (clipboard-kill-ring-save (point-min) (point-max)))))
+  (defun copy-10 ()
+    "Enter a Unicode character's base-10 value and copy it to clipboard."
+    (interactive)
+    (with-temp-buffer
+      (let ((read-quoted-char-radix 10))
+        (quoted-insert 1)
+        (clipboard-kill-ring-save (point-min) (point-max)))))
 
-(defun copy-unicode ()
-  "Search for a Unicode character and copy it to clipboard."
-  (interactive)
-  (with-temp-buffer
-    (call-interactively #'insert-char)
-    (clipboard-kill-ring-save (point-min) (point-max))))
+  (defun copy-unicode ()
+    "Search for a Unicode character and copy it to clipboard."
+    (interactive)
+    (with-temp-buffer
+      (call-interactively #'insert-char)
+      (clipboard-kill-ring-save (point-min) (point-max))))
 
-;;;; `use-package' declaration.
+  ;;;; `use-package' declaration.
 
-(use-package exwm
-  :init
-  ;; Easy window-switching with s-b.
-  (setq exwm-workspace-show-all-buffers t)
-  (setq exwm-layout-show-all-buffers t)
-  ;; C-c is a prefix key; send ^C with C-c C-c.
-  (setq exwm-input-simulation-keys '(([?\C-c ?\C-c] . ?\C-c)))
-  (setq exwm-input-global-keys
-        (mapcar
-         (lambda (binding)
-           (cons (kbd (car binding)) (cdr binding)))
-         `(("s-h" . windmove-left) ; basic movement keys
-           ("s-j" . windmove-down)
-           ("s-k" . windmove-up)
-           ("s-l" . windmove-right)
-           ("C-s-h" . ,(exchange-window #'windmove-left)) ; swap buffers
-           ("C-s-j" . ,(exchange-window #'windmove-down))
-           ("C-s-k" . ,(exchange-window #'windmove-up))
-           ("C-s-l" . ,(exchange-window #'windmove-right))
-           ("M-s-h" . shrink-window-horizontally) ; weird resize
-           ("M-s-j" . enlarge-window)
-           ("M-s-k" . shrink-window)
-           ("M-s-l" . enlarge-window-horizontally)
-           ("s-n" . split-window-below) ; obviously, window-splits
-           ("s-m" . split-window-right)
-           ("s-w" . delete-window)     ; kill a window (buffer is left behind)
-           ("s-q" . force-kill-buffer) ; kill a buffer
-           ("s-b" . switch-to-buffer)  ; select a buffer
-           ("s-f" . exwm-layout-toggle-fullscreen) ; window modes
-           ("s-r" . exwm-floating-toggle-floating)
-           ("s-g" . exwm-input-toggle-keyboard) ; char and line mode switch
-           ("s-i" . load-init)     ; reload init file
-           ("s-v" . select-layout) ; change workspace
-           ("s-'" . copy-unicode)  ; weird stuff
-           ("s-0" . copy-10)
-           ("s-s" . exwm-input-send-next-key)
-           ("s-e" . exec)
-           ("s-E" . exec-buf)
-           ("<s-return>" . my-term) ; common programs
-           ("<print>" . ,(sh-binding "screenshot"))
-           ("s-d" . quick) ; dmenu-like prompt
-           ("s-p" . ,(mpd-binding "select")) ; music
-           ("s-," . ,(mpd-binding "prev"))
-           ("s-." . ,(mpd-binding "next"))
-           ("s-o" . ,(mpd-binding "toggle"))
-           ("s-;" . ,(mpd-binding "clear"))
-           ("s-[" . ,(mpd-binding "status"))
-           ("s-]" . ,(mpd-binding "single"))
-           ("s-ä" . ,(mpd-binding "seek -8"))
-           ("s-$" . ,(mpd-binding "seek +8"))))))
+  (use-package exwm
+    :init
+    ;; Easy window-switching with s-b.
+    (setq exwm-workspace-show-all-buffers t)
+    (setq exwm-layout-show-all-buffers t)
+    ;; C-c is a prefix key; send ^C with C-c C-c.
+    (setq exwm-input-simulation-keys '(([?\C-c ?\C-c] . ?\C-c)))
+    (setq exwm-input-global-keys
+          (mapcar
+           (lambda (binding)
+             (cons (kbd (car binding)) (cdr binding)))
+           `(("s-h" . windmove-left) ; basic movement keys
+             ("s-j" . windmove-down)
+             ("s-k" . windmove-up)
+             ("s-l" . windmove-right)
+             ("C-s-h" . ,(exchange-window #'windmove-left)) ; swap buffers
+             ("C-s-j" . ,(exchange-window #'windmove-down))
+             ("C-s-k" . ,(exchange-window #'windmove-up))
+             ("C-s-l" . ,(exchange-window #'windmove-right))
+             ("M-s-h" . shrink-window-horizontally) ; weird resize
+             ("M-s-j" . enlarge-window)
+             ("M-s-k" . shrink-window)
+             ("M-s-l" . enlarge-window-horizontally)
+             ("s-n" . split-window-below) ; obviously, window-splits
+             ("s-m" . split-window-right)
+             ("s-w" . delete-window)     ; kill a window (buffer is left behind)
+             ("s-q" . force-kill-buffer) ; kill a buffer
+             ("s-b" . switch-to-buffer)  ; select a buffer
+             ("s-f" . exwm-layout-toggle-fullscreen) ; window modes
+             ("s-r" . exwm-floating-toggle-floating)
+             ("s-g" . exwm-input-toggle-keyboard) ; char and line mode switch
+             ("s-i" . load-init)     ; reload init file
+             ("s-v" . select-layout) ; change workspace
+             ("s-'" . copy-unicode)  ; weird stuff
+             ("s-0" . copy-10)
+             ("s-s" . exwm-input-send-next-key)
+             ("s-e" . exec)
+             ("s-E" . exec-buf)
+             ("<s-return>" . my-term) ; common programs
+             ("<print>" . ,(sh-binding "screenshot"))
+             ("s-d" . quick) ; dmenu-like prompt
+             ("s-p" . ,(mpd-binding "select")) ; music
+             ("s-," . ,(mpd-binding "prev"))
+             ("s-." . ,(mpd-binding "next"))
+             ("s-o" . ,(mpd-binding "toggle"))
+             ("s-;" . ,(mpd-binding "clear"))
+             ("s-[" . ,(mpd-binding "status"))
+             ("s-]" . ,(mpd-binding "single"))
+             ("s-ä" . ,(mpd-binding "seek -8"))
+             ("s-$" . ,(mpd-binding "seek +8"))))))
 
-;;;; EXWM magic.
+  ;;;; EXWM magic.
 
-(defun exwm-update-class-actions ()
-  (unless exwm-title
-    (exwm-workspace-rename-buffer exwm-class-name)))
-(add-hook 'exwm-update-class-hook #'exwm-update-class-actions)
+  (defun exwm-update-class-actions ()
+    (unless exwm-title
+      (exwm-workspace-rename-buffer exwm-class-name)))
+  (add-hook 'exwm-update-class-hook #'exwm-update-class-actions)
 
-(defun exwm-update-title-actions ()
-  (exwm-workspace-rename-buffer exwm-title))
-(add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
+  (defun exwm-update-title-actions ()
+    (exwm-workspace-rename-buffer exwm-title))
+  (add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
 
-(defvar exwm-enabled nil
-  "Non-nil if `start-exwm' was run.")
+  (defun exwm-disable-modeline ()
+    "Delegate modeline display to `mini-modeline-mode'."
+    (setq mode-line-format nil))
+  (add-hook 'exwm-manage-finish-hook #'exwm-disable-modeline)
 
-(defun exwm-update-input ()
-  "Re-bind EXWM keys after `exwm-input-global-keys' update."
-  (dolist (binding exwm-input-global-keys)
-    (exwm-input--set-key (car binding) (cdr binding))))
+  (defvar exwm-enabled nil
+    "Non-nil if `start-exwm' was run.")
 
-(defun exwm-init-actions ()
-  "Hook run when the EXWM session is initialized."
-  (use-package humanoid-themes)
-  (load-theme 'humanoid-dark t)
-  (set-frame-font "Hack 10" nil t)
-  (unbind global-map "C-z") ; can't hide EXWM frames
-  (setq exwm-enabled t))
-(add-hook 'exwm-init-hook #'exwm-init-actions)
+  (defun exwm-update-input ()
+    "Re-bind EXWM keys after `exwm-input-global-keys' update."
+    (dolist (binding exwm-input-global-keys)
+      (exwm-input--set-key (car binding) (cdr binding))))
 
-(add-hook 'exwm-exit-hook (lambda () (setq exwm-enabled nil)))
+  (defun exwm-init-actions ()
+    "Hook run when the EXWM session is initialized."
+    (use-package humanoid-themes)
+    (load-theme 'humanoid-dark t)
+    (set-frame-font "Hack 10" nil t)
+    (unbind global-map "C-z") ; can't hide EXWM frames
+    (setq exwm-enabled t))
+  (add-hook 'exwm-init-hook #'exwm-init-actions)
 
-(defun start-exwm ()
-  "Start EXWM session.  Used in .xinitrc."
-  (exwm-enable)
-  (scroll-bar-mode 0)
-  (fringe-mode 0))
+  (add-hook 'exwm-exit-hook (lambda () (setq exwm-enabled nil)))
 
-;; If EXWM is still running, re-bind the keys.
-(when exwm-enabled
-  (exwm-update-input))
+  (defun start-exwm ()
+    "Start EXWM session.  Used in .xinitrc."
+    (exwm-enable)
+    (scroll-bar-mode 0)
+    (fringe-mode 0))
+
+  ;; If EXWM is still running, re-bind the keys.
+  (when exwm-enabled
+    (exwm-update-input))
 #+END_SRC
 
 * Miscellaneous
 
 #+BEGIN_SRC emacs-lisp
-(c-add-style "nonk123"
-             '("java"
-               (c-basic-offset . 4)
-               (c-offsets-alist ((access-label . /)
-                                 (case-label . +)))))
+  (c-add-style "nonk123"
+               '("java"
+                 (c-basic-offset . 4)
+                 (c-offsets-alist ((access-label . /)
+                                   (case-label . +)))))
 
-(setq c-default-style
-      '((java-mode . "java")
-        (awk-mode . "awk")
-        (other . "nonk123")))
+  (setq c-default-style
+        '((java-mode . "java")
+          (awk-mode . "awk")
+          (other . "nonk123")))
 
-(setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 
-(setq-default
- indent-tabs-mode nil
- tab-stop-list nil
- epa-pinentry-mode 'loopback
- vc-follow-symlinks t
- major-mode #'prog-mode)
+  (setq-default
+   indent-tabs-mode nil
+   tab-stop-list nil
+   epa-pinentry-mode 'loopback
+   vc-follow-symlinks t
+   major-mode #'prog-mode)
 
-(menu-bar-mode 0)
-(tool-bar-mode 0)
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
 
-(blink-cursor-mode 0)
+  (blink-cursor-mode 0)
 
-(setq display-time-day-and-date t)
-(display-time-mode 1)
+  (delete-selection-mode 1)
 
-(delete-selection-mode 1)
+  (show-paren-mode 1)
 
-(show-paren-mode 1)
-
-(column-number-mode 1)
+  (column-number-mode 1)
 #+END_SRC
