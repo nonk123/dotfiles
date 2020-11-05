@@ -5,7 +5,7 @@ After=sound.target
 Requires=sound.target
 
 [Service]
-ExecStart=/usr/bin/env fluidsynth -i --server -a pulseaudio -m alsa_seq -g 1.0 /home/nonk/Misc/Unison.sf2
+ExecStart=/usr/bin/env fluidsynth -i --server -a pulseaudio -m alsa_seq -g 1.0 /usr/share/sounds/sf2/FluidR3_GM.sf2
 Restart=on-failure
 
 [Install]
