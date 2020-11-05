@@ -1,6 +1,0 @@
-#!/bin/sh
-
-user=nonk
-addr=tilde.as205315.net
-
-scp "$1" "$user@$addr:~/Files/"

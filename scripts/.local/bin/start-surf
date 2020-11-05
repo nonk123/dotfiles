@@ -1,4 +1,0 @@
-#!/bin/sh
-
-website=$(echo "google.com" | prompt "Website:")
-[ "$website" ] && surf "$website"
