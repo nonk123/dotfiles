@@ -8,6 +8,9 @@
 
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
+;; ODT exporter fork.
+(add-to-list 'package-archives '("ox-odt" . "https://kjambunathan.github.io/elpa/"))
+
 ;; Workaround for Emacs 26; GNU package archive won't work otherwise.
 (when (= emacs-major-version 26)
   (defvar gnutls-algorithm-priority) ; avoid a warning in later versions

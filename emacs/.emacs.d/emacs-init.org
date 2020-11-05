@@ -391,9 +391,12 @@ external program paths.
     (dolist (key (list [(tab)] (kbd "TAB") (kbd "<tab>")))
       (define-key org-mode-map key nil))
     (setq org-latex-to-mathml-convert-command
-          "latexmlmath \"%i\" --presentationmathml=%o"))
+          "java -jar %j -unicode -force -df %o %I")
+    (setq org-latex-to-mathml-jar-file "~/Downloads/mathtoweb.jar"))
 
   (use-package org-preview-html)
+
+  (use-package ox-odt)
 
   (use-package htmlize)
 #+END_SRC
@@ -514,7 +517,7 @@ Various hooks and variables. Not much to say here.
     :init
     (setq whitespace-line-column 80)
     (setq whitespace-style '(face trailing tab-mark lines-tail))
-    :hook ((prog-mode sgml-mode) . whitespace-mode))
+    :hook ((prog-mode sgml-mode org-mode text-mode) . whitespace-mode))
 
   (use-package eldoc
     :delight
@@ -590,52 +593,54 @@ arguments, or start a login shell, which is, in fact, the main focus of
 this function.
 
 #+BEGIN_SRC emacs-lisp
-(defun my-term (&optional command &rest args)
-  "Start `ansi-term', executing COMMAND with ARGS.
+  (defun my-term (&optional command &rest args)
+    "Start `ansi-term', executing COMMAND with ARGS.
 
-If COMMAND is not set (e.g. interactive call), enter login shell.
+  If COMMAND is not set (e.g. interactive call), enter login shell.
 
-COMMAND is spawned inside the project root,
-if present, or in user's home directory."
-  (interactive)
-  (let* ((default-directory (or (projectile-project-root) (expand-file-name "~")))
-         (command (if command
-                      (concat command " " (string-join args " "))
-                    (concat (getenv "SHELL") " -l")))
-         (program (mktemp "my-term" command)))
-    (chmod program #o744)
-    (ansi-term program)))
+  COMMAND is spawned inside the project root,
+  if present, or in user's home directory."
+    (interactive)
+    (let* ((default-directory (or (projectile-project-root) (expand-file-name "~")))
+           (command (if command
+                        (concat command " " (string-join args " "))
+                      (concat (getenv "SHELL") " -l")))
+           (program (mktemp "my-term" command)))
+      (chmod program #o744)
+      (ansi-term program)))
 
-(defun emux-ssh (hostname)
-  "Start a `my-term' session which connects to HOSTNAME over SSH."
-  (let ((connector
-         (mktemp "emux-connector"
-                 (format "ssh -tAY %s emacsclient -c" hostname))))
-    (chmod connector #o744)
-    (my-term connector)
-    (emux-mode -1)))
+  (defun emux-ssh (hostname)
+    "Start a `my-term' session which connects to HOSTNAME over SSH."
+    (let ((connector
+           (mktemp "emux-connector"
+                   (format "ssh -tAY %s emacsclient -c" hostname))))
+      (chmod connector #o744)
+      (my-term connector)
+      (emux-mode -1)))
 
-(defun emux-connect ()
-  "Choose a host to connect to, and connect to it via `emux-ssh'."
-  (interactive)
-  (when-let ((hosts '(("Tilde" . "nonk@tilde.as205315.net")
-                      ("Music" . "music@185.222.117.80")))
-             (hostname (helm (helm-build-sync-source "SSH Endpoints"
-                               :candidates hosts))))
-    (emux-ssh hostname)))
+  (defun emux-connect ()
+    "Choose a host to connect to, and connect to it via `emux-ssh'."
+    (interactive)
+    (when-let ((hosts '(("Tilde" . "nonk@tilde.as205315.net")
+                        ("Music" . "music@185.222.117.80")))
+               (hostname (helm (helm-build-sync-source "SSH Endpoints"
+                                 :candidates hosts))))
+      (emux-ssh hostname)))
 
-(defun force-kill-buffer ()
-  "Kill this buffer even if it has a process running."
-  (interactive)
-  (let ((kill-buffer-query-functions
-         (delq 'process-kill-buffer-query-function kill-buffer-query-functions)))
-    (kill-this-buffer)))
+  (defun force-kill-buffer ()
+    "Kill this buffer even if it has a process running."
+    (interactive)
+    (let ((kill-buffer-query-functions
+           (delq 'process-kill-buffer-query-function kill-buffer-query-functions)))
+      (if (string= (buffer-name) "*scratch*")
+          (user-error "Really?")
+        (kill-this-buffer))))
 
-(define-minor-mode emux-mode
-  "Emux keybindings mode."
-  :init-value t
-  :lighter " ε"
-  :keymap (bind (make-sparse-keymap) emux-map))
+  (define-minor-mode emux-mode
+    "Emux keybindings mode."
+    :init-value t
+    :lighter " ε"
+    :keymap (bind (make-sparse-keymap) emux-map))
 #+END_SRC
 
 * Modes
@@ -1051,10 +1056,9 @@ Currently used by Flymake."
           (call-interactively #'kill-region)
           (modal-insert))
       (when-let ((char (read-char "Replace with: ")))
-        (replace-region-contents
-         (point) (1+ (point))
-         (lambda ()
-           (char-to-string char))))))
+        (delete-region (point) (1+ (point)))
+        (insert char)
+        (goto-char (1- (point))))))
 
   (defun move-and-kill (old-point)
     "Kill everything between OLD-POINT and point."
@@ -1302,56 +1306,6 @@ Currently used by Flymake."
                       :candidates utils)))))
       (sh command 0)))
 
-  ;;;; Window layouts.
-
-  (defvar window-layout-defs
-    '(("d" . ())
-      ("b" . ())
-      ("c" . (:right my-term :below my-term))
-      ("t" . (my-term))
-      ("i" . ())
-      ("1" . ())
-      ("2" . ())
-      ("3" . ()))
-    "Description of window layouts created on EXWM startup.")
-
-  (defvar layout-mappings '())
-
-  (defun generate-layouts ()
-    "Generate EXWM frames from `window-layout-defs'."
-    (dolist (def window-layout-defs)
-      (set-buffer "*scratch*") ; *scratch* is the starting buffer
-      (let ((workspace (exwm-workspace-add)))
-        (dolist (token (cdr def))
-          (cl-typecase token
-            (keyword        ; :right and :below just split the current window
-             (select-window ; this makes the split window current
-              (cond
-               ((eq token :right)
-                (split-window-right))
-               ((eq token :below)
-                (split-window-below))
-               (t
-                (user-error "Unrecognized token: %s" token)))))
-            (t
-             (funcall token)))) ; call symbols and lambdas (untested)
-        ;; Save the frame for use in `select-layout'.
-        (add-to-list 'layout-mappings (cons (car def) workspace)))))
-
-  (defun select-layout ()
-    "Ask user to select a layout from `layout-mappings'."
-    (interactive)
-    (unless layout-mappings ; create the frames on first call
-      (generate-layouts))
-    (if-let* ((letter (read-key "Layout: "))
-              (letter (key-description (list letter))) ; strings are used as keys
-              (mapping (assoc letter layout-mappings))
-              (workspace (cdr mapping))
-              ;; Bail out if the frame is dead.
-              (workspace (when (frame-live-p workspace) workspace)))
-        (exwm-workspace-switch workspace)
-      (user-error "Not a layout")))
-
   (defun copy-10 ()
     "Enter a Unicode character's base-10 value and copy it to clipboard."
     (interactive)
@@ -1400,8 +1354,21 @@ Currently used by Flymake."
              ("s-f" . exwm-layout-toggle-fullscreen) ; window modes
              ("s-r" . exwm-floating-toggle-floating)
              ("s-g" . exwm-input-toggle-keyboard) ; char and line mode switch
-             ("s-i" . load-init)     ; reload init file
-             ("s-v" . select-layout) ; change workspace
+             ("s-i" . load-init) ; reload init file
+             ,@(mapcar (lambda (x) ; workspace stuff
+                         (cons
+                          (format "s-%s" x)
+                          (lambda ()
+                            (interactive)
+                            (let ((count (exwm-workspace--count)))
+                              (exwm-workspace-switch-create x)
+                              ;; When a workspace is created, split horizontally
+                              ;; to compensate for two monitors. The entire frame
+                              ;; is stretched over 2*1366 pixels otherwise.
+                              (when (>= x count)
+                                (switch-to-buffer "*scratch*")
+                                (split-window-right))))))
+                       (number-sequence 0 9))
              ("s-'" . copy-unicode)  ; weird stuff
              ("s-0" . copy-10)
              ("s-s" . exwm-input-send-next-key)
@@ -1448,8 +1415,9 @@ Currently used by Flymake."
     "Hook run when the EXWM session is initialized."
     (use-package humanoid-themes)
     (load-theme 'humanoid-dark t)
-    (set-frame-font "Hack 10" nil t)
+    (set-frame-font "Hack 9" nil t)
     (unbind global-map "C-z") ; can't hide EXWM frames
+    (split-window-right) ; initial workspace 0 split for two monitors
     (setq exwm-enabled t))
   (add-hook 'exwm-init-hook #'exwm-init-actions)
 
