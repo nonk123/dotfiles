@@ -10,20 +10,22 @@ cd "$1"
 
 shift
 
-# Activate the Python virtual environment and install the project dependencies.
-function venv_hook() {
-    export VIRTUAL_ENV=$PWD/$1
-    source $1/bin/activate
-    python -m pip install --upgrade -r requirements.txt &
+# Run `pip` silently.
+function pip() {
+    /usr/bin/env pip "$@" < /dev/null &> /dev/null
 }
 
-# Check for common virtual environment directories.
-for venv_dir in env/ venv/; do
-    if [[ -d "$venv_dir" ]]; then
-        venv_hook "$venv_dir"
-        break
-    fi
-done
+# Start a new virtual environment if requirements.txt is found.
+# This marks the project as a Python project.
+if [[ -f "requirements.txt" ]]; then
+    # Create if virtual environment doesn't exist.
+    [[ ! -d env/ ]] && python3 -m virtualenv env/
+    source env/bin/activate
+    # Install `pyls`.
+    pip install -U python-language-server rope pyflakes yapf
+    # And random dependencies on top of that, in the background.
+    pip install -U -r requirements.txt &
+fi
 
 # Fetch Cargo dependencies for Rust completion.
 if [[ -f Cargo.toml ]]; then
@@ -31,6 +33,6 @@ if [[ -f Cargo.toml ]]; then
 fi
 
 # Run the language server.
-$@
+"$@"
 
 wait

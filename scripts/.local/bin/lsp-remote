@@ -40,7 +40,7 @@ function run-helper() {
 function project-tree() {
     local flag
 
-    # -c outputs the tracked files, and -o the untracked.
+    # -c outputs the tracked files, and -o, the untracked.
     for flag in -c -o; do
         git -C "$LOCAL_PROJECT_ROOT" ls-files $flag --exclude-standard
     done
@@ -54,7 +54,7 @@ function start-mainloop() {
     # This ensures that `inotifywait` _will_ be killed upon exit: Bash functions
     # don't have a PID and cannot be stopped with `kill`.
     inotifywait -rm --format $'%w%f\t%e' "$LOCAL_PROJECT_ROOT" \
-                -e modify,attrib,move,create > "$MAINLOOP_FIFO" &
+                -e modify,move,create > "$MAINLOOP_FIFO" &
 
     sleep 2
 
@@ -63,6 +63,10 @@ function start-mainloop() {
     # This will run until the mainloop FIFO is exhausted.
     while read line; do
         local local_file=$(echo "$line" | cut -f1)
+
+        # Prevent spamming `lsp-copy`.
+        [[ "$local_file" = "$prev_file" ]] && continue
+
         local_file=$(realpath --relative-to "$LOCAL_PROJECT_ROOT" "$local_file")
 
         local remote_file=$REMOTE_PROJECT_ROOT/${local_file#$LOCAL_PROJECT_ROOT}
@@ -71,6 +75,8 @@ function start-mainloop() {
         if project-tree | grep -qFx "$local_file"; then
             run-helper lsp-copy "$remote_file" < "$local_file"
         fi
+
+        local prev_file=$local_file
     done < "$MAINLOOP_FIFO" &
 }
 
