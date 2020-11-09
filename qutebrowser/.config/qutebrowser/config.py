@@ -44,7 +44,7 @@ config.bind("<Alt-p>", "command-history-prev", mode="command")
 # Reload config.
 config.bind("<space>c", "config-source")
 # Download a YouTube video as a music track.
-config.bind("<space>d", "spawn mpd-control download {url}")
+config.bind("<space>d", "spawn ~/.local/bin/download-track {url}")
 # Look up on Wiktionary.
 config.bind("<space>w", "set-cmd-text :open -t en.wiktionary.org/wiki/")
 

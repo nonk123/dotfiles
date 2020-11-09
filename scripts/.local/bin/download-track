@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Download a music track with `youtube-dl`.
+
+# $1 - track URL.
+
+if ~/.local/bin/youtube-dl --no-playlist -x -o "~/Music/%(title)s.%(ext)s" "$1"; then
+    mpc update
+    notify-send "Download complete"
+else
+    notify-send "Download failed"
+fi

@@ -6,9 +6,8 @@
 # Ignore external files, and whitelist homebrewn stuff.
 !df-to-xresources
 !lsp-remote
-!mpd-control
+!download-track
 !open-and-sync
-!prompt
 !screenshot
 !sync
 !update-winetricks

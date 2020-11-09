@@ -6,7 +6,9 @@ After=network.target sound.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/mpd --verbose --stdout
+ExecStart=/usr/bin/env mpd --verbose --stdout
+ExecStartPost=/usr/bin/env mpc repeat on
+ExecStartPost=/usr/bin/env mpc single on
 Restart=on-failure
 StandardOutput=journal
 StandardError=journal
