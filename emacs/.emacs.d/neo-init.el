@@ -113,6 +113,7 @@ project paths."
 (use-package projectile
   :delight
   :init
+  (setq projectile-completion-system 'default)
   (when (file-exists-p "~/Sources/")
     (setq projectile-project-search-path '("~/Sources/")))
   (when (file-exists-p "~/dotfiles/")
@@ -138,10 +139,23 @@ project paths."
 
 ;;;;; Major modes
 
-;; Call `use-package' on each `-mode' beginning with LANG.
-;; No specific configuration is required for them.
-(dolist (lang '(rust lua yaml))
-  (eval `(use-package ,(concat-symbols lang '-mode))))
+(use-package yaml-mode)
+
+(use-package lua-mode)
+
+(use-package rust-mode
+  :init
+  (when (file-exists-p "~/.cargo/bin/cargo")
+    (setq rust-cargo-bin "~/.cargo/bin/cargo")
+    (setq rust-rustfmt-bin "~/.cargo/bin/rustfmt")
+    (setq rust-format-on-save t)))
+
+(defvar asy-el-dir "/usr/share/emacs/site-lisp/")
+
+(use-package asy-mode
+  ;; Prevent loading if asymptote isn't installed.
+  :when (file-exists-p (concat (file-name-directory asy-el-dir) "asy-mode.el"))
+  :load-path asy-el-dir)
 
 ;;;;; Fun
 
@@ -158,15 +172,20 @@ project paths."
 
 ;;;; Org
 
+(defun org-mode-actions ()
+  "Set appropriate `fill-column' and disable `electric-indent-local-mode'."
+  (electric-indent-local-mode -1)
+  (set-fill-column 72))
+
 (use-package org
+  :hook (org-mode . org-mode-actions)
   :config
   (setq org-confirm-babel-evaluate #'ignore)
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((ditaa . t)))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((plantuml . t)))
+   '((ditaa . t)
+     (plantuml . t)
+     (asymptote .t)))
   (custom-set-variables
    '(org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
    '(org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
@@ -215,10 +234,23 @@ project paths."
   (column-number-mode 1)
   (show-paren-mode 1)
   (electric-pair-mode 1)
-  ;; Disable tab indentation.
+  ;; C-like styles.
+  (c-add-style
+   "nonk123"
+   '("java"
+     (c-basic-offset . 4)
+     (c-offsets-alist ((access-label . /)
+                       (case-label . +)))))
+  (setq c-default-style
+        '((java-mode . "java")
+          (awk-mode . "awk")
+          (other . "nonk123")))
+  ;; Default to 4-space indentation.
   (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
   ;; Enable all disabled commands.
   (setq disabled-command-function nil)
+  :hook (text-mode . auto-fill-mode)
   :bind (:map emacs-lisp-mode-map
               ("M-e" . eval-region-or-buffer)))
 
