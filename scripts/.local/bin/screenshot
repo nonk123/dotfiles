@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Take a screenshot with `maim`, and copy it to clipboard.
 
@@ -6,4 +6,4 @@
 
 IMAGE_FORMAT=png
 
-maim "$@" -sf $IMAGE_FORMAT | xclip -t image/$IMAGE_FORMAT -sel clip
+maim -sf "$IMAGE_FORMAT" | xclip -t "image/$IMAGE_FORMAT" -sel clip

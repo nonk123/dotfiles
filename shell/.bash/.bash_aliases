@@ -109,9 +109,22 @@ function up {
 # `scp` files to the godserver (tm).
 # $@ - the files.
 function upload {
+    local file
+
     for file in "$@"; do
         scp "$file" nonk@tilde.as205315.net:~/Files/
+        echo "https://files.nonk.users.as205315.net/${file##*/}" | clip
     done
+}
+
+# Upload a file from stdin to the godserver (tm).
+# stdin - file contents.
+function upload-stdin {
+    local file=$(mktemp)
+
+    cat > "$file"
+    upload "$file"
+    rm "$file"
 }
 
 export -f failsafe notify-send clip
