@@ -305,6 +305,9 @@ project paths."
 (use-package display-line-numbers
   :hook (prog-mode . display-line-numbers-mode))
 
+(use-package woman
+  :bind ("C-c w" . woman))
+
 (defun eval-region-or-buffer ()
   "If region is active, evaluate it.  Evaluate the current buffer otherwise."
   (interactive)
@@ -384,6 +387,39 @@ Actually returns a new command to do that."
       (if result
           (switch-to-buffer result)
         (run-shell-command program)))))
+
+(use-package winner
+  :init (winner-mode 1)
+  :bind (:map winner-mode-map
+              ("C-c u" . winner-undo)
+              ("C-c U" . winner-redo))
+  :bind-exwm (("s-u" . winner-undo)
+              ("s-U" . winner-redo)))
+
+(use-package alarm-clock
+  :init
+  (when-let* ((file "~/Music/Master of Tartarus.mp4")
+              (file-exists-p file))
+    (setq alarm-clock-sound-file file))
+  :config
+  ;; Replace mpg123 with mpv in `alarm-clock'.
+
+  (defvar alarm-clock--ding-process nil)
+
+  (defun alarm-clock--ding ()
+    "Play a ding with MPV."
+    (let ((sound (expand-file-name alarm-clock-sound-file)))
+      (setq alarm-clock--ding-process
+            (start-process "Alarm Clock" nil "mpv" sound))))
+
+  (defun alarm-clock-stop-ding ()
+    "Stop `alarm-clock--ding-process'."
+    (interactive)
+    (when (process-live-p alarm-clock--ding-process)
+      (interrupt-process alarm-clock--ding-process)))
+  :bind-exwm (("s-a v" . alarm-clock-list-view)
+              ("s-a s" . alarm-clock-set)
+              ("s-a S" . alarm-clock-stop-ding)))
 
 (use-package exwm
   :init
