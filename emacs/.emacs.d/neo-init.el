@@ -19,8 +19,6 @@
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 
-(load-file custom-file)
-
 ;;;; Package initialization
 
 (require 'package)
@@ -65,6 +63,47 @@ TESTFN is passed to `assoc' call on PLACE."
   (if-let ((entry (assoc key (symbol-value place) testfn)))
       (setf (cdr entry) value)
     (add-to-list place (cons key value))))
+
+;;;; :bind-exwm
+
+;; A `use-package' keyword which allows creating EXWM keybindings.
+
+(defvar use-package-exwm-bindings '()
+  "EXWM keybindings created with `:bind-exwm' keyword.")
+
+(defun use-package-normalize/:bind-exwm (name keyword args)
+  ;; A lot of this magic has been taken from `use-package-normalize:/bind'.
+  (let ((arg args)
+        (args* '()))
+    (while arg
+      (let ((x (car arg)))
+        (cond
+         ((and (consp x)
+               (or (stringp (car x)) (vectorp (car x)))
+               (use-package-recognize-function (cdr x) t))
+          (setq args* (nconc args* (list x))))
+         ((listp x)
+          (setq args* (nconc args* (use-package-normalize-binder name keyword x)))
+          (setq arg (cdr arg)))
+         (t
+          (use-package-error ":bind-exwm takes a list of (KEY . COMMAND)")))
+        (setq arg (cdr arg))))
+    args*))
+
+(defun use-package-handler/:bind-exwm (name _keyword args rest state)
+  (use-package-concat
+   (use-package-process-keywords name rest state)
+   `((assoc-update 'use-package-exwm-bindings ',name ',args))))
+
+;; Add `:bind-exwm' after `:bind'.
+(cl-pushnew :bind-exwm
+            (let ((place nil) ; TODO: find a better way?
+                  (list use-package-keywords))
+              (while (and list (not place))
+                (when (eq (car list) :bind)
+                  (setq place list))
+                (setq list (cdr list)))
+              (cdr place)))
 
 ;;;; External packages
 
@@ -286,10 +325,16 @@ project paths."
   (interactive)
   (run-shell-command "~/.local/bin/screenshot"))
 
-(defun spawn-or-switch (program regexp)
+(defun switch-to-buffer-command (buffer-or-name)
+  "Return a new command to switch to buffer BUFFER-OR-NAME."
+  (lambda ()
+    (interactive)
+    (switch-to-buffer buffer-or-name)))
+
+(defun switch-or-spawn (program regexp)
   "Switch to the buffer with name matching REGEXP.  Spawn PROGRAM if no match.
 
-Actually returns a new _command_ to do that."
+Actually returns a new command to do that."
   (lambda ()
     (interactive)
     (let (result)
@@ -307,31 +352,56 @@ Actually returns a new _command_ to do that."
   (setq exwm-layout-show-all-buffers t)
   ;; Prevent floating on all windows.
   (add-hook 'exwm-floating-setup-hook #'exwm-floating-toggle-floating)
-  (custom-set-variables
-   '(exwm-input-global-keys
-     (mapcar (lambda (x)
-               (cons (kbd (car x)) (cdr x)))
-             `(("s-h" . windmove-left)
-               ("s-j" . windmove-down)
-               ("s-k" . windmove-up)
-               ("s-l" . windmove-right)
-               ("s-n" . split-window-below)
-               ("s-m" . split-window-right)
-               ("s-i" . load-init)
-               ("s-f" . exwm-layout-toggle-fullscreen)
-               ("s-w" . delete-window)
-               ("s-q" . kill-current-buffer)
-               ("s-b" . switch-to-buffer)
-               ("s-v" . ,(spawn-or-switch "qutebrowser" ".*qutebrowser$"))
-               ("s-d" . ,(spawn-or-switch "discord" ".*Discord$"))
-               ("s-p" . simple-mpc)
-               ("s-e" . run-shell-command)
-               ("<s-return>" . ansi-term)
-               ("<print>" . screenshot)))))
-  :bind (:map exwm-mode-map ("C-c" . nil)))
 
-;; Fix warnings.
-(declare-function exwm-workspace-rename-buffer "exwm-workspace.el")
+  (defun exwm-init-actions ()
+    "Run `on-gui-available' when EXWM is initialized."
+    (on-gui-available)
+    ;; Split for two monitors.
+    (split-window-right))
+  (add-hook 'exwm-init-hook #'exwm-init-actions)
+
+  (defun exwm-update-class-actions ()
+    "Change buffer name to the window's class name if its title is unset."
+    (unless exwm-title
+      (exwm-workspace-rename-buffer exwm-class-name)))
+  (add-hook 'exwm-update-class-hook #'exwm-update-class-actions)
+
+  (defun exwm-update-title-actions ()
+    "Change buffer name to the window's title."
+    (exwm-workspace-rename-buffer exwm-title))
+  (add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
+
+  (setq exwm-input-global-keys
+        (mapcar
+         (lambda (x)
+           (cons (if (stringp (car x))
+                     (kbd (car x))
+                   (car x))
+                 (cdr x)))
+         `(("s-h" . windmove-left)
+           ("s-j" . windmove-down)
+           ("s-k" . windmove-up)
+           ("s-l" . windmove-right)
+           ("s-n" . split-window-below)
+           ("s-m" . split-window-right)
+           ("s-i" . load-init)
+           ("s-f" . exwm-layout-toggle-fullscreen)
+           ("s-w" . delete-window)
+           ("s-q" . kill-current-buffer)
+           ("s-b" . switch-to-buffer)
+           ("s-v" . ,(switch-or-spawn "qutebrowser" ".*qutebrowser$"))
+           ("s-d" . ,(switch-or-spawn "discord" ".*Discord$"))
+           ("s-s" . ,(switch-to-buffer-command "*scratch*"))
+           ("s-P" . proced)
+           ("s-e" . run-shell-command)
+           ("<s-return>" . ansi-term)
+           ("<print>" . screenshot)
+           ,@(car (mapcar #'cdr use-package-exwm-bindings)))))
+  ;; Apply keymap changes.
+  (pcase-dolist (`(,key . ,command) exwm-input-global-keys)
+    (exwm-input--set-key key command))
+  (exwm-input--update-global-prefix-keys)
+  :bind (:map exwm-mode-map ("C-c" . nil)))
 
 (defun on-gui-available ()
   "Code run when GUI (e.g. X) becomes available."
@@ -343,22 +413,7 @@ Actually returns a new _command_ to do that."
 (when (display-graphic-p)
   (on-gui-available))
 
-(defun exwm-init-actions ()
-  "Run `on-gui-available' when EXWM is initialized."
-  (on-gui-available)
-  ;; Split for two monitors.
-  (split-window-right))
-(add-hook 'exwm-init-hook #'exwm-init-actions)
-
-(defun exwm-update-class-actions ()
-  "Change buffer name to the window's class name if its title is unset."
-  (unless exwm-title
-    (exwm-workspace-rename-buffer exwm-class-name)))
-(add-hook 'exwm-update-class-hook #'exwm-update-class-actions)
-
-(defun exwm-update-title-actions ()
-  "Change buffer name to the window's title."
-  (exwm-workspace-rename-buffer exwm-title))
-(add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
+;; Load the custom file last, after the modifications had been made.
+(load-file custom-file)
 
 ;;; neo-init.el ends here
