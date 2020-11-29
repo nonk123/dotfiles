@@ -45,15 +45,26 @@
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 
-;;;; Preface
-
-;; These modes should be set even if init-file loading goes wrong.
-
 ;;;; Utilities
 
 (defun concat-symbols (&rest symbols)
   "Concatenate SYMBOLS as if they were strings."
   (intern (apply #'concat (mapcar #'symbol-name symbols))))
+
+(defun assoc-update (place key value &optional testfn)
+  "Update the VALUE of KEY in alist PLACE.
+
+PLACE is a symbol pointing to an alist.
+
+KEY and VALUE correspond to the alist entry (KEY . VALUE).
+
+If KEY is not present in PLACE, push (KEY . VALUE).
+If KEY is present, update the VALUE.
+
+TESTFN is passed to `assoc' call on PLACE."
+  (if-let ((entry (assoc key (symbol-value place) testfn)))
+      (setf (cdr entry) value)
+    (add-to-list place (cons key value))))
 
 ;;;; External packages
 
@@ -74,25 +85,25 @@
 
 ;;;; IDE-like features.
 
-(defvar lsp-supported-hook nil
-  "Hook run when opening a file supported by `lsp-remote'.")
+(use-package yasnippet
+  :delight yas-minor-mode
+  :init (yas-global-mode 1))
 
-;; TODO: add more modes.
-(dolist (mode '(python))
-  (add-hook (concat-symbols mode '-mode-hook)
-            (lambda ()
-              (run-hooks 'lsp-supported-hook))))
+(use-package flymake
+  :hook (prog-mode . flymake-mode)
+  :bind (:map flymake-mode-map
+              ("M-p" . flymake-goto-prev-error)
+              ("M-n" . flymake-goto-next-error)))
 
 (use-package eglot
   :config
+  (assoc-update 'eglot-server-programs 'rust-mode '("~/.cargo/bin/rls"))
   ;; Inject `lsp-remote' into all servers.
-  (defun stringp-and-string= (x y)
-    "Return non-nil if X and Y are equal strings."
-    (and (stringp x) (stringp y) (string= x y)))
   (dolist (entry eglot-server-programs)
     (when (listp (cdr entry))
       (cl-pushnew "~/.local/bin/lsp-remote" (cdr entry)
-                  :test #'stringp-and-string=)))
+                  :test (lambda (x y)
+                          (and (stringp x) (stringp y) (string= x y))))))
   ;; Override `eglot' path/URI functions to support `lsp-remote'.
   (defun eglot--uri-to-path (uri)
     "The modus operandi of this function has been lost to time.
@@ -108,7 +119,9 @@ project paths."
     "Convert local project path into \"/tmp/\"-based remote URI."
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) "../"))))
-  :hook (lsp-supported . eglot-ensure))
+  :hook ((python-mode rust-mode) . eglot-ensure)
+  :bind (:map eglot-mode-map
+              ("C-c d" . eldoc-doc-buffer)))
 
 (use-package projectile
   :delight
@@ -121,18 +134,6 @@ project paths."
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
 
-(use-package flymake
-  :hook ((prog-mode eglot-managed-mode) . flymake-mode)
-  :bind (:map flymake-mode-map
-              (("M-n" . flymake-goto-next-error)
-               ("M-p" . flymake-goto-prev-error))))
-
-(use-package company
-  :delight
-  :bind ("<M-tab>" . completion-at-point))
-
-(use-package company-c-headers)
-
 (use-package magit
   :demand
   :bind ("C-x g" . magit))
@@ -143,12 +144,17 @@ project paths."
 
 (use-package lua-mode)
 
+(use-package markdown-mode)
+
 (use-package rust-mode
   :init
   (when (file-exists-p "~/.cargo/bin/cargo")
     (setq rust-cargo-bin "~/.cargo/bin/cargo")
     (setq rust-rustfmt-bin "~/.cargo/bin/rustfmt")
-    (setq rust-format-on-save t)))
+    (setq rust-format-on-save t))
+  (setq rust-format-show-buffer nil)
+  :bind (:map rust-mode-map
+              ("C-c r" . rust-run)))
 
 (defvar asy-el-dir "/usr/share/emacs/site-lisp/")
 
