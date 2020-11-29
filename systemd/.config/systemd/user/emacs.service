@@ -1,5 +1,5 @@
 [Unit]
-Description=Emacs text editor
+Description=Emacs text editor (deprecated service)
 Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
 
 [Service]
