@@ -206,14 +206,54 @@ project paths."
 
 (use-package simple-mpc
   :config
-  ;; Override seek functions to accept prefix argument.
-  (declare-function simple-mpc-seek-internal "simple-mpc.el")
+  ;; Override seek functions to accept a prefix argument.
+
   (defun simple-mpc-seek-forward (&optional arg)
     (interactive "P")
     (simple-mpc-seek-internal (or arg simple-mpc-seek-time-in-s)))
+
   (defun simple-mpc-seek-backward (&optional arg)
     (interactive "P")
-    (simple-mpc-seek-internal (- (or arg simple-mpc-seek-time-in-s)))))
+    (simple-mpc-seek-internal (- (or arg simple-mpc-seek-time-in-s))))
+
+  (defun simple-mpc-seek-to (time-string)
+    "Seek to TIME-STRING in the current track."
+    (interactive "sSeek to: ")
+    ;; Check exit code for errors.
+    (when (/= 0 (simple-mpc-call-mpc nil (list "seek" time-string)))
+      (user-error "Wrong time format")))
+
+  (defun simple-mpc-add-all ()
+    "Clear playlist and add all tracks from \"mpc listall\"."
+    (interactive)
+    (simple-mpc-call-mpc nil "clear")
+    ;; Pass "mpc listall" output to stdin of "mpc add".
+    (with-temp-buffer
+      (call-process "mpc" nil t nil "listall")
+      (let ((process (start-process "mpc add" nil "mpc" "add")))
+        (process-send-region process (point-min) (point-max))
+        (process-send-eof process)))
+    (simple-mpc-maybe-refresh-playlist))
+
+  (defun simple-mpc-extra-commands-hack (&rest args)
+    "Alter the simple-mpc buffer to show extra commands."
+    (interactive)
+    (with-current-buffer (get-buffer-create simple-mpc-main-buffer-name)
+      (read-only-mode -1)
+      (goto-line 8) ; after "seek [b]ackward"
+      (goto-char (line-end-position))
+      (insert "\n      * seek t[o]")
+      (goto-line 14) ; final item of the playlist header
+      (goto-char (line-end-position))
+      (insert "\n      * [a]dd all")
+      (goto-char (point-min))
+      (read-only-mode 1)))
+
+  (advice-add #'simple-mpc :after #'simple-mpc-extra-commands-hack)
+  :bind (:map simple-mpc-mode-map
+              ("a" . simple-mpc-add-all)
+              ("o" . simple-mpc-seek-to))
+  :bind-exwm ("s-p" . simple-mpc))
 
 ;;;; Org
 
