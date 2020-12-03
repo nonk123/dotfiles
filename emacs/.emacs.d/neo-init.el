@@ -11,8 +11,6 @@
   (interactive)
   (load-file "~/.emacs.d/neo-init.el"))
 
-(setq inhibit-startup-screen 'inhibit)
-
 (setq custom-file "~/.emacs.d/custom.el")
 
 ;; Create custom file if it doesn't exist.
@@ -39,9 +37,8 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; Force :ensure t everywhere.
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
+;; Ensure we can actually load stuff.
+(add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 
 ;;;; Utilities
 
@@ -64,48 +61,16 @@ TESTFN is passed to `assoc' call on PLACE."
       (setf (cdr entry) value)
     (add-to-list place (cons key value))))
 
-;;;; :bind-exwm
+;;;; Homebrewn packages.
 
-;; A `use-package' keyword which allows creating EXWM keybindings.
-
-(defvar use-package-exwm-bindings '()
-  "EXWM keybindings created with `:bind-exwm' keyword.")
-
-(defun use-package-normalize/:bind-exwm (name keyword args)
-  ;; A lot of this magic has been taken from `use-package-normalize:/bind'.
-  (let ((arg args)
-        (args* '()))
-    (while arg
-      (let ((x (car arg)))
-        (cond
-         ((and (consp x)
-               (or (stringp (car x)) (vectorp (car x)))
-               (use-package-recognize-function (cdr x) t))
-          (setq args* (nconc args* (list x))))
-         ((listp x)
-          (setq args* (nconc args* (use-package-normalize-binder name keyword x)))
-          (setq arg (cdr arg)))
-         (t
-          (use-package-error ":bind-exwm takes a list of (KEY . COMMAND)")))
-        (setq arg (cdr arg))))
-    args*))
-
-(defun use-package-handler/:bind-exwm (name _keyword args rest state)
-  (use-package-concat
-   (use-package-process-keywords name rest state)
-   `((assoc-update 'use-package-exwm-bindings ',name ',args))))
-
-;; Add `:bind-exwm' after `:bind'.
-(cl-pushnew :bind-exwm
-            (let ((place nil) ; TODO: find a better way?
-                  (list use-package-keywords))
-              (while (and list (not place))
-                (when (eq (car list) :bind)
-                  (setq place list))
-                (setq list (cdr list)))
-              (cdr place)))
+;; The most epic keyword.
+(use-package bind-exwm)
 
 ;;;; External packages
+
+;; Force :ensure t everywhere.
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
 
 ;; Alter mode lighters at will.
 (use-package delight)
@@ -364,36 +329,6 @@ project paths."
 
 ;;;; GUI
 
-(defun run-shell-command (command)
-  "Run COMMAND using the default shell."
-  (interactive (list (read-shell-command "Run: ")))
-  (start-process "shell" nil "bash" "-c" command))
-
-(defun screenshot ()
-  "Run screenshot script."
-  (interactive)
-  (run-shell-command "~/.local/bin/screenshot"))
-
-(defun switch-to-buffer-command (buffer-or-name)
-  "Return a new command to switch to buffer BUFFER-OR-NAME."
-  (lambda ()
-    (interactive)
-    (switch-to-buffer buffer-or-name)))
-
-(defun switch-or-spawn (program regexp)
-  "Switch to the buffer with name matching REGEXP.  Spawn PROGRAM if no match.
-
-Actually returns a new command to do that."
-  (lambda ()
-    (interactive)
-    (let (result)
-      (dolist (buffer (mapcar #'buffer-name (buffer-list)))
-        (when (string-match regexp buffer)
-          (setq result buffer)))
-      (if result
-          (switch-to-buffer result)
-        (run-shell-command program)))))
-
 (use-package winner
   :init (winner-mode 1)
   :bind (:map winner-mode-map
@@ -430,8 +365,10 @@ Actually returns a new command to do that."
 (use-package exwm
   :init
   (require 'exwm-config)
+
   (setq exwm-workspace-show-all-buffers t)
   (setq exwm-layout-show-all-buffers t)
+
   ;; Prevent floating on all windows.
   (add-hook 'exwm-floating-setup-hook #'exwm-floating-toggle-floating)
 
@@ -453,13 +390,14 @@ Actually returns a new command to do that."
     (exwm-workspace-rename-buffer exwm-title))
   (add-hook 'exwm-update-title-hook #'exwm-update-title-actions)
 
+  (defun screenshot ()
+    "Run screenshot script."
+    (interactive)
+    (call-process "~/.local/bin/screenshot" nil 0))
+
   (setq exwm-input-global-keys
         (mapcar
-         (lambda (x)
-           (cons (if (stringp (car x))
-                     (kbd (car x))
-                   (car x))
-                 (cdr x)))
+         #'exwm-normalize-binding
          `(("s-h" . windmove-left)
            ("s-j" . windmove-down)
            ("s-k" . windmove-up)
@@ -471,17 +409,19 @@ Actually returns a new command to do that."
            ("s-w" . delete-window)
            ("s-q" . kill-current-buffer)
            ("s-b" . switch-to-buffer)
-           ("s-v" . ,(switch-or-spawn "qutebrowser" ".*qutebrowser$"))
-           ("s-d" . ,(switch-or-spawn "discord" ".*Discord$"))
-           ("s-s" . ,(switch-to-buffer-command "*scratch*"))
+           ("s-v" . ("qutebrowser" . ".*qutebrowser$"))
+           ("s-d" . ("discord" . ".*Discord$"))
+           ("s-s" . "*scratch*")
            ("s-P" . proced)
            ("s-e" . run-shell-command)
            ("<s-return>" . ansi-term)
            ("<print>" . screenshot)
-           ,@(car (mapcar #'cdr use-package-exwm-bindings)))))
+           ,@(use-package-exwm-bindings--unwrap))))
+
   ;; Apply keymap changes.
   (pcase-dolist (`(,key . ,command) exwm-input-global-keys)
     (exwm-input--set-key key command))
+
   (exwm-input--update-global-prefix-keys)
   :bind (:map exwm-mode-map ("C-c" . nil)))
 
