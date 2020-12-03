@@ -61,6 +61,16 @@ TESTFN is passed to `assoc' call on PLACE."
       (setf (cdr entry) value)
     (add-to-list place (cons key value))))
 
+(defmacro override-defun (symbol &rest defun-args)
+  "Define a new function with DEFUN-ARGS.  Override SYMBOL with it.
+
+DEFUN-ARGS takes the same arguments as `defun', without the function name."
+  (declare (indent defun))
+  (let* ((override (concat-symbols symbol '--override-hack)))
+    `(progn
+       (defun ,override ,@defun-args)
+       (advice-add #',symbol :override #',override))))
+
 ;;;; Homebrewn packages.
 
 ;; The most epic keyword.
@@ -89,16 +99,19 @@ TESTFN is passed to `assoc' call on PLACE."
 
 ;;;; IDE-like features.
 
+;; Code snippets.
 (use-package yasnippet
   :delight yas-minor-mode
   :init (yas-global-mode 1))
 
+;; Syntax checking. TODO: ditch for `flycheck'?
 (use-package flymake
   :hook (prog-mode . flymake-mode)
   :bind (:map flymake-mode-map
               ("M-p" . flymake-goto-prev-error)
               ("M-n" . flymake-goto-next-error)))
 
+;; Language-server client. Heavily modified for use with `lsp-remote'.
 (use-package eglot
   :config
   (assoc-update 'eglot-server-programs 'rust-mode '("~/.cargo/bin/rls"))
@@ -109,7 +122,7 @@ TESTFN is passed to `assoc' call on PLACE."
                   :test (lambda (x y)
                           (and (stringp x) (stringp y) (string= x y))))))
   ;; Override `eglot' path/URI functions to support `lsp-remote'.
-  (defun eglot--uri-to-path (uri)
+  (override-defun eglot--uri-to-path (uri)
     "The modus operandi of this function has been lost to time.
 
 It converts `lsp-remote' URIs starting with \"/tmp/project_root/\" into local
@@ -119,7 +132,7 @@ project paths."
       "^/tmp/"
       (concat (projectile-project-root) "../")
       (url-filename (url-generic-parse-url uri)))))
-  (defun eglot--path-to-uri (path)
+  (override-defun eglot--path-to-uri (path)
     "Convert local project path into \"/tmp/\"-based remote URI."
     (concat "file:///tmp/"
             (file-relative-name path (concat (projectile-project-root path) "../"))))
@@ -127,6 +140,7 @@ project paths."
   :bind (:map eglot-mode-map
               ("C-c d" . eldoc-doc-buffer)))
 
+;; Project manager.
 (use-package projectile
   :delight
   :init
@@ -138,6 +152,7 @@ project paths."
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
 
+;; Git magic.
 (use-package magit
   :demand
   :bind ("C-x g" . magit))
@@ -152,7 +167,8 @@ project paths."
 
 (use-package rust-mode
   :init
-  (when (file-exists-p "~/.cargo/bin/cargo")
+  ;; Format on save. It's too tedious to do manually.
+  (when (file-exists-p "~/.cargo/")
     (setq rust-cargo-bin "~/.cargo/bin/cargo")
     (setq rust-rustfmt-bin "~/.cargo/bin/rustfmt")
     (setq rust-format-on-save t))
@@ -164,20 +180,21 @@ project paths."
 
 (use-package asy-mode
   ;; Prevent loading if asymptote isn't installed.
-  :when (file-exists-p (concat (file-name-directory asy-el-dir) "asy-mode.el"))
+  :when (file-exists-p (expand-file-name "asy-mode.el" asy-el-dir))
   :load-path asy-el-dir)
 
 ;;;;; Fun
 
+;; An epic `mpc' client.
 (use-package simple-mpc
   :config
   ;; Override seek functions to accept a prefix argument.
 
-  (defun simple-mpc-seek-forward (&optional arg)
+  (override-defun simple-mpc-seek-forward (&optional arg)
     (interactive "P")
     (simple-mpc-seek-internal (or arg simple-mpc-seek-time-in-s)))
 
-  (defun simple-mpc-seek-backward (&optional arg)
+  (override-defun simple-mpc-seek-backward (&optional arg)
     (interactive "P")
     (simple-mpc-seek-internal (- (or arg simple-mpc-seek-time-in-s))))
 
@@ -256,16 +273,19 @@ project paths."
 
 ;;;; Configure built-ins
 
+;; TODO: use something more modern?
 (use-package icomplete
   :delight
-  :init (icomplete-mode 1))
+  :init
+  (setq completion-styles '(basic partial-completion substring emacs22))
+  (icomplete-mode 1))
 
 (use-package whitespace
   :delight
   :init
   (setq whitespace-line-column 80)
   (setq whitespace-style '(face trailing tab-mark lines-tail))
-  :hook ((text-mode prog-mode) . whitespace-mode))
+  :hook (prog-mode . whitespace-mode))
 
 (use-package time
   :init
@@ -298,8 +318,9 @@ project paths."
    "nonk123"
    '("java"
      (c-basic-offset . 4)
-     (c-offsets-alist ((access-label . /)
-                       (case-label . +)))))
+     (c-offsets-alist
+      (access-label . /)
+      (case-label . +))))
   (setq c-default-style
         '((java-mode . "java")
           (awk-mode . "awk")
@@ -310,8 +331,9 @@ project paths."
   ;; Enable all disabled commands.
   (setq disabled-command-function nil)
   :hook (text-mode . auto-fill-mode)
-  :bind (:map emacs-lisp-mode-map
-              ("M-e" . eval-region-or-buffer)))
+  :bind (("M-SPC" . cycle-spacing)
+         :map emacs-lisp-mode-map
+         ("M-e" . eval-region-or-buffer)))
 
 ;;;; Miscellany
 
@@ -321,7 +343,7 @@ project paths."
 
 (defun scratch-kill-buffer-query-function ()
   "Ask for confirmation if killing *scratch*."
-  (if (string= (buffer-name) "*scratch*")
+  (if (equal (buffer-name) "*scratch*")
       (yes-or-no-p "Are you sure? ")
     t))
 
@@ -347,7 +369,7 @@ project paths."
 
   (defvar alarm-clock--ding-process nil)
 
-  (defun alarm-clock--ding ()
+  (override-defun alarm-clock--ding (&rest args)
     "Play a ding with MPV."
     (let ((sound (expand-file-name alarm-clock-sound-file)))
       (setq alarm-clock--ding-process
