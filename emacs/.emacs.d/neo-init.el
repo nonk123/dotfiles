@@ -257,13 +257,13 @@ project paths."
 
 ;;;; Org
 
-(defun org-mode-actions ()
-  "Set appropriate `fill-column' and disable `electric-indent-local-mode'."
-  (electric-indent-local-mode -1)
-  (set-fill-column 72))
-
 (use-package org
   :hook (org-mode . org-mode-actions)
+  :init
+  (defun org-mode-actions ()
+    "Set appropriate `fill-column' and disable `electric-indent-local-mode'."
+    (electric-indent-local-mode -1)
+    (set-fill-column 72))
   :config
   (setq org-confirm-babel-evaluate #'ignore)
   (org-babel-do-load-languages
@@ -272,15 +272,21 @@ project paths."
      (plantuml . t)
      (asymptote .t)))
   (custom-set-variables
+   '(org-odt-preferred-output-format "doc")
    '(org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
-   '(org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
-   ;; TODO: use a system-wide install.
-   '(org-latex-to-mathml-jar-file "~/Downloads/mathtoweb.jar")
-   '(org-latex-to-mathml-convert-command
-     "java -jar %j -unicode -force -df %o %I")))
+   '(org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar"))
+  ;; A little hack to prevent "export failed" errors when LibreOffice is open.
+  (defun org-export-to-odt-kill-libreoffice-hack (&rest args)
+    "Kill LibreOffice before exporting to ODT."
+    (dolist (process (process-list))
+      (when (string-prefix-p "soffice " (process-name process))
+        (interrupt-process process))))
+  (advice-add #'org-odt-export-to-odt :before #'org-export-to-odt-kill-libreoffice-hack))
 
+;; ODT exporter fork to make .doc trickery more manageable.
 (use-package ox-odt)
 
+;; Code formatting on export.
 (use-package htmlize)
 
 ;;;; Configure built-ins
