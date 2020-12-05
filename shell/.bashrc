@@ -1,5 +1,3 @@
-[ "$DISPLAY" ] && wmname LG3D
-
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 for dir in $HOME/.{cargo,local}/bin/; do
