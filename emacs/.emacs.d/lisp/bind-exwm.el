@@ -8,6 +8,9 @@
 
 (require 'use-package)
 
+(defvar use-package-exwm-bindings '()
+  "EXWM keybindings created with `:bind-exwm' keyword.")
+
 (defun exwm-binding-p (entry)
   "Return non-nil if ENTRY is recognized by `exwm-normalize-binding'."
   (and (consp entry)
@@ -31,7 +34,7 @@ COMMAND can be:
   regex.  If no match was found, spawn PROGRAM."
   (cons
    (let ((key (car entry)))
-     (if (stringp key)
+     (if (stringp key) ; convert string to vector
          (kbd key)
        key))
    (let ((command (cdr entry)))
@@ -45,19 +48,16 @@ COMMAND can be:
         (lambda ()
           (interactive)
           (let ((list (mapcar #'buffer-name (buffer-list)))
-                buffer
-                result)
-            (while (and list (null result))
+                (program (car command))
+                buffer)
+            (while (and list (null buffer))
               (setq buffer (car list))
-              (if (string-match (cdr command) buffer)
-                  (setq result buffer)
+              (unless (string-match (cdr command) buffer)
+                (setq buffer nil)
                 (setq list (cdr list))))
-            (if result
-                (switch-to-buffer result)
-              (call-process (car command) nil 0)))))))))
-
-(defvar use-package-exwm-bindings '()
-  "EXWM keybindings created with `:bind-exwm' keyword.")
+            (if buffer
+                (switch-to-buffer buffer)
+              (call-process program nil 0)))))))))
 
 (defun use-package-exwm-bindings--unwrap ()
   "Return `use-package-exwm-bindings' in unwrapped form.
@@ -65,7 +65,7 @@ COMMAND can be:
 That is, you can plug it into `exwm-input-global-keys' after normalizing with
 (mapcar #'exwm-normalize-keybinding ...)"
   (let (result)
-    ;; CAR is package name, CDR is the keybinding list.
+    ;; CAR is the package name, CDR is the keybinding list.
     (dolist (nested (mapcar #'cdr use-package-exwm-bindings) result)
       ;; Flatten the list.
       (setq result (nconc result nested)))))
@@ -103,6 +103,13 @@ That is, you can plug it into `exwm-input-global-keys' after normalizing with
          (setq place list)
        (setq list (cdr list))))
    (cdr place)))
+
+(defun use-package-bind-exwm-do-cleanup ()
+  "Make sure to call this function before reloading your init file.
+
+It cleans up `use-package-exwm-bindings' in case any packages were removed
+from the configuration."
+  (setq use-package-exwm-bindings '()))
 
 (provide 'bind-exwm)
 

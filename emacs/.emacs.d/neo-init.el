@@ -9,7 +9,7 @@
 (defun load-init ()
   "Load the NEO init-file."
   (interactive)
-  (load-file "~/.emacs.d/neo-init.el"))
+  (load-file (expand-file-name "neo-init.el" user-emacs-directory)))
 
 (setq custom-file "~/.emacs.d/custom.el")
 
@@ -71,15 +71,20 @@ DEFUN-ARGS takes the same arguments as `defun', without the function name."
        (defun ,override ,@defun-args)
        (advice-add #',symbol :override #',override))))
 
+(require 'use-package-ensure)
+
 ;;;; Homebrewn packages.
 
+;; Disable :ensure for local packages.
+(setq use-package-always-ensure nil)
+
 ;; The most epic keyword.
-(use-package bind-exwm)
+(use-package bind-exwm
+  :init (use-package-bind-exwm-do-cleanup))
 
 ;;;; External packages
 
-;; Force :ensure t everywhere.
-(require 'use-package-ensure)
+;; And re-enable for external.
 (setq use-package-always-ensure t)
 
 ;; Alter mode lighters at will.
@@ -417,6 +422,10 @@ project paths."
     (interactive)
     (call-process "~/.local/bin/screenshot" nil 0))
 
+  (defun run-shell-command (command)
+    (interactive (list (read-shell-command "Run: ")))
+    (call-process "/bin/sh" nil 0 nil "-c" command))
+
   (setq exwm-input-global-keys
         (mapcar
          #'exwm-normalize-binding
@@ -443,7 +452,6 @@ project paths."
   ;; Apply keymap changes.
   (pcase-dolist (`(,key . ,command) exwm-input-global-keys)
     (exwm-input--set-key key command))
-
   (exwm-input--update-global-prefix-keys)
   :bind (:map exwm-mode-map ("C-c" . nil)))
 
