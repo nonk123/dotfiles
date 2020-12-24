@@ -90,6 +90,18 @@ DEFUN-ARGS takes the same arguments as `defun', without the function name."
 (use-package mpc-gui
   :bind-exwm ("s-p" . mpc-gui))
 
+;; A very stupid alarm clock.
+(use-package alarm-clock
+  :config
+  (let ((file "~/Music/Want to be Close - ATOLS Remix - Persona 3 Dancing Moon Night.opus"))
+    (when (file-exists-p file)
+      (setq alarm-clock-default-media-file file)
+      (alarm-clock-set-schedule
+       '(["6:00" alarm-clock-all-days nil]
+         ["6:30" alarm-clock-all-days nil]
+         ["7:00" alarm-clock-all-days nil]))))
+  :bind-exwm ("s-a" . alarm-clock-stop))
+
 ;; A nice little hack.
 (use-package no-pop)
 
@@ -328,31 +340,6 @@ project paths."
               ("C-c U" . winner-redo))
   :bind-exwm (("s-u" . winner-undo)
               ("s-U" . winner-redo)))
-
-(use-package alarm-clock
-  :init
-  (when-let* ((file "~/Music/Master of Tartarus.mp4")
-              (file-exists-p file))
-    (setq alarm-clock-sound-file file))
-  :config
-  ;; Replace mpg123 with mpv in `alarm-clock'.
-
-  (defvar alarm-clock--ding-process nil)
-
-  (override-defun alarm-clock--ding (&rest args)
-    "Play a ding with MPV."
-    (let ((sound (expand-file-name alarm-clock-sound-file)))
-      (setq alarm-clock--ding-process
-            (start-process "Alarm Clock" nil "mpv" sound))))
-
-  (defun alarm-clock-stop-ding ()
-    "Stop `alarm-clock--ding-process'."
-    (interactive)
-    (when (process-live-p alarm-clock--ding-process)
-      (interrupt-process alarm-clock--ding-process)))
-  :bind-exwm (("s-a v" . alarm-clock-list-view)
-              ("s-a s" . alarm-clock-set)
-              ("s-a S" . alarm-clock-stop-ding)))
 
 (use-package exwm
   :init
