@@ -105,6 +105,21 @@ DEFUN-ARGS takes the same arguments as `defun', without the function name."
 ;; A nice little hack.
 (use-package no-pop)
 
+(use-package ff-extras
+  :no-pop play-by-filename
+  :init
+  (defun play-by-filename (filename)
+    "Play track FILENAME with mpv."
+    (start-process "mpv" (pop-to-buffer "*mpv*")
+                   "mpv" "--quiet" "--no-msg-color" filename))
+  (let ((audio-extensions '("mp3" "ogg" "m4a" "mid" "midi" "opus")))
+    (setq ff-extras-alist `((,audio-extensions . play-by-filename)
+                            (("doc" "docx" "odt") "lowriter" :file)
+                            (("xlsx" "xls" "gnumeric") "gnumeric" :file)
+                            (("png" "jpeg") "sxiv" :file)
+                            ("pptx" "loimpress" :file)
+                            ("pdf" "zathura" :file)))))
+
 ;;;; External packages
 
 ;; And re-enable for external.
