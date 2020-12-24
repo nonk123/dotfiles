@@ -90,6 +90,9 @@ DEFUN-ARGS takes the same arguments as `defun', without the function name."
 (use-package mpc-gui
   :bind-exwm ("s-p" . mpc-gui))
 
+;; A nice little hack.
+(use-package no-pop)
+
 ;;;; External packages
 
 ;; And re-enable for external.
@@ -203,6 +206,7 @@ project paths."
 
 (use-package org
   :hook (org-mode . org-mode-actions)
+  :no-pop org-edit-special
   :init
   (defun org-mode-actions ()
     "Set appropriate `fill-column' and disable `electric-indent-local-mode'."
@@ -241,6 +245,10 @@ project paths."
   :init
   (setq completion-styles '(basic partial-completion substring emacs22))
   (icomplete-mode 1))
+
+(use-package proced
+  :no-pop
+  :bind-exwm ("s-P" . proced))
 
 (use-package whitespace
   :delight
@@ -400,7 +408,6 @@ project paths."
            ("s-v" . ("qutebrowser" . ".*qutebrowser$"))
            ("s-d" . ("discord" . ".*Discord$"))
            ("s-s" . "*scratch*")
-           ("s-P" . proced)
            ("s-e" . run-shell-command)
            ("<s-return>" . ansi-term)
            ("<print>" . screenshot)
@@ -418,7 +425,9 @@ project paths."
   (set-frame-font "Hack 9" nil t)
   (global-set-key (kbd "C-z") nil))
 
-;; Run again when the init-file is loaded.
+;; Finalize `no-pop'.
+(use-package-do-no-pop)
+
 (when (display-graphic-p)
   (on-gui-available))
 
