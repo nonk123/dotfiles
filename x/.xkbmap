@@ -10,8 +10,6 @@ xkb_keymap {
         key <AD02> { [ w, W,            U02B7,       Greek_omega ] };
         // Punctuation.
         key <AE04> { [ 4, nobreakspace, endash,      emdash      ] };
-        // Rebind the missing key to the left of Y. Can't type ch(de) otherwise.
-        key <MENU> { [ less, greater, backslash, brokenbar ] };
         // Add Russian layout and Caps Lock toggle.
         include "ru:2+group(shift_caps_toggle)"
     };
