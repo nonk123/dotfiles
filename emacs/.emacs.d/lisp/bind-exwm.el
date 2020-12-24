@@ -15,10 +15,10 @@
   "Return non-nil if ENTRY is recognized by `exwm-normalize-binding'."
   (and (consp entry)
        (or (stringp (car entry)) (vectorp (car entry)))
-       (or (commandp (cdr entry)) (stringp (cdr entry))
-           (and (consp (cdr x)) ; (PROGRAM . BUFFER-NAME)
-                (stringp (cadr x))
-                (stringp (cddr x))))))
+       (or (symbolp (cdr entry)) (stringp (cdr entry))
+           (and (consp (cdr entry)) ; (PROGRAM . BUFFER-NAME)
+                (stringp (cadr entry))
+                (stringp (cddr entry))))))
 
 (defun exwm-normalize-binding (entry)
   "Normalize ENTRY into `exwm-input-global-keys'-compatible format.
@@ -29,7 +29,7 @@ BINDING is either a string to pass to `kbd', or a vector of keys.
 
 COMMAND can be:
 - A symbol (command name).
-- A buffer name to switch to..
+- A buffer name to switch to.
 - A cons cell of (PROGRAM . BUFFER-NAME).  Switch to BUFFER-NAME, matched with
   regex.  If no match was found, spawn PROGRAM."
   (cons
@@ -63,7 +63,7 @@ COMMAND can be:
   "Return `use-package-exwm-bindings' in unwrapped form.
 
 That is, you can plug it into `exwm-input-global-keys' after normalizing with
-(mapcar #'exwm-normalize-keybinding ...)"
+\\(mapcar #'exwm-normalize-keybinding ...\\)"
   (let (result)
     ;; CAR is the package name, CDR is the keybinding list.
     (dolist (nested (mapcar #'cdr use-package-exwm-bindings) result)
@@ -71,17 +71,19 @@ That is, you can plug it into `exwm-input-global-keys' after normalizing with
       (setq result (nconc result nested)))))
 
 (defun use-package-normalize/:bind-exwm (name keyword args)
-  ;; A lot of this magic has been taken from `use-package-normalize:/bind'.
+  "Normalize :bind-exwm arguments.
+
+NAME, KEYWORD, and ARGS, so that `flymake' doesn't complain."
   (let ((arg args)
-        (args* '()))
+        args*)
     (while arg
       (let ((x (car arg)))
         (cond
-         ;; Match `exwm-normalize-keybinding'.
          ((exwm-binding-p x)
           (setq args* (nconc args* (list x))))
          ((listp x)
-          (setq args* (nconc args* (use-package-normalize-binder name keyword x)))
+          (let ((x (use-package-normalize/:bind-exwm name keyword x)))
+            (setq args* (nconc args* x)))
           (setq arg (cdr arg)))
          (t
           (use-package-error ":bind-exwm takes a list of (BINDING . COMMAND)")))
@@ -89,9 +91,12 @@ That is, you can plug it into `exwm-input-global-keys' after normalizing with
     args*))
 
 (defun use-package-handler/:bind-exwm (name _keyword args rest state)
+  "Update `use-packge-exwm-bindings' with (NAME . ARGS).
+
+REST and STATE so that `flymake' doesn't complain."
   (use-package-concat
    (use-package-process-keywords name rest state)
-   `((assoc-update 'use-package-exwm-bindings',name ',args))))
+   `((assoc-update 'use-package-exwm-bindings ',name ',args))))
 
 ;; Add `:bind-exwm' after `:bind'.
 (cl-pushnew

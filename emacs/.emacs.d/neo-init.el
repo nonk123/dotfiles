@@ -17,6 +17,8 @@
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 
+(load-file custom-file)
+
 ;;;; Package initialization
 
 (require 'package)
@@ -42,12 +44,14 @@
 
 ;;;; Utilities
 
+(require 'subr-x)
+
 (defun concat-symbols (&rest symbols)
   "Concatenate SYMBOLS as if they were strings."
   (intern (apply #'concat (mapcar #'symbol-name symbols))))
 
 (defun assoc-update (place key value &optional testfn)
-  "Update the VALUE of KEY in alist PLACE.
+  "Destructively update the VALUE of KEY in alist PLACE.
 
 PLACE is a symbol pointing to an alist.
 
@@ -80,7 +84,7 @@ DEFUN-ARGS takes the same arguments as `defun', without the function name."
 
 ;; The most epic keyword.
 (use-package bind-exwm
-  :init (use-package-bind-exwm-do-cleanup))
+  :config (use-package-bind-exwm-do-cleanup))
 
 ;;;; External packages
 
@@ -464,8 +468,5 @@ project paths."
 ;; Run again when the init-file is loaded.
 (when (display-graphic-p)
   (on-gui-available))
-
-;; Load the custom file last, after the modifications had been made.
-(load-file custom-file)
 
 ;;; neo-init.el ends here
