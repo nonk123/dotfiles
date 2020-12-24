@@ -52,6 +52,7 @@ config.bind("<space>w", "set-cmd-text :open -t en.wiktionary.org/wiki/")
 quickies = [("g", c.url.start_pages[0]), # first and only start page
             ("y", "youtube.com"),
             ("v", "vk.com"),
+            ("e", "e-learning.unn.ru"),
             ("x", "xhamster.desi")] # don't tell anybody
 
 for key, url in quickies:
