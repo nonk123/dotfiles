@@ -48,15 +48,21 @@
 (defvar alarm-clock--playback-process nil
   "Process playing an alarm's media file.")
 
+(defun alarm-clock-start-player (file)
+  "Return a process that plays back FILE.  Feel free to override.
+
+FILE is an absolute path.
+
+Plays a file with MPV by default."
+  (start-process "Alarm Clock" nil "mpv" file))
+
 (defun alarm-clock-play (file)
-  "Play FILE using `alarm-clock-playback-program'.
+  "Play FILE with `alarm-clock-start-player'.
 
 Playback is not \"layered\"; the currently playing alarm is stopped."
   (alarm-clock-stop)
   (setq alarm-clock--playback-process
-        (start-process "Alarm Clock" nil
-                       alarm-clock-playback-program
-                       (expand-file-name file))))
+        (alarm-clock-start-player (expand-file-name file))))
 
 (defun alarm-clock-stop (&optional interactive)
   "Stop playing the alarm sound.
@@ -64,7 +70,7 @@ Playback is not \"layered\"; the currently playing alarm is stopped."
 When INTERACTIVE is non-nil, show a message if no alarm is playing."
   (interactive (list t))
   (if (process-live-p alarm-clock--playback-process)
-      (interrupt-process alarm-clock--playback-process)
+      (kill-process alarm-clock--playback-process)
     (when interactive
       (message "No alarm is currently playing")))
   (setq alarm-clock--playback-process nil))

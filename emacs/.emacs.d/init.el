@@ -90,6 +90,13 @@ TESTFN is passed to `assoc' call on PLACE."
 (use-package alarm-clock
   :demand
   :config
+  (defun alarm-clock-start-player-windows (file)
+    "A Windows alternative to `alarm-clock-start-player'.
+
+Play FILE with an absolute path to MPV.  The player is started headless."
+    (start-process "Alarm Clock" nil
+                   "C:\\Program Files\\mpv\\mpv.exe" "--no-video" file))
+  (advice-add #'alarm-clock-start-player :override #'alarm-clock-start-player-windows)
   (let* ((file "Want to be Close - ATOLS Remix - Persona 3 Dancing Moon Night.mp4")
          (file (expand-file-name file (concat "C:\\Users\\" (user-login-name) "\\Music\\"))))
     (when (file-exists-p file)
@@ -248,6 +255,7 @@ TESTFN is passed to `assoc' call on PLACE."
   (setq completion-styles '(basic partial-completion substring emacs22))
   (icomplete-mode 1))
 
+;; A fix for Magit.
 (use-package server
   :config
   (defun true (&rest args)
