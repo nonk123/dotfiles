@@ -185,11 +185,13 @@ Can accept negative ARG to seek forward."
   (interactive "P")
   (mpc-gui-seek-delta (- (or arg mpc-gui-seek-amount))))
 
-(defun mpc-gui-reload-playlist ()
+(defun mpc-gui-reload-playlist (&optional interactive)
   "Reload the playlist.  Continue playing the current track.
 
-Return the current playlist for output in `mpc-gui-display'."
-  (interactive)
+Return the current playlist for output in `mpc-gui-display'.
+
+If INTERACTIVE is non-nil, revert the buffer."
+  (interactive (list t))
   (pcase-let* ((was-paused (mpc-gui-paused-p))
                (current-track (mpc-gui-get-current-track))
                (elapsed (mpc-gui-get-track-time))
@@ -212,6 +214,8 @@ Return the current playlist for output in `mpc-gui-display'."
             (setq found t))
         (setq playlist* (cdr playlist*))
         (cl-incf track-id)))
+    (when interactive
+      (revert-buffer))
     playlist))
 
 ;;;; Main
