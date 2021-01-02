@@ -6,6 +6,7 @@ emacs-init.el
 emacs-init.html
 
 *.eld
+*.cache
 tramp
 
 projects

@@ -2,7 +2,9 @@
 
 ;;; Commentary:
 
-;; An mpc GUI modelled after `simple-mpc'.
+;; An MPD GUI modelled after `simple-mpc'.
+;;
+;; Now talks over the TCP protocol, without `mpc'.
 
 ;;; Code:
 
@@ -10,8 +12,17 @@
 
 ;;;; Variables
 
+(defvar mpc-gui-reconnect-attempts 10
+  "Try to reconnect to MPD this many times if something goes wrong.")
+
 (defvar mpc-gui-seek-amount 5
   "Seek this many seconds by default.")
+
+(defvar mpc-gui-server-host "127.0.0.1"
+  "MPD server host.")
+
+(defvar mpc-gui-server-port "6600"
+  "MPD server port.")
 
 ;;;; Faces
 
@@ -26,104 +37,85 @@
   "Return the `mpc-gui' buffer."
   (get-buffer-create "*mpc-gui*"))
 
-(defun mpc-gui-call-mpc (destination &rest args)
-  "Call mpc with `call-process'.
+(defun mpc-gui-run-mpc (command &rest args)
+  "Run mpd COMMAND with ARGS.
 
-INFILE, DESTINATION, and ARGS are passed to `call-process'.  Each element of
-ARGS is converted to string beforehand."
-  (apply #'call-process "mpc" nil destination nil
-         (mapcar (lambda (x) (format "%s" x)) args)))
-
-(defun mpc-gui-run-mpc (&rest args)
-  "Return mpc output as string.
-
-ARGS are passed to `mpc-gui-call-mpc'."
+Return command output as string."
   (with-temp-buffer
-    (apply #'mpc-gui-call-mpc t args)
-    (buffer-string)))
+    (let* ((host mpc-gui-server-host)
+           (port mpc-gui-server-port)
+           (stream (open-network-stream "mpc" (current-buffer) host port)))
+      ;; Receive the OK.
+      (accept-process-output stream)
+      (unless (equal "OK MPD " (buffer-substring (point-min) (+ 7 (point-min))))
+        (error "Malformed connection response"))
+      (erase-buffer)
+      ;; Run the command.
+      (with-temp-buffer
+        (insert command)
+        (dolist (arg args)
+          (insert " " (format "%s" arg))) ; convert ARG to string
+        (insert "\n")
+        (process-send-region stream (point-min) (point-max)))
+      ;; Receive output.
+      (accept-process-output stream)
+      (buffer-string))))
 
-(defun mpc-gui--nothing-playing-p ()
-  "Return t if no track is currently playing."
-  (string-empty-p (mpc-gui-run-mpc "current")))
-
-(defun mpc-gui--paused-p ()
-  "Return t if playback is paused."
-  (and (string-match "^\\[paused\\]  #" (mpc-gui-run-mpc "status")) t))
-
-(defun mpc-gui--get-track-progress ()
-  "Return the track progress grepped from \"mpc status\"."
-  (let ((output (mpc-gui-run-mpc "status"))
-        ;; TODO: verify this works for >1-hour and <1-minute tracks.
-        (regex "\\([0-9]+:[0-9]+/[0-9]+:[0-9]+ ([0-9]+%)\\)"))
-    (string-match regex output)
+(defun mpc-gui-get-key-value (key command &rest args)
+  "Run mpd COMMAND with ARGS.  Return the value of KEY from its output."
+  (let ((output (apply #'mpc-gui-run-mpc command args)))
+    (string-match (concat key ": \\(.+\\)\n") output)
     (match-string 1 output)))
 
-(defun mpc-gui-get-track-progress ()
-  "Return a vector of [TIME LENGTH PERCENTAGE] parsed from \"mpc status\".
+(defun mpc-gui-paused-p ()
+  "Return t if playback is paused."
+  (equal "pause" (mpc-gui-get-key-value "state" "status")))
 
-TIME is the current time of the track. LENGTH is the track's total length. Both
-are returned as strings.
-
-PERCENTAGE is TIME divided by LENGTH, as a floating-point number.
-
-Best used with `pcase-let' for destructuring."
-  (let ((output (mpc-gui--get-track-progress)))
-    (cl-labels ((match (regex)
-                       (string-match regex output)
-                       (match-string 1 output)))
-      (vector (match "\\(.+\\)/")
-              (match "/\\(.+\\) ")
-              (let* ((raw-string (match " (\\(.+\\)%)"))
-                     (number (float (string-to-number raw-string))))
-                (/ number 100.))))))
+(defun mpc-gui-get-track-time ()
+  "Return the elapsed time of the current track, in seconds."
+  (mpc-gui-get-key-value "elapsed" "status"))
 
 (defun mpc-gui-get-current-track ()
   "Return the current track name from \"mpc current\"."
-  (with-temp-buffer
-    (mpc-gui-call-mpc t "current")
-    (mpc-gui--strip-newline)
-    (buffer-string)))
+  (mpc-gui-get-key-value "file" "currentsong"))
 
 (defun mpc-gui--current-line ()
   "Get current line as string."
   (buffer-substring (line-beginning-position) (line-end-position)))
 
-(defun mpc-gui--strip-newline ()
-  "Strip the last newline in the buffer if there is any."
-  (unless (= (buffer-size) 0)
-    ;; Prevent side-effects.
-    (let ((previous-point (point)))
-      (goto-char (point-max))
-      (delete-char -1)
-      (goto-char previous-point))))
-
 ;;;; Playlist
 
-(defun mpc-gui--populate-playlist ()
+(defun mpc-gui-populate-playlist ()
   "Add all available tracks to the playlist.  Return the new playlist."
   (with-temp-buffer
-    (mpc-gui-call-mpc t "listall")
-    ;; Bail out if no tracks are available.
-    (if (= (buffer-size) 0)
-        '()
-      (mpc-gui-run-mpc "clear")
-      (mpc-gui-run-mpc "update")
-      (let ((process (start-process "mpc add" nil "mpc" "add")))
-        (process-send-region process (point-min) (point-max))
-        (process-send-eof process)
-        (mpc-gui-get-playlist)))))
+    (mpc-gui-run-mpc "clear")
+    (mpc-gui-run-mpc "update")
+    ;; A dirty hack to add all tracks.
+    (mpc-gui-run-mpc "searchadd" "\"(modified-since \\\"1\\\")\"")
+    (mpc-gui-get-playlist)))
 
 (defun mpc-gui-get-playlist ()
   "Return the current playlist as a list of file names ordered by position."
   (with-temp-buffer
-    (mpc-gui-call-mpc t "playlist")
-    (let ((playlist '()))
+    (insert (mpc-gui-run-mpc "playlist"))
+    (let ((playlist '())
+          (running t))
       (goto-char (point-min))
-      (while (not (eobp))
+      ;; Quit on empty playlist.
+      (when (equal "OK\n" (buffer-string))
+        (setq running nil))
+      (while running
+        ;; Delete the leading "0:file: ".
+        (goto-char (line-beginning-position))
+        (while (not (equal ?\s (char-after)))
+          (delete-char 1))
+        (delete-char 1) ; delete the space itself
         (push (mpc-gui--current-line) playlist)
-        (forward-line 1))
-      (or (nreverse playlist) ; tracks were added in reverse order
-          (mpc-gui--populate-playlist)))))
+        (forward-line 1)
+        ;; Stop after reaching the OK confirmation.
+        (when (equal "OK" (mpc-gui--current-line))
+          (setq running nil)))
+      (nreverse playlist)))) ; tracks were added in reverse order
 
 ;;;; Display functions
 
@@ -151,32 +143,33 @@ Point value stays the same before and after execution."
 
 IGNORE-AUTO and NOCONFIRM are passed by `revert-buffer'."
   (mpc-gui--do-display (mpc-gui-get-buffer)
-    (let ((current-track (mpc-gui-get-current-track)))
-      (cl-labels ((fancify (track) (if (equal track current-track)
-                                       (propertize track 'face 'mpc-gui-current-track-face)
-                                     track)))
-        (dolist (track (mpc-gui-get-playlist))
-          (insert (fancify track) "\n"))
-        (mpc-gui--strip-newline)))))
+    (let* ((current-track (mpc-gui-get-current-track))
+           (playlist (mpc-gui-get-playlist))
+           (playlist (or playlist (mpc-gui-populate-playlist))))
+      (dolist (track playlist)
+        (insert (if (equal track current-track)
+                    (propertize track 'face 'mpc-gui-current-track-face)
+                  track)
+                "\n")))))
 
 ;;;; Commands
 
 (defun mpc-gui-play-line ()
   "Play the track with the same ID as the current line number."
   (interactive)
-  (mpc-gui-run-mpc "play" (line-number-at-pos))
+  (mpc-gui-run-mpc "play" (1- (line-number-at-pos)))
   (revert-buffer))
 
-(defun mpc-gui-toggle ()
+(defun mpc-gui-toggle-playback ()
   "Pause if playing, and play if paused."
   (interactive)
-  (mpc-gui-run-mpc "toggle"))
+  (mpc-gui-run-mpc "pause"))
 
 (defun mpc-gui-seek-delta (n)
   "Seek N seconds forward/backward."
   (let* ((sign (if (< n 0) "" "+"))
          (amount (format "%s%d" sign n)))
-    (mpc-gui-run-mpc "seek" amount)))
+    (mpc-gui-run-mpc "seekcur" amount)))
 
 (defun mpc-gui-seek-forward (&optional arg)
   "Seek forward ARG seconds.  Without ARG, use `mpc-gui-seek-amount'.
@@ -193,36 +186,40 @@ Can accept negative ARG to seek forward."
   (mpc-gui-seek-delta (- (or arg mpc-gui-seek-amount))))
 
 (defun mpc-gui-reload-playlist ()
-  "Reload the playlist.  Continue playing the current track."
+  "Reload the playlist.  Continue playing the current track.
+
+Return the current playlist for output in `mpc-gui-display'."
   (interactive)
-  (pcase-let* ((was-paused (mpc-gui--paused-p))
+  (pcase-let* ((was-paused (mpc-gui-paused-p))
                (current-track (mpc-gui-get-current-track))
-               (`[,time _ _] (mpc-gui-get-track-progress))
-               (playlist (mpc-gui--populate-playlist))
+               (elapsed (mpc-gui-get-track-time))
+               (playlist (mpc-gui-populate-playlist))
+               (playlist* playlist)
+               (track-id 0)
                (track nil)
-               (found nil)
-               (track-id 1))
+               (found nil))
     ;; Find the current track's ID in the new playlist.
-    (while (and current-track playlist (not found))
-      (setq track (car playlist))
+    (while (and current-track playlist* (not found))
+      (setq track (car playlist*))
       (if (equal track current-track)
           (progn
             ;; Track found.  Play it, and seek to where we were.
             (mpc-gui-run-mpc "play" track-id)
-            (mpc-gui-run-mpc "seek" time)
+            (mpc-gui-run-mpc "seekcur" elapsed)
             ;; Keep the track paused if it was so.
             (when was-paused
-              (mpc-gui-run-mpc "pause"))
+              (mpc-gui-run-mpc "pause" 1))
             (setq found t))
-        (setq playlist (cdr playlist))
-        (cl-incf track-id)))))
+        (setq playlist* (cdr playlist*))
+        (cl-incf track-id)))
+    playlist))
 
 ;;;; Main
 
 (defvar mpc-gui-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "r") #'mpc-gui-reload-playlist)
-    (define-key map (kbd "t") #'mpc-gui-toggle)
+    (define-key map (kbd "t") #'mpc-gui-toggle-playback)
     (define-key map (kbd "f") #'mpc-gui-seek-forward)
     (define-key map (kbd "b") #'mpc-gui-seek-backward)
     (define-key map (kbd "RET") #'mpc-gui-play-line)
