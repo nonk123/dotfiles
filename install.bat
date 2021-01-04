@@ -26,9 +26,7 @@ if not exist %MpdDir% (
 
 rem Download the executable.
 
-call :download-p
-
-if %ErrorLevel% equ 0 (
+if [%1] != [] (
    bitsadmin /transfer "Download MPD" %MpdExeURL% %MpdDir%\mpd.exe
 )
 
@@ -40,7 +38,3 @@ sc create mpd start= auto binPath= "\"C:\Program Files\mpd\mpd.exe\" \"C:\Progra
 sc start mpd
 
 exit /b 0
-
-:download-p
-if [%1]==[] exit /b 1
-else exit /b 0
