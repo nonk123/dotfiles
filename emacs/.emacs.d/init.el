@@ -6,12 +6,24 @@
 
 ;;; Code:
 
+;; !!HACK WARNING!!
+;;
+;; $HOME will be overriden later in the file.
+;; It is saved and restored at this point to ensure .emacs.d works.
+
+(defvar real-home (expand-file-name "~"))
+(setq user-emacs-directory (expand-file-name ".emacs.d" real-home))
+
+;; In case of an init-file reload.
+(setenv "HOME" real-home)
+
 (defun load-init ()
   "Load the NEO init-file."
   (interactive)
   (load-file (expand-file-name "neo-init.el" user-emacs-directory)))
 
-(setq custom-file "~/.emacs.d/custom.el")
+;; Since HOME is overriden, we have to use a dirty hack.
+(setq custom-file (concat "C:/Users/" user-login-name "/AppData/Roaming/.emacs.d/custom.el"))
 
 ;; Create custom file if it doesn't exist.
 (unless (file-exists-p custom-file)
@@ -98,7 +110,7 @@ Play FILE with an absolute path to MPV.  The player is started headless."
                    "C:\\Program Files\\mpv\\mpv.exe" "--no-video" file))
   (advice-add #'alarm-clock-start-player :override #'alarm-clock-start-player-windows)
   (let* ((file "Want to be Close - ATOLS Remix - Persona 3 Dancing Moon Night.mp4")
-         (file (expand-file-name file (concat "C:\\Users\\" (user-login-name) "\\Music\\"))))
+         (file (expand-file-name file "~/Music")))
     (when (file-exists-p file)
       (setq alarm-clock-default-media-file file)
       (alarm-clock-set-schedule
@@ -110,20 +122,17 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 ;; A nice little hack.
 (use-package no-pop)
 
-(use-package ff-extras
-  :no-pop play-by-filename
-  :init
-  (defun play-by-filename (filename)
-    "Play track FILENAME with mpv."
-    (start-process "mpv" (pop-to-buffer "*mpv*")
-                   "mpv" "--quiet" "--no-msg-color" filename))
-  (let ((audio-extensions '("mp3" "ogg" "m4a" "mid" "midi" "opus")))
-    (setq ff-extras-alist `((,audio-extensions . play-by-filename)
-                            (("doc" "docx" "odt") "lowriter" :file)
-                            (("xlsx" "xls" "gnumeric") "gnumeric" :file)
-                            (("png" "jpeg") "sxiv" :file)
-                            ("pptx" "loimpress" :file)
-                            ("pdf" "zathura" :file)))))
+;;;; $HOME hack.
+
+;; !!VERY IMPORTANT!!
+;;
+;; Here it comes.
+;;
+;; Magit stuff won't work without this.
+;;
+;; "~" expands to %AppData%. Also not good.
+
+(setenv "HOME" (concat "C:\\Users\\" user-login-name))
 
 ;;;; External packages
 
@@ -170,9 +179,11 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   :delight
   :init
   (setq projectile-completion-system 'default)
-  ;; A dirty hack because Emacs's "~" differs from Git Bash's.
-  (when-let* ((file (concat "C:\\Users\\" (user-login-name) "\\dotfiles"))
-              (file-exists-p file))
+  (when-let* ((file "~/Sources")
+              ((file-exists-p file)))
+    (setq projectile-project-search-path (list file)))
+  (when-let* ((file "~/dotfiles")
+              ((file-exists-p file)))
     (projectile-add-known-project file))
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
@@ -184,6 +195,10 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 (use-package magit
   :demand
   :bind ("C-x g" . magit))
+
+;; More magic.
+(use-package ssh-agency
+  :demand)
 
 ;;;;; Major modes
 
