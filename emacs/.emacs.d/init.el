@@ -370,4 +370,6 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 (when (display-graphic-p)
   (on-gui-available))
 
+(server-start)
+
 ;;; init.el ends here

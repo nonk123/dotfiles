@@ -1,0 +1,12 @@
+* dotfiles
+
+The new and updated dotfiles for my Windows 10 setup. All the unused
+code from my Linux configuration has been moved to [[./legacy/]].
+
+Currently available are an Emacs init-file and a semi-working, seldom
+used MPD service.
+
+[[./install.bat]] is responsible for doing the installation. Run it at your
+own risk! It may break nothing, or maybe everything.
+
+There isn't much to see as of now; I am no Windows poweruser.
