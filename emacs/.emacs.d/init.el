@@ -25,7 +25,7 @@
 ;; Since HOME is overriden, we have to use a dirty hack.
 (setq custom-file (concat "C:/Users/" user-login-name "/AppData/Roaming/.emacs.d/custom.el"))
 
-;; Create custom file if it doesn't exist.
+;; Create the custom-file if it doesn't exist.
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 
@@ -35,9 +35,8 @@
 
 (require 'package)
 
-(dolist (archive '(("melpa" . "https://melpa.org/packages/")
-                   ("ox-odt" . "https://kjambunathan.github.io/elpa/")))
-  (add-to-list 'package-archives archive 'append))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("ox-odt" . "https://kjambunathan.github.io/elpa/") 'append)
 
 ;; Workaround for Emacs 26; GNU package archive won't work otherwise.
 (when (= emacs-major-version 26)
@@ -45,10 +44,10 @@
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 (package-initialize)
+(package-refresh-contents)
 
 ;; Make sure `use-package' is always installed.
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
   (package-install 'use-package))
 
 ;; Ensure we can actually load stuff.
@@ -143,6 +142,13 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 
 ;;;;; Small utilities
 
+;; Epic completions.
+(use-package selectrum
+  :init
+  (setq completion-styles '(basic partial-completion substring emacs22))
+  (setq selectrum-num-candidates-displayed 20)
+  (selectrum-mode 1))
+
 ;; M-. in `emacs-lisp-mode'.
 (use-package elisp-slime-nav
   :delight
@@ -153,6 +159,11 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   :delight
   :hook (prog-mode . dtrt-indent-mode))
 
+;; Do something with whitespaces.
+(use-package ws-butler
+  :delight
+  :hook (prog-mode . ws-butler-mode))
+
 ;;;; IDE-like features.
 
 ;; Code snippets.
@@ -160,19 +171,23 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   :delight yas-minor-mode
   :init (yas-global-mode 1))
 
-;; Syntax checking. TODO: ditch for `flycheck'?
-(use-package flymake
-  :hook (prog-mode . flymake-mode)
-  :bind (:map flymake-mode-map
-              ("M-p" . flymake-goto-prev-error)
-              ("M-n" . flymake-goto-next-error)))
+;; Syntax checking.
+(use-package flycheck
+  :init
+  (global-flycheck-mode 1)
+  :config
+  (setq flycheck-emacs-lisp-load-path
+        (append '("~/emacs.d/lisp/") (directory-files "~/.emacs.d/elpa/" t nil t)))
+  :bind (:map flycheck-mode-map
+              ("M-n" . flycheck-next-error)
+              ("M-p" . flycheck-previous-error)))
 
 ;; Language-server client.
-(use-package eglot
-  :config (assoc-update 'eglot-server-programs 'rust-mode '("~/.cargo/bin/rls"))
-  :hook ((python-mode rust-mode) . eglot-ensure)
-  :bind (:map eglot-mode-map
-              ("C-c d" . eldoc-doc-buffer)))
+(use-package lsp-mode
+  :hook ((python-mode rust-mode) . lsp))
+
+;; Only useful for displaying docstrings.
+(use-package lsp-ui)
 
 ;; Project manager.
 (use-package projectile
@@ -210,7 +225,7 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 
 (use-package rust-mode
   :init
-  ;; Format on save. It's too tedious to do manually.
+  ;; Format on save; too tedious to do manually.
   (when (file-exists-p "~/.cargo/")
     (setq rust-cargo-bin "~/.cargo/bin/cargo")
     (setq rust-rustfmt-bin "~/.cargo/bin/rustfmt")
@@ -237,6 +252,7 @@ Play FILE with an absolute path to MPV.  The player is started headless."
     (electric-indent-local-mode -1)
     (set-fill-column 72))
   :config
+  ;; TODO: none of the stuff below works on Windows.
   (setq org-confirm-babel-evaluate #'ignore)
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -263,22 +279,16 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 
 ;;;; Configure built-ins
 
-;; TODO: use something more modern?
-(use-package icomplete
-  :delight
-  :init
-  (setq completion-styles '(basic partial-completion substring emacs22))
-  (icomplete-mode 1))
-
 ;; A fix for Magit.
 (use-package server
   :config
-  (defun true (&rest args)
+  (defun true (&rest _args)
     "Ignore ARGS, return t."
     t)
   (advice-add #'server-ensure-safe-dir :override #'true))
 
 (use-package proced
+  :demand
   :no-pop
   :bind ("<apps> P" . proced))
 
@@ -298,16 +308,6 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 (use-package display-line-numbers
   :hook (prog-mode . display-line-numbers-mode))
 
-(use-package woman
-  :bind ("C-c w" . woman))
-
-(defun eval-region-or-buffer ()
-  "If region is active, evaluate it.  Evaluate the current buffer otherwise."
-  (interactive)
-  (if (region-active-p)
-      (eval-region (region-beginning) (region-end))
-    (eval-buffer)))
-
 (use-package emacs
   :init
   (menu-bar-mode -1)
@@ -315,23 +315,26 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   (column-number-mode 1)
   (show-paren-mode 1)
   (electric-pair-mode 1)
+
   ;; C-like styles.
-  (c-add-style
-   "nonk123"
-   '("java"
-     (c-basic-offset . 4)
-     (c-offsets-alist
-      (access-label . /)
-      (case-label . +))))
   (setq c-default-style
         '((java-mode . "java")
           (awk-mode . "awk")
-          (other . "nonk123")))
+          (other . "gnu")))
+
   ;; Default to 4-space indentation.
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
+
   ;; Enable all disabled commands.
   (setq disabled-command-function nil)
+
+  (defun eval-region-or-buffer ()
+    "If region is active, evaluate it.  Evaluate the current buffer otherwise."
+    (interactive)
+    (if (region-active-p)
+        (eval-region (region-beginning) (region-end))
+      (eval-buffer)))
   :hook (text-mode . auto-fill-mode)
   :bind (("<backtab>" . completion-at-point) ; M-<TAB> is reserved in Windows
          ("M-SPC" . cycle-spacing)
@@ -360,12 +363,14 @@ Play FILE with an absolute path to MPV.  The player is started headless."
          ("<apps> U" . winner-redo)))
 
 (defun on-gui-available ()
-  "Code run when GUI (e.g. X) becomes available."
+  "Code run when GUI (e.g., X) becomes available."
   (scroll-bar-mode -1)
+  (use-package apropospriate-theme
+    :init (load-theme 'apropospriate-light t))
   (set-frame-font "Hack 10" nil t))
 
 ;; Finalize `no-pop'.
-(use-package-do-no-pop)
+(use-package-commit-no-pop)
 
 (when (display-graphic-p)
   (on-gui-available))

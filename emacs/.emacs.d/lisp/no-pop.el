@@ -82,7 +82,7 @@ NAME-SYMBOL, KEYWORD, REST, and STATE do magic."
           `(push ',(intern x) use-package-no-pop-functions))
         functions))))
 
-(defun use-package-do-no-pop ()
+(defun use-package-commit-no-pop ()
   "Call this function at the END of your init-file.
 
 It will finalize the `no-pop' changes."

@@ -1,14 +1,11 @@
 custom.el
-
-# Tangled copy.
-emacs-init.el
-# HTML export to check formatting.
-emacs-init.html
+flycheck_init.el
 
 *.eld
 *.cache
 tramp
 
+.lsp-session-v*
 projects
 
 */
