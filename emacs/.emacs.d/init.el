@@ -175,16 +175,17 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 (use-package flycheck
   :init
   (global-flycheck-mode 1)
-  :config
-  (setq flycheck-emacs-lisp-load-path
-        (append '("~/emacs.d/lisp/") (directory-files "~/.emacs.d/elpa/" t nil t)))
-  :bind (:map flycheck-mode-map
-              ("M-n" . flycheck-next-error)
-              ("M-p" . flycheck-previous-error)))
+  (setq flycheck-emacs-lisp-load-path 'inherit))
 
 ;; Language-server client.
 (use-package lsp-mode
-  :hook ((python-mode rust-mode) . lsp))
+  :hook ((python-mode rust-mode) . lsp)
+  :init
+  ;; Annoying as hell.
+  (setq lsp-headerline-breadcrumb-enable nil)
+  ;; :init is run after `lsp-mode-map' and `lsp-keymap-prefix' are defined.
+  (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
+  (define-key lsp-mode-map (kbd "M-l") lsp-command-map))
 
 ;; Only useful for displaying docstrings.
 (use-package lsp-ui)
@@ -223,23 +224,7 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 
 (use-package markdown-mode)
 
-(use-package rust-mode
-  :init
-  ;; Format on save; too tedious to do manually.
-  (when (file-exists-p "~/.cargo/")
-    (setq rust-cargo-bin "~/.cargo/bin/cargo")
-    (setq rust-rustfmt-bin "~/.cargo/bin/rustfmt")
-    (setq rust-format-on-save t))
-  (setq rust-format-show-buffer nil)
-  :bind (:map rust-mode-map
-              ("C-c r" . rust-run)))
-
-(defvar asy-el-dir "/usr/share/emacs/site-lisp/")
-
-(use-package asy-mode
-  ;; Prevent loading if asymptote isn't installed.
-  :when (file-exists-p (expand-file-name "asy-mode.el" asy-el-dir))
-  :load-path asy-el-dir)
+(use-package rust-mode)
 
 ;;;; Org
 
@@ -264,7 +249,7 @@ Play FILE with an absolute path to MPV.  The player is started headless."
    '(org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
    '(org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar"))
   ;; A little hack to prevent "export failed" errors when LibreOffice is open.
-  (defun org-export-to-odt-kill-libreoffice-hack (&rest args)
+  (defun org-export-to-odt-kill-libreoffice-hack (&rest _ignored)
     "Kill LibreOffice before exporting to ODT."
     (dolist (process (process-list))
       (when (string-prefix-p "soffice " (process-name process))
@@ -299,6 +284,14 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   (setq whitespace-style '(face trailing tab-mark lines-tail))
   :hook (prog-mode . whitespace-mode))
 
+(use-package cc-mode
+  :init
+  (setq c-default-style
+        '((java-mode . "java")
+          (awk-mode . "awk")
+          (other . "gnu"))))
+
+
 (use-package time
   :init
   (setq display-time-default-load-average nil)
@@ -315,12 +308,6 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   (column-number-mode 1)
   (show-paren-mode 1)
   (electric-pair-mode 1)
-
-  ;; C-like styles.
-  (setq c-default-style
-        '((java-mode . "java")
-          (awk-mode . "awk")
-          (other . "gnu")))
 
   ;; Default to 4-space indentation.
   (setq-default indent-tabs-mode nil)
