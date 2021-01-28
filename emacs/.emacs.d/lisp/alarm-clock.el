@@ -10,6 +10,8 @@
 
 (require 'parse-time)
 
+(require 'my-utils)
+
 ;;;; Variables
 
 (defvar alarm-clock-playback-program "mpv"
@@ -48,21 +50,13 @@
 (defvar alarm-clock--playback-process nil
   "Process playing an alarm's media file.")
 
-(defun alarm-clock-start-player (file)
-  "Return a process that plays back FILE.  Feel free to override.
-
-FILE is an absolute path.
-
-Plays a file with MPV by default."
-  (start-process "Alarm Clock" nil "mpv" file))
-
 (defun alarm-clock-play (file)
   "Play FILE with `alarm-clock-start-player'.
 
 Playback is not \"layered\"; the currently playing alarm is stopped."
   (alarm-clock-stop)
-  (setq alarm-clock--playback-process
-        (alarm-clock-start-player (expand-file-name file))))
+  (let ((process (play-media (expand-file-name file))))
+    (setq alarm-clock--playback-process process)))
 
 (defun alarm-clock-stop (&optional interactive)
   "Stop playing the alarm sound.

@@ -17,10 +17,13 @@
 ;; In case of an init-file reload.
 (setenv "HOME" real-home)
 
+(defvar first-load t
+  "If nil, the init file was fully loaded at least once.")
+
 (defun load-init ()
   "Load the NEO init-file."
   (interactive)
-  (load-file (expand-file-name "neo-init.el" user-emacs-directory)))
+  (load-file (expand-file-name "init.el" user-emacs-directory)))
 
 ;; Since HOME is overriden, we have to use a dirty hack.
 (setq custom-file (concat "C:/Users/" user-login-name "/AppData/Roaming/.emacs.d/custom.el"))
@@ -44,7 +47,9 @@
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 (package-initialize)
-(package-refresh-contents)
+
+(when first-load
+  (package-refresh-contents))
 
 ;; Make sure `use-package' is always installed.
 (unless (package-installed-p 'use-package)
@@ -53,39 +58,30 @@
 ;; Ensure we can actually load stuff.
 (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 
-;;;; Utilities
-
-(require 'subr-x)
-
-(defun concat-symbols (&rest symbols)
-  "Concatenate SYMBOLS as if they were strings."
-  (intern (apply #'concat (mapcar #'symbol-name symbols))))
-
-(defun assoc-update (place key value &optional testfn)
-  "Destructively update the VALUE of KEY in alist PLACE.
-
-PLACE is a symbol pointing to an alist.
-
-KEY and VALUE correspond to the alist entry (KEY . VALUE).
-
-If KEY is not present in PLACE, push (KEY . VALUE).
-If KEY is present, update the VALUE.
-
-TESTFN is passed to `assoc' call on PLACE."
-  (if-let ((entry (assoc key (symbol-value place) testfn)))
-      (setf (cdr entry) value)
-    (add-to-list place (cons key value))))
-
 ;; Make Menu key a prefix.
 (define-prefix-command 'menu-prefix)
 (global-set-key (kbd "<apps>") 'menu-prefix)
 
 (require 'use-package-ensure)
 
+;;;; $HOME hack.
+
+;; !!VERY IMPORTANT!!
+;;
+;; Here it comes.
+;;
+;; Magit stuff won't work without this.
+;;
+;; "~" expands to %AppData%. Also not good.
+
+(setenv "HOME" (concat "C:\\Users\\" user-login-name))
+
 ;;;; Homebrewn packages.
 
 ;; Disable :ensure for local packages.
 (setq use-package-always-ensure nil)
+
+(use-package my-utils)
 
 ;; The least epic GUI for `mpc'.
 (use-package mpc-gui
@@ -101,13 +97,6 @@ TESTFN is passed to `assoc' call on PLACE."
 (use-package alarm-clock
   :demand
   :config
-  (defun alarm-clock-start-player-windows (file)
-    "A Windows alternative to `alarm-clock-start-player'.
-
-Play FILE with an absolute path to MPV.  The player is started headless."
-    (start-process "Alarm Clock" nil
-                   "C:\\Program Files\\mpv\\mpv.exe" "--no-video" file))
-  (advice-add #'alarm-clock-start-player :override #'alarm-clock-start-player-windows)
   (let* ((file "Want to be Close - ATOLS Remix - Persona 3 Dancing Moon Night.mp4")
          (file (expand-file-name file "~/Music")))
     (when (file-exists-p file)
@@ -120,18 +109,6 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 
 ;; A nice little hack.
 (use-package no-pop)
-
-;;;; $HOME hack.
-
-;; !!VERY IMPORTANT!!
-;;
-;; Here it comes.
-;;
-;; Magit stuff won't work without this.
-;;
-;; "~" expands to %AppData%. Also not good.
-
-(setenv "HOME" (concat "C:\\Users\\" user-login-name))
 
 ;;;; External packages
 
@@ -194,13 +171,10 @@ Play FILE with an absolute path to MPV.  The player is started headless."
 (use-package projectile
   :delight
   :init
+  (setq projectile-indexing-method 'alien)
   (setq projectile-completion-system 'default)
-  (when-let* ((file "~/Sources")
-              ((file-exists-p file)))
-    (setq projectile-project-search-path (list file)))
-  (when-let* ((file "~/dotfiles")
-              ((file-exists-p file)))
-    (projectile-add-known-project file))
+  (predicate-set 'projectile-project-search-path #'file-exists-p "~/Sources" #'list)
+  (predicate-pipe "~/dotfiles" #'file-exists-p #'projectile-add-known-project)
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
 
@@ -363,5 +337,7 @@ Play FILE with an absolute path to MPV.  The player is started headless."
   (on-gui-available))
 
 (server-start)
+
+(setq first-load nil)
 
 ;;; init.el ends here
