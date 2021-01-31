@@ -203,6 +203,8 @@
 
 (use-package rust-mode)
 
+(use-package ahk-mode)
+
 ;;;; Org
 
 (use-package org
