@@ -12,7 +12,9 @@
 ;; It is saved and restored at this point to ensure .emacs.d works.
 
 (defvar real-home (expand-file-name "~"))
+
 (setq user-emacs-directory (expand-file-name ".emacs.d" real-home))
+(setq package-user-dir (locate-user-emacs-file "elpa"))
 
 ;; In case of an init-file reload.
 (setenv "HOME" real-home)
@@ -47,9 +49,7 @@
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 (package-initialize)
-
-(when first-load
-  (package-refresh-contents))
+(package-refresh-contents)
 
 ;; Make sure `use-package' is always installed.
 (unless (package-installed-p 'use-package)
@@ -122,7 +122,7 @@
 ;; Epic completions.
 (use-package selectrum
   :init
-  (setq completion-styles '(basic partial-completion substring emacs22))
+  (setq completion-styles '(flex))
   (setq selectrum-num-candidates-displayed 20)
   (selectrum-mode 1))
 
@@ -157,10 +157,9 @@
 ;; Language-server client.
 (use-package lsp-mode
   :hook ((python-mode rust-mode) . lsp)
-  :init
-  ;; Annoying as hell.
+  :init ;; Annoying as hell.
   (setq lsp-headerline-breadcrumb-enable nil)
-  ;; :init is run after `lsp-mode-map' and `lsp-keymap-prefix' are defined.
+  :config
   (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
   (define-key lsp-mode-map (kbd "M-l") lsp-command-map))
 
@@ -297,7 +296,7 @@
         (eval-region (region-beginning) (region-end))
       (eval-buffer)))
   :hook (text-mode . auto-fill-mode)
-  :bind (("<backtab>" . completion-at-point) ; M-<TAB> is reserved in Windows
+  :bind (("§" . completion-at-point)
          ("M-SPC" . cycle-spacing)
          :map emacs-lisp-mode-map
          ("M-e" . eval-region-or-buffer)))

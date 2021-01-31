@@ -62,6 +62,7 @@ Otherwise, return nil."
 If INTERACTIVE is nil, start mpv silently."
   (interactive "fPlay file: ")
   (pipe last-mpv-process 'kill-process)
+  (setq last-mpv-process nil)
   (let* ((file (expand-file-name file))
          (args (if interactive (list file) (list "--no-video" file)))
          (process (apply #'start-process "Playback" nil mpv-executable args)))

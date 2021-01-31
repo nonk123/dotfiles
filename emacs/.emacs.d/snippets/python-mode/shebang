@@ -2,6 +2,6 @@
 # name: shebang
 # --
 
-#!/usr/bin/python${1:3}
+#!/usr/bin/env python3
 
 $0
