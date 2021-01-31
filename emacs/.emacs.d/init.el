@@ -107,6 +107,10 @@
          ["7:00" alarm-clock-all-days nil]))))
   :bind ("<apps> a" . alarm-clock-stop))
 
+;; Epic theming stuff.
+(use-package dark-light
+  :bind ("C-c l" . dl-switch))
+
 ;; A nice little hack.
 (use-package no-pop)
 
@@ -325,9 +329,13 @@
 (defun on-gui-available ()
   "Code run when GUI (e.g., X) becomes available."
   (scroll-bar-mode -1)
+  (set-frame-font "Hack 10" nil t)
   (use-package apropospriate-theme
-    :init (load-theme 'apropospriate-light t))
-  (set-frame-font "Hack 10" nil t))
+    :init
+    (setq dl-dark-theme 'apropospriate-dark)
+    (setq dl-light-theme 'apropospriate-light)
+    (when first-load
+      (dl-switch))))
 
 ;; Finalize `no-pop'.
 (use-package-commit-no-pop)
