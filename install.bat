@@ -42,6 +42,6 @@ rem * AutoHotKey
 
 rem Create the startup task.
 set AhkConfig=%UserProfile%\dotfiles\ahk\AutoHotkey.ahk
-schtasks /Create /F /SC ONSTART /TN AHK /TR "\"C:\Program Files\AutoHotkey\AutoHotkey.exe\" %AhkConfig%"
+schtasks /Create /F /SC ONLOGON /TN AHK /TR "\"C:\Program Files\AutoHotkey\AutoHotkey.exe\" %AhkConfig%"
 
 exit /b 0
