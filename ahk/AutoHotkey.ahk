@@ -4,8 +4,16 @@
 ; Make the current window stay on top.
 #f::Winset, Alwaysontop, , A
 
-; [Q]uit the current window.
+; Quit the current window.
 #q::WinClose, A
+
+; Download a YouTube video to our music folder.
+#y::
+out := "~/Music/%(title)s.%(ext)s"
+InputBox, url, YoutubeDL, Enter URL:
+if !ErrorLevel
+    Run youtube-dl --no-playlist -f bestaudio[ext=m4a] -o %out% %url%
+return
 
 #Include Gdip_All.ahk
 
@@ -19,24 +27,18 @@ KeyWait, LButton, D
 MouseGetPos, x2, y2
 KeyWait, LButton
 
-if (x1 > x2)
-{
+if (x1 > x2) {
     startX := x2
     endX := x1
-}
-else
-{
+} else {
     startX := x1
     endX := x2
 }
 
-if (y1 > y2)
-{
+if (y1 > y2) {
     startY := y2
     endY := y1
-}
-else
-{
+} else {
     startY := y1
     endY := y2
 }

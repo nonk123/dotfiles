@@ -48,8 +48,9 @@
   (defvar gnutls-algorithm-priority)
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
-(package-initialize)
-(package-refresh-contents)
+(when first-load
+  (package-initialize)
+  (package-refresh-contents))
 
 ;; Make sure `use-package' is always installed.
 (unless (package-installed-p 'use-package)
@@ -68,9 +69,7 @@
 
 ;; !!VERY IMPORTANT!!
 ;;
-;; Here it comes.
-;;
-;; Magit stuff won't work without this.
+;; Here it comes. Magit stuff won't work without this.
 ;;
 ;; "~" expands to %AppData%. Also not good.
 
@@ -109,6 +108,7 @@
 
 ;; Epic theming stuff.
 (use-package dark-light
+  :demand
   :bind ("C-c l" . dl-switch))
 
 ;; A nice little hack.
@@ -155,17 +155,29 @@
 ;; Syntax checking.
 (use-package flycheck
   :init
+  ;; Proper syntax checking for Elisp files.
+  (setq flycheck-emacs-lisp-load-path 'inherit)
   (global-flycheck-mode 1)
-  (setq flycheck-emacs-lisp-load-path 'inherit))
+  :config
+  ;; Change Flycheck prefix to C-c f.
+  (define-key flycheck-mode-map flycheck-keymap-prefix nil)
+  (setq flycheck-keymap-prefix (kbd "C-c f"))
+  (define-key flycheck-mode-map flycheck-keymap-prefix flycheck-command-map))
 
 ;; Language-server client.
 (use-package lsp-mode
-  :hook ((python-mode rust-mode) . lsp)
-  :init ;; Annoying as hell.
+  :hook ((python-mode rust-mode js-mode c-mode c++-mode html-mode) . lsp)
+  :init
+  ;; Annoying as hell.
   (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-signature-auto-activate t)
+  (setq lsp-signature-doc-lines 1)
   :config
   (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
   (define-key lsp-mode-map (kbd "M-l") lsp-command-map))
+
+(use-package lsp-python-ms
+  :init (setq lsp-python-ms-auto-install-server t))
 
 ;; Only useful for displaying docstrings.
 (use-package lsp-ui)
@@ -174,12 +186,26 @@
 (use-package projectile
   :delight
   :init
+  (defun add-project (path)
+    "Call `projectile-add-known-project' on PATH if it exists."
+    (predicate-pipe path #'file-exists-p #'projectile-add-known-project))
   (setq projectile-indexing-method 'alien)
   (setq projectile-completion-system 'default)
-  (predicate-set 'projectile-project-search-path #'file-exists-p "~/Sources" #'list)
-  (predicate-pipe "~/dotfiles" #'file-exists-p #'projectile-add-known-project)
+  (let ((dots-path "~/dotfiles")
+        (sources-path "~/Sources")
+        search-path)
+    (when (file-exists-p dots-path)
+      (push dots-path search-path))
+    (when (file-exists-p sources-path)
+      (push sources-path search-path))
+    (add-project dots-path)
+    (setq projectile-project-search-path search-path))
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
+
+(use-package flycheck-projectile
+  :bind (:map projectile-command-map
+              ("e" . flycheck-projectile-list-errors)))
 
 ;; The silver searcher support for Projectile.
 (use-package ag)
@@ -189,21 +215,20 @@
   :demand
   :bind ("C-x g" . magit))
 
-;; More magic.
-(use-package ssh-agency
-  :demand)
-
 ;;;;; Major modes
 
 (use-package yaml-mode)
 
-(use-package lua-mode)
+(use-package lua-mode
+  :init (setq lua-indent-level 4))
 
 (use-package markdown-mode)
 
 (use-package rust-mode)
 
 (use-package ahk-mode)
+
+(use-package gdscript-mode)
 
 ;;;; Org
 
@@ -280,6 +305,9 @@
 (use-package display-line-numbers
   :hook (prog-mode . display-line-numbers-mode))
 
+(use-package sgml-mode
+  :bind (:map sgml-mode-map ("§" . completion-at-point)))
+
 (use-package emacs
   :init
   (menu-bar-mode -1)
@@ -309,6 +337,9 @@
 
 ;;;; Miscellany
 
+;; Fixes the header snippet for c-mode.
+(use-package string-inflection)
+
 ;; Don't ask if the buffer has a process running.
 (setq kill-buffer-query-functions (delq #'process-kill-buffer-query-function
                                         kill-buffer-query-functions))
@@ -331,13 +362,19 @@
 (defun on-gui-available ()
   "Code run when GUI (e.g., X) becomes available."
   (scroll-bar-mode -1)
-  (set-frame-font "Hack 10" nil t)
-  (use-package apropospriate-theme
+  (set-frame-font "Go Mono for Powerline 10" nil t)
+  (global-unset-key (kbd "C-z"))
+  (use-package solarized-theme
     :init
-    (setq dl-dark-theme 'apropospriate-dark)
-    (setq dl-light-theme 'apropospriate-light)
+    (setq solarized-use-less-bold t)
+    (setq solarized-use-variable-pitch nil)
+    (setq solarized-scale-org-headlines nil)
+    (setq solarized-scale-outline-headlines nil)
+    :config
+    (dl-set-dark-theme 'solarized-dark)
+    (dl-set-light-theme 'solarized-light)
     (when first-load
-      (dl-switch))))
+      (dl-go-light))))
 
 ;; Finalize `no-pop'.
 (use-package-commit-no-pop)
