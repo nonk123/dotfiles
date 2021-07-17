@@ -1,0 +1,22 @@
+# Pretty cool aliases.
+alias ls='ls --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+
+alias grep='grep --color=auto'
+
+# Infinite history size.
+export HISTCONTROL=ignoreboth
+export HISTSIZE=
+export HISTFILESIZE=
+
+# Bring some colour into this boring life.
+
+function color {
+    echo "\\[\\e[0;$1m\\]$2\\[\\e[m\\]"
+}
+
+export PS1="$(color 32 \\u@\\H):$(color 36 \\w)\\$ "
+
+export VISUAL="emacsclient"
+export EDITOR="emacsclient"

@@ -6,6 +6,8 @@
 ;;
 ;; This package allows replacing that functionality with `switch-to-buffer',
 ;; for specified commands.
+;;
+;; 07/17/21 update: I have no idea what is going on in this code.
 
 ;;; Code:
 

@@ -1,0 +1,11 @@
+[ip]
+command=ip -4 addr show ppp0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+interval=5
+
+[time]
+command=date +%T
+interval=1
+
+[date]
+command=date +%D
+interval=60
