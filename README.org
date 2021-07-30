@@ -5,8 +5,6 @@ Arch.
 
 ** Structure
 
-[[legacy]] is left here for historical purposes.
-
 [[system]] is installed into the root of the filesystem. It contains
 non-sensitive configuration files.
 

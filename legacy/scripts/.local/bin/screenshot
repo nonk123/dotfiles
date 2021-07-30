@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-# Take a screenshot with `maim`, and copy it to clipboard.
-
-# No args.
-
-IMAGE_FORMAT=png
-
-maim -sf "$IMAGE_FORMAT" | xclip -t "image/$IMAGE_FORMAT" -sel clip
