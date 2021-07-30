@@ -15,13 +15,15 @@ though.
 
 [[sway]] and [[emacs]] contain the respective configuration files.
 
+[[misc]] is configuration files that don't fit anywhere else.
+
 ** Installation
 
 Symlink management is done with =stow=; it is the preferred way of
 installation.
 
 #+BEGIN_SRC sh
-  stow -t ~ scripts sway emacs
+  stow -t ~ sway emacs scripts misc
   sudo stow -t / system
 #+END_SRC
 
