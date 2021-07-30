@@ -2,3 +2,28 @@
 
 The 4th iteration of my dotfiles repository. This time, we're going
 Arch.
+
+** Structure
+
+[[legacy]] is left here for historical purposes.
+
+[[system]] is installed into the root of the filesystem. It contains
+non-sensitive configuration files.
+
+[[scripts]] contains scripts of my own creation. They're not that good
+though.
+
+[[sway]] and [[emacs]] contain the respective configuration files.
+
+** Installation
+
+Symlink management is done with =stow=; it is the preferred way of
+installation.
+
+#+BEGIN_SRC sh
+  stow -t ~ scripts sway emacs
+  sudo stow -t / system
+#+END_SRC
+
+You might have to delete the original files before running either of
+these commands.

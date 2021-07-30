@@ -1,5 +1,9 @@
 [ip]
-command=ip -4 addr show ppp0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+command=list-ips ppp0 ztuze2ve4j
+interval=once
+
+[stardate]
+command=stardate
 interval=5
 
 [time]

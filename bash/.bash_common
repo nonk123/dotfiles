@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+# The line above is needed for `sh-mode` to start correctly.
+
 # Pretty cool aliases.
 alias ls='ls --color=auto'
 alias ll='ls -alF'

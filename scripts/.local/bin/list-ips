@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# A utility command to print a list of network interfaces with their respective
+# IPv4 addresses. The interfaces are passed as arguments, and an optional
+# variable SEPARATOR can be set.
+#
+# SEPARATOR is printed after every interface-address pair except the last. It
+# defaults to ", ".
+#
+# Example usage:
+#   SEPARATOR="\n" list-ips lo ppp0
+#
+# Example output:
+#   lo: 127.0.0.1
+#   ppp0: 69.42.0.13
+
+[[ -v SEPARATOR ]] || export SEPARATOR=", "
+
+for interface in "$@"; do
+    [[ "$interface" != "$1" ]] && echo -en "$SEPARATOR"
+    echo -n "$interface: "
+    ip -4 addr show "$interface" | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | tr -d "\n"
+done
+
+echo

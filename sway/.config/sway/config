@@ -14,17 +14,13 @@ input * {
 # Command shortcuts.
 set $bindkey bindsym --to-code
 
-# Start some very cool apps in the background.
+# Start some cool daemons.
 exec --no-startup-id mako
-exec --no-startup-id discord --start-minimized
-exec --no-startup-id telegram-desktop -startintray
-exec --no-startup-id nextcloud --background
-exec --no-startup-id steam -silent
-exec emacs --bg-daemon
 
 # Quick-launch keybindings.
-$bindkey $mod+Return exec emacsclient -c
-$bindkey $mod+d exec "rofi -modi drun,run -show drun"
+$bindkey $mod+Return exec emacsclient -c -e '(vterm-new-session)'
+$bindkey $mod+e exec emacsclient -c -e '(switch-to-buffer nil)'
+$bindkey $mod+d exec rofi -modi "drun,run" -show drun
 
 # Enable easy screenshot-making.
 $bindkey Print exec swayshot region

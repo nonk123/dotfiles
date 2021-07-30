@@ -114,12 +114,10 @@
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-signature-auto-activate t)
   (setq lsp-signature-doc-lines 1)
-  :config
-  (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
-  (define-key lsp-mode-map (kbd "M-l") lsp-command-map))
+  :config (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
+  :bind ("M-l" . lsp-format-buffer))
 
-(use-package lsp-python-ms
-  :init (setq lsp-python-ms-auto-install-server t))
+(use-package lsp-java)
 
 ;; Only useful for displaying docstrings.
 (use-package lsp-ui)
@@ -223,6 +221,9 @@
   ;; Enable all disabled commands.
   (setq disabled-command-function nil)
 
+  ;; Always follow symlinks.
+  (setq vc-follow-symlinks t)
+
   (defun eval-region-or-buffer ()
     "If region is active, evaluate it.  Evaluate the current buffer otherwise."
     (interactive)
@@ -245,29 +246,41 @@
 
 (defun scratch-kill-buffer-query-function ()
   "Ask for confirmation when killing *scratch*."
-  (or (and (equal (buffer-name) "*scratch*") (yes-or-no-p "Are you sure? ")) t))
+  (if (equal (buffer-name) "*scratch*") (yes-or-no-p "Are you sure? ") t))
 
 (add-to-list 'kill-buffer-query-functions #'scratch-kill-buffer-query-function)
 
 ;;;; GUI
 
-(defun on-gui-available ()
-  "Code run when GUI (e.g., X) becomes available."
-  (scroll-bar-mode -1)
-  (set-frame-font "Inconsolata for Powerline 11" nil t)
-  (global-unset-key (kbd "C-z"))
-  (use-package color-theme-sanityinc-tomorrow
-    :init (when first-load
-            (color-theme-sanityinc-tomorrow-eighties))))
+(defvar gui-hook-run nil)
+
+(defun on-frame-made-actions (frame)
+  "Actions to perform when FRAME is created."
+  (unless gui-hook-run
+    (scroll-bar-mode -1)
+    (global-unset-key (kbd "C-z"))
+    (setq gui-hook-run t))
+  (set-frame-font "Inconsolata for Powerline 11" nil (list frame)))
+
+(add-hook 'after-make-frame-functions #'on-frame-made-actions)
+
+(use-package frames-only-mode
+  :init (frames-only-mode 1))
+
+(use-package vterm
+  :init (defun vterm-new-session () (interactive) (vterm t))
+  :bind ("C-c RET" . vterm-new-session))
+
+(use-package color-theme-sanityinc-tomorrow
+  :init (when first-load
+          (color-theme-sanityinc-tomorrow-eighties)))
 
 ;; Finalize `no-pop'.
 (use-package-commit-no-pop)
 
-(when (display-graphic-p)
-  (on-gui-available))
-
 (setq first-load nil)
 
+(make-directory server-socket-dir t)
 (server-start)
 
 ;;; init.el ends here

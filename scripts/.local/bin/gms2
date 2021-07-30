@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# A simple prefix management command to start GMS2 in its respective bottle.
+
+cd ~/.wine64_gms2/drive_c/Program\ Files/GameMaker\ Studio\ 2/
+WINEPREFIX=~/.wine64_gms2 wine GameMakerStudio.exe
