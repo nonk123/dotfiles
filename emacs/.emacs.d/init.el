@@ -126,9 +126,9 @@
 (use-package projectile
   :delight
   :init
-  (setq projectile-indexing-method 'alien)
   (setq projectile-completion-system 'default)
-  (setq projectile-project-search-path '("~/Sources"))
+  (setq projectile-project-search-path '(("~/Sources" . 1)))
+  (setq projectile-enable-caching t)
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
 
@@ -252,17 +252,13 @@
 
 ;;;; GUI
 
-(defvar gui-hook-run nil)
+(defun configure-font (&optional frame)
+  (set-frame-font "Hack 9" nil t))
 
-(defun on-frame-made-actions (frame)
-  "Actions to perform when FRAME is created."
-  (unless gui-hook-run
-    (scroll-bar-mode -1)
-    (global-unset-key (kbd "C-z"))
-    (setq gui-hook-run t))
-  (set-frame-font "Inconsolata for Powerline 11" nil (list frame)))
+(add-hook 'after-make-frame-functions #'configure-font)
+(add-hook 'server-after-make-frame-functions #'configure-font)
 
-(add-hook 'after-make-frame-functions #'on-frame-made-actions)
+(scroll-bar-mode -1)
 
 (use-package frames-only-mode
   :init (frames-only-mode 1))
