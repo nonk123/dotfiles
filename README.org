@@ -11,6 +11,8 @@ non-sensitive configuration files.
 [[scripts]] contains scripts of my own creation. They're not that good
 though.
 
+[[shell]] is the shell configuration, currently for =bash=.
+
 [[sway]] and [[emacs]] contain the respective configuration files.
 
 [[misc]] is configuration files that don't fit anywhere else.
@@ -21,7 +23,7 @@ Symlink management is done with =stow=; it is the preferred way of
 installation.
 
 #+BEGIN_SRC sh
-  stow -t ~ sway emacs scripts misc
+  stow -t ~ sway emacs shell scripts misc
   sudo stow -t / system
 #+END_SRC
 

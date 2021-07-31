@@ -1,4 +1,0 @@
-VISUAL=emacsclient
-EDITOR=emacsclient
-
-PATH DEFAULT=/home/@{PAM_USER}/.local/bin:${PATH}

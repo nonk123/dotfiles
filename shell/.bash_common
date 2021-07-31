@@ -2,6 +2,11 @@
 
 # The line above is needed for `sh-mode` to start correctly.
 
+# Epic environment variables.
+export PATH=$HOME/.local/bin:$PATH
+export VISUAL=emacsclient
+export EDITOR=emacsclient
+
 # Pretty cool aliases.
 alias ls='ls --color=auto'
 alias ll='ls -alF'
