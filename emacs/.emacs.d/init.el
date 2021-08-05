@@ -53,12 +53,12 @@
 
 ;;;;; Small utilities
 
+(use-package orderless
+  :init (setq completion-styles '(orderless)))
+
 ;; Epic completions.
 (use-package selectrum
-  :init
-  (setq completion-styles '(flex))
-  (setq selectrum-num-candidates-displayed 20)
-  (selectrum-mode 1))
+  :init (selectrum-mode 1))
 
 ;; M-. in `emacs-lisp-mode'.
 (use-package elisp-slime-nav
@@ -121,7 +121,7 @@
   :delight
   :init
   (setq projectile-completion-system 'default)
-  (setq projectile-project-search-path '("~/Sources"))
+  (setq projectile-project-search-path '(("~/Sources/" . 1)))
   (setq projectile-enable-caching t)
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
