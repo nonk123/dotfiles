@@ -6,11 +6,6 @@
 
 ;;; Code:
 
-(setq inhibit-startup-screen t)
-
-(setq package-user-dir (locate-user-emacs-file "elpa"))
-(setq custom-file (locate-user-emacs-file "custom.el"))
-
 (defvar first-load t
   "If nil, the init file was fully loaded at least once.")
 
@@ -19,48 +14,41 @@
   (interactive)
   (load-file (expand-file-name "init.el" user-emacs-directory)))
 
+;;;; Initialise custom file
+
+(setq custom-file (locate-user-emacs-file "custom.el"))
+
 ;; Create the custom-file if it doesn't exist.
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 
 (load-file custom-file)
 
-;;;; Package initialization
+;;;; Bootstrap straight.el
 
-(require 'package)
-
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("ox-odt" . "https://kjambunathan.github.io/elpa/") 'append)
-
-;; Workaround for Emacs 26; GNU package archive won't work otherwise.
-(when (= emacs-major-version 26)
-  (defvar gnutls-algorithm-priority)
-  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
+(defvar bootstrap-version)
 
 (when first-load
-  (package-initialize)
-  (package-refresh-contents))
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+  (straight-pull-recipe-repositories))
 
-;; Make sure `use-package' is always installed.
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+;;;; Prepare use-package
 
-;; Ensure we can actually load stuff.
-(add-to-list 'load-path (locate-user-emacs-file "lisp/"))
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 
-(require 'use-package-ensure)
+;;;; Install and configure packages
 
-;;;; Homebrewn packages.
-
-(setq use-package-always-ensure nil)
-(use-package my-utils)
-(use-package no-pop)
-
-;;;; External packages
-
-(setq use-package-always-ensure t)
-
-;; Alter mode lighters at will.
 (use-package delight)
 
 ;;;;; Small utilities
@@ -87,7 +75,7 @@
   :delight
   :hook (prog-mode . ws-butler-mode))
 
-;;;; IDE-like features.
+;;;;; IDE-like features.
 
 ;; Code snippets.
 (use-package yasnippet
@@ -115,19 +103,25 @@
   (setq lsp-signature-auto-activate t)
   (setq lsp-signature-doc-lines 1)
   :config (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
-  :bind ("M-l" . lsp-format-buffer))
-
+  :bind (:map lsp-mode-map
+              ("M-l" . lsp-format-buffer)
+              ("M-RET" . lsp-execute-code-action)
+              ("M-." . lsp-find-declaration)
+              ("M-:" . lsp-find-definition)))
+(use-package lsp-ui)
+(use-package ccls)
 (use-package lsp-java)
 
-;; Only useful for displaying docstrings.
-(use-package lsp-ui)
+(use-package treemacs)
+(use-package treemacs-projectile)
+(use-package lsp-treemacs)
 
 ;; Project manager.
 (use-package projectile
   :delight
   :init
   (setq projectile-completion-system 'default)
-  (setq projectile-project-search-path '(("~/Sources" . 1)))
+  (setq projectile-project-search-path '("~/Sources"))
   (setq projectile-enable-caching t)
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
@@ -155,19 +149,15 @@
 
 (use-package rust-mode)
 
-;;;; Org
+;;;;; Org
 
 (use-package org
-  :hook (org-mode . org-mode-actions)
-  :no-pop org-edit-special)
-
-;; ODT exporter fork to make .doc trickery more manageable.
-(use-package ox-odt)
+  :hook (org-mode . org-mode-actions))
 
 ;; Code formatting on export.
 (use-package htmlize)
 
-;;;; Configure built-ins
+;;;;; Configure built-ins
 
 ;; A fix for Magit.
 (use-package server
@@ -176,10 +166,6 @@
     "Ignore ARGS, return t."
     t)
   (advice-add #'server-ensure-safe-dir :override #'true))
-
-(use-package proced
-  :demand
-  :no-pop)
 
 (use-package whitespace
   :delight
@@ -250,7 +236,9 @@
 
 (add-to-list 'kill-buffer-query-functions #'scratch-kill-buffer-query-function)
 
-;;;; GUI
+(setq inhibit-startup-screen t)
+
+;;;;; GUI
 
 (defun configure-font (&optional frame)
   (set-frame-font "Hack 9" nil t))
@@ -271,12 +259,10 @@
   :init (when first-load
           (color-theme-sanityinc-tomorrow-eighties)))
 
-;; Finalize `no-pop'.
-(use-package-commit-no-pop)
+(when first-load
+  (make-directory server-socket-dir t)
+  (server-start))
 
 (setq first-load nil)
-
-(make-directory server-socket-dir t)
-(server-start)
 
 ;;; init.el ends here
