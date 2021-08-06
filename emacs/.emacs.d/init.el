@@ -130,10 +130,6 @@
 (use-package ccls)
 (use-package lsp-java)
 
-(use-package treemacs)
-(use-package treemacs-projectile)
-(use-package lsp-treemacs)
-
 ;; Project manager.
 (use-package projectile
   :delight
@@ -147,6 +143,26 @@
 (use-package flycheck-projectile
   :bind (:map projectile-command-map
               ("e" . flycheck-projectile-list-errors)))
+
+;; File management within a project.
+(use-package treemacs
+  :init
+  (defun treemacs-show ()
+    "Show the treemacs window without switching to it."
+    (interactive)
+    (let ((previous-window (selected-window)))
+      (when (eq (treemacs-current-visibility) 'none)
+        (treemacs--init))
+      (select-window previous-window)))
+  (defun treemacs-after-project-is-open ()
+    "Automatically add an opened project to the treemacs workspace."
+    (when-let ((path (projectile-project-root)))
+      (treemacs-do-add-project-to-workspace path (treemacs--filename path)))
+    (treemacs-show))
+  :hook (projectile-after-switch-project . treemacs-after-project-is-open))
+(use-package treemacs-projectile)
+(use-package treemacs-magit)
+(use-package lsp-treemacs)
 
 ;; The silver searcher support for Projectile.
 (use-package ag)
