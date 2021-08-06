@@ -53,10 +53,11 @@
 
 ;;;;; Small utilities
 
+;; Epic completions.
 (use-package orderless
   :init (setq completion-styles '(orderless)))
 
-;; Epic completions.
+;; Epic completion menu.
 (use-package selectrum
   :init (selectrum-mode 1))
 
@@ -70,10 +71,27 @@
   :delight
   :hook (prog-mode . dtrt-indent-mode))
 
-;; Do something with whitespaces.
+;; Do something with whitespace.
 (use-package ws-butler
   :delight
+  :init (setq ws-butler-keep-whitespace-before-point nil)
   :hook (prog-mode . ws-butler-mode))
+
+;; Jump to headings like a boss.
+(use-package outshine
+  :delight outshine-mode
+  :delight outline-minor-mode
+  :preface
+  (defun purge-outshine-keybindings ()
+    "Prevent global-keymap pollution from `outshine-mode'."
+    (assq-delete-all 'outshine-mode minor-mode-map-alist))
+  :init (setq outline-minor-mode-prefix (kbd "C-c o"))
+  :hook ((emacs-lisp-mode . outshine-mode)
+         (outshine-mode . purge-outshine-keybindings))
+  :bind (:map outline-minor-mode-map
+              ("<backtab>" . outline-cycle)
+              ("M-N" . outline-next-visible-heading)
+              ("M-P" . outline-previous-visible-heading)))
 
 ;;;;; IDE-like features.
 
@@ -238,7 +256,7 @@
 
 (setq inhibit-startup-screen t)
 
-;;;;; GUI
+;;;; GUI
 
 (defun configure-font (&optional frame)
   (set-frame-font "Hack 9" nil t))
