@@ -102,6 +102,7 @@
 
 ;; Syntax checking.
 (use-package flycheck
+  :delight
   :init
   ;; Proper syntax checking for Elisp files.
   (setq flycheck-emacs-lisp-load-path 'inherit)
@@ -139,7 +140,6 @@
   (setq projectile-enable-caching t)
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map))
-
 (use-package flycheck-projectile
   :bind (:map projectile-command-map
               ("e" . flycheck-projectile-list-errors)))
@@ -219,7 +219,8 @@
 (use-package time
   :init
   (setq display-time-default-load-average nil)
-  (setq display-time-day-and-date t)
+  (setq display-time-interval 1)
+  (setq display-time-format "%H:%M:%S %a %d.%m.%y")
   (display-time-mode 1))
 
 (use-package display-line-numbers
@@ -272,7 +273,61 @@
 
 (setq inhibit-startup-screen t)
 
-;;;; GUI
+;;;; EXWM
+
+(defun execute-command (command)
+  "Execute COMMAND asynchronously using the default shell."
+  (interactive (list (read-shell-command "$ ")))
+  (start-process "*shell*" nil (getenv "SHELL") "-c" command))
+
+(defun lambda-run (command)
+  "Return a lambda calling (execute-command COMMAND)."
+  (lambda () (interactive) (execute-command command)))
+
+(use-package exwm
+  :init
+  (add-hook 'exwm-update-class-hook
+          (lambda ()
+            (exwm-workspace-rename-buffer exwm-class-name)))
+  (add-hook 'exwm-update-title-hook
+            (lambda ()
+              (unless exwm-instance-name
+                (exwm-workspace-rename-buffer exwm-title))))
+  (setq exwm-manage-configurations '((t char-mode t)))
+  (setq
+   exwm-input-global-keys
+   (mapcar
+    (lambda (cell)
+      (cons (kbd (car cell)) (cdr cell)))
+    `(("s-h" . windmove-left)
+      ("s-j" . windmove-down)
+      ("s-k" . windmove-up)
+      ("s-l" . windmove-right)
+      ("s-n" . split-window-below)
+      ("s-m" . split-window-right)
+      ("s-x" . delete-window)
+      ("s-q" . kill-current-buffer)
+      ("s-z" . bury-buffer)
+      ("s-d" . execute-command)
+      ("s-w" . exwm-floating-toggle-floating)
+      ("s-f" . exwm-layout-toggle-fullscreen)
+      ("s-i" . load-init)
+      ,@(mapcar (lambda (i)
+                  `(,(format "s-%d" i) .
+                    (lambda ()
+                      (interactive)
+                      (exwm-workspace-switch-create ,i))))
+                (number-sequence 0 9))
+      ,@(mapcar (lambda (i)
+                  `(,(format "C-s-%d" i) .
+                    (lambda ()
+                      (interactive)
+                      (exwm-workspace-move-window ,i))))
+                (number-sequence 0 9))
+      ("<print>" . ,(lambda-run "screenshot region"))
+      ("M-<print>" . ,(lambda-run "screenshot window"))
+      ("S-<print>" . ,(lambda-run "screenshot display")))))
+   (exwm-enable))
 
 (defun configure-font (&optional frame)
   (set-frame-font "Hack 9" nil t))
@@ -281,9 +336,6 @@
 (add-hook 'server-after-make-frame-functions #'configure-font)
 
 (scroll-bar-mode -1)
-
-(use-package frames-only-mode
-  :init (frames-only-mode 1))
 
 (use-package vterm
   :init (defun vterm-new-session () (interactive) (vterm t))

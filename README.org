@@ -5,25 +5,21 @@ Arch.
 
 ** Structure
 
-[[system]] is installed into the root of the filesystem. It contains
+- [[system]] is installed into the root of the filesystem. It contains
 non-sensitive configuration files.
-
-[[scripts]] contains scripts of my own creation. They're not that good
+- [[scripts]] contains scripts of my own creation. They're not that good
 though.
-
-[[shell]] is the shell configuration, currently for =bash=.
-
-[[i3]] and [[emacs]] contain the respective configuration files.
-
-[[misc]] is configuration files that don't fit anywhere else.
+- [[shell]] is the shell configuration, currently for =bash=.
+- [[emacs]] is my EXWM setup with its supplemental =.xinitrc=.
+- [[misc]] configuration files don't fit anywhere else.
 
 ** Installation
 
-Symlink management is done with =stow=. It is the preferred way of
+Symlink management is done with =stow=, and it is the preferred way of
 installation.
 
 #+BEGIN_SRC sh
-  stow -t ~ emacs i3 shell scripts misc
+  stow -t ~ emacs shell scripts misc
   sudo stow -t / system
 #+END_SRC
 
