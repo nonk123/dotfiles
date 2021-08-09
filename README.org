@@ -7,19 +7,18 @@ Arch.
 
 - [[system]] is installed into the root of the filesystem. It contains
 non-sensitive configuration files.
-- [[scripts]] contains scripts of my own creation. They're not that good
-though.
-- [[shell]] is the shell configuration, currently for =bash=.
-- [[emacs]] is my EXWM setup with its supplemental =.xinitrc=.
-- [[misc]] configuration files don't fit anywhere else.
+- [[scripts]] contains scripts of my own creation.
+- [[shell]] is my Bash configuration.
+- [[emacs]] is my EXWM setup with its supplemental [[emacs/.xinitrc][.xinitrc]].
+- [[mpd]] includes my MPD and =mpdscribble= configuration.
 
 ** Installation
 
 Symlink management is done with =stow=, and it is the preferred way of
-installation.
+installation. Example script:
 
 #+BEGIN_SRC sh
-  stow -t ~ emacs shell scripts misc
+  stow -t ~ emacs mpd shell scripts
   sudo stow -t / system
 #+END_SRC
 
