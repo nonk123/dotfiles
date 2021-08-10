@@ -168,6 +168,9 @@
     (treemacs-show))
   :hook (projectile-after-switch-project . treemacs-after-project-is-open)
   :bind ("C-c t" . treemacs-but-stay))
+(use-package treemacs-icons-dired
+  :delight
+  :init (treemacs-icons-dired-mode 1))
 (use-package treemacs-projectile)
 (use-package treemacs-magit)
 (use-package lsp-treemacs)
