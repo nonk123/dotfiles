@@ -1,0 +1,12 @@
+[Unit]
+Description=AudioScrobbler for MPD
+Documentation=man:mpdscribble(1)
+After=mpd.service
+Requires=mpd.service
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/mpdscribble --no-daemon
+
+[Install]
+WantedBy=default.target
