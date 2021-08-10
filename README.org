@@ -6,7 +6,7 @@ Arch.
 ** Structure
 
 - [[system]] is installed into the root of the filesystem. It contains
-non-sensitive configuration files.
+  non-sensitive configuration files.
 - [[scripts]] contains scripts of my own creation.
 - [[shell]] is my Bash configuration.
 - [[emacs]] is my EXWM setup with its supplemental [[emacs/.xinitrc][.xinitrc]].
