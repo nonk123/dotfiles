@@ -1,0 +1,15 @@
+library: ~/.config/beets/library.db
+
+plugins: fetchart embedart lastgenre lyrics duplicates mpdupdate
+
+fetchart:
+  auto: no
+
+lyrics:
+  auto: no
+
+lastgenre:
+  auto: no
+
+import:
+  move: yes
