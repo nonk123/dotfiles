@@ -29,3 +29,7 @@ export PS1="$(color 32 \\u@\\H):$(color 36 \\w)\\$ "
 
 export VISUAL="emacsclient"
 export EDITOR="emacsclient"
+
+# Keyboard shortcuts.
+bind '"\en"':menu-complete
+bind '"\ep"':menu-complete-backward
