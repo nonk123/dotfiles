@@ -1,4 +1,4 @@
-;;; init.el --- the NEO² init.el -*- lexical-binding: t -*-
+;;; init.el --- the NEO² init.el. -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
@@ -47,9 +47,15 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+(require 'use-package)
+
 ;;;; Install and configure packages
 
 (use-package delight)
+
+;;;;; Custom packages
+
+(add-to-list 'load-path (locate-user-emacs-file "lisp/"))
 
 ;;;;; Small utilities
 
@@ -59,6 +65,7 @@
 
 ;; Epic completion menu.
 (use-package selectrum
+  :commands selectrum-mode
   :init (selectrum-mode 1))
 
 ;; M-. in `emacs-lisp-mode'.
@@ -98,11 +105,13 @@
 ;; Code snippets.
 (use-package yasnippet
   :delight yas-minor-mode
+  :commands yas-global-mode
   :init (yas-global-mode 1))
 
 ;; Syntax checking.
 (use-package flycheck
   :delight
+  :commands global-flycheck-mode
   :init
   ;; Proper syntax checking for Elisp files.
   (setq flycheck-emacs-lisp-load-path 'inherit)
@@ -121,12 +130,14 @@
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-signature-auto-activate t)
   (setq lsp-signature-doc-lines 1)
+  (setq lsp-completion-provider :none)
   :config (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
   :bind (:map lsp-mode-map
               ("M-l" . lsp-format-buffer)
               ("M-RET" . lsp-execute-code-action)
               ("M-." . lsp-find-declaration)
-              ("M-:" . lsp-find-definition)))
+              ("M-:" . lsp-find-definition)
+              ("M-r" . lsp-rename)))
 (use-package lsp-ui)
 (use-package ccls)
 (use-package lsp-java)
@@ -134,6 +145,7 @@
 ;; Project manager.
 (use-package projectile
   :delight
+  :commands projectile-mode
   :init
   (setq projectile-completion-system 'default)
   (setq projectile-project-search-path '(("~/Sources/" . 1)))
@@ -146,14 +158,11 @@
 
 ;; File management within a project.
 (use-package treemacs
+  :commands (treemacs treemacs-show)
+  :functions (treemacs--init treemacs-do-add-project-to-workspace
+              projectile-project-root treemacs-get-local-buffer
+              treemacs-get-local-window)
   :init
-  (defun treemacs-show ()
-    "Show the treemacs window without switching to it."
-    (interactive)
-    (let ((previous-window (selected-window)))
-      (when (eq (treemacs-current-visibility) 'none)
-        (treemacs--init))
-      (select-window previous-window)))
   (defun treemacs-but-stay ()
     "Toggle treemacs view without altering the current window."
     (interactive)
@@ -161,6 +170,15 @@
       (treemacs)
       (when (window-live-p current-window)
         (select-window current-window))))
+
+  (defun treemacs-show ()
+    "Show the treemacs window without switching to it."
+    (interactive)
+    (let ((previous-window (selected-window)))
+      (when (eq (treemacs-current-visibility) 'none)
+        (treemacs--init))
+      (select-window previous-window)))
+
   (defun treemacs-after-project-is-open ()
     "Automatically add an opened project to the treemacs workspace."
     (when-let ((path (projectile-project-root)))
@@ -170,6 +188,7 @@
   :bind ("C-c t" . treemacs-but-stay))
 (use-package treemacs-icons-dired
   :delight
+  :commands treemacs-icons-dired-mode
   :init (treemacs-icons-dired-mode 1))
 (use-package treemacs-projectile)
 (use-package treemacs-magit)
@@ -206,11 +225,8 @@
 
 ;; A fix for Magit.
 (use-package server
-  :config
-  (defun true (&rest _args)
-    "Ignore ARGS, return t."
-    t)
-  (advice-add #'server-ensure-safe-dir :override #'true))
+  :functions server-ensure-safe-dir
+  :init (advice-add #'server-ensure-safe-dir :override (lambda (&rest ignored) t)))
 
 (use-package whitespace
   :delight
@@ -284,79 +300,9 @@
 
 (setq inhibit-startup-screen t)
 
-;;;; EXWM
+;;;; Finalisation
 
-(defun execute-command (command)
-  "Execute COMMAND asynchronously using the default shell."
-  (interactive (list (read-shell-command "$ ")))
-  (start-process "*shell*" nil (getenv "SHELL") "-c" command))
-
-(defun lambda-run (command)
-  "Return a lambda calling (execute-command COMMAND)."
-  (lambda () (interactive) (execute-command command)))
-
-(use-package vterm
-  :init (defun vterm-new-session ()
-          (interactive) (vterm t)))
-
-(use-package exwm
-  :init
-  (add-hook 'exwm-update-class-hook
-          (lambda ()
-            (exwm-workspace-rename-buffer exwm-class-name)))
-  (add-hook 'exwm-update-title-hook
-            (lambda ()
-              (unless exwm-instance-name
-                (exwm-workspace-rename-buffer exwm-title))))
-
-  (setq exwm-manage-configurations '((t char-mode t)))
-
-  (setq
-   exwm-input-global-keys
-   (mapcar
-    (lambda (cell)
-      (cons (kbd (car cell)) (cdr cell)))
-    `(("s-h" . windmove-left)
-      ("s-j" . windmove-down)
-      ("s-k" . windmove-up)
-      ("s-l" . windmove-right)
-      ("s-n" . split-window-below)
-      ("s-m" . split-window-right)
-      ("s-x" . delete-window)
-      ("s-q" . kill-current-buffer)
-      ("s-z" . previous-buffer)
-      ("s-b" . switch-to-buffer)
-      ("s-d" . execute-command)
-      ("s-w" . exwm-floating-toggle-floating)
-      ("s-f" . exwm-layout-toggle-fullscreen)
-      ("s-i" . load-init)
-      ("s-<return>" . vterm-new-session)
-      ("s-p" . ,(lambda-run "mpc toggle"))
-      ,@(mapcar (lambda (i)
-                  `(,(format "s-%d" i) .
-                    (lambda ()
-                      (interactive)
-                      (exwm-workspace-switch-create ,i))))
-                (number-sequence 0 9))
-      ("<print>" . ,(lambda-run "screenshot region"))
-      ("S-<print>" . ,(lambda-run "screenshot display")))))
-
-  (require 'exwm-systemtray)
-  (exwm-systemtray-enable)
-  (exwm-enable)
-
-  ;; Update EXWM keys if they are changed.
-  (pcase-dolist (`(,key . ,command) exwm-input-global-keys)
-    (exwm-input--set-key key command))
-  (exwm-input--update-global-prefix-keys))
-
-(set-frame-font "Hack 9" nil t)
-(fringe-mode (cons nil 1))
-(scroll-bar-mode -1)
-
-(use-package color-theme-sanityinc-tomorrow
-  :init (when first-load
-          (color-theme-sanityinc-tomorrow-eighties)))
+(require 'my-exwm)
 
 (when first-load
   (make-directory server-socket-dir t)
