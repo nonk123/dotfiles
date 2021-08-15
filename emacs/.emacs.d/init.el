@@ -53,10 +53,6 @@
 
 (use-package delight)
 
-;;;;; Custom packages
-
-(add-to-list 'load-path (locate-user-emacs-file "lisp/"))
-
 ;;;;; Small utilities
 
 ;; Epic completions.
@@ -172,19 +168,20 @@
         (select-window current-window))))
 
   (defun treemacs-show ()
-    "Show the treemacs window without switching to it."
+    "Show the treemacs window without losing focus."
     (interactive)
     (let ((previous-window (selected-window)))
       (when (eq (treemacs-current-visibility) 'none)
         (treemacs--init))
       (select-window previous-window)))
 
-  (defun treemacs-after-project-is-open ()
-    "Automatically add an opened project to the treemacs workspace."
+  (defun treemacs-add-current ()
+    "Add open project to treemacs workspace."
+    (interactive)
     (when-let ((path (projectile-project-root)))
       (treemacs-do-add-project-to-workspace path (treemacs--filename path)))
     (treemacs-show))
-  :hook (projectile-after-switch-project . treemacs-after-project-is-open)
+  :hook (projectile-after-switch-project . treemacs-add-current)
   :bind ("C-c t" . treemacs-but-stay))
 (use-package treemacs-icons-dired
   :delight
@@ -285,6 +282,17 @@
 
 ;;;; Miscellany
 
+(use-package frames-only-mode
+  :commands frames-only-mode
+  :init (frames-only-mode 1))
+
+(use-package vterm
+  :commands vterm
+  :init
+  (defun vterm-new-session ()
+    (interactive)
+    (vterm t)))
+
 ;; Fix the header snippet for `c-mode'.
 (use-package string-inflection)
 
@@ -300,9 +308,28 @@
 
 (setq inhibit-startup-screen t)
 
-;;;; Finalisation
+;;;; Look and Feel
 
-(require 'my-exwm)
+(defvar theme-configured nil)
+
+(defun configure-theme (&optional ignored)
+  "Configure font and theme on a newly opened graphical frame.
+
+IGNORED is ignored to silence Flycheck."
+  (use-package color-theme-sanityinc-tomorrow
+    :commands color-theme-sanityinc-tomorrow-eighties
+    :init
+    (unless theme-configured
+      (color-theme-sanityinc-tomorrow-eighties)
+      (setq theme-configured t)))
+  (set-frame-font "Hack 9" nil t)
+  (scroll-bar-mode -1)
+  (fringe-mode (cons nil 1)))
+
+(add-hook 'after-make-frame-functions #'configure-theme)
+(add-hook 'server-after-make-frame-hook #'configure-theme)
+
+;;;; Finalisation
 
 (when first-load
   (make-directory server-socket-dir t)

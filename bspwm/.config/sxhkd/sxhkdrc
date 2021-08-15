@@ -1,0 +1,53 @@
+super + {h,j,k,l}
+    bspc node -f {west,south,north,east}
+
+super + {_,control + }{h,j,k,l}
+    bspc node -{f,s} {west,south,north,east}
+
+super + shift + {h,j,k,l}; {1-9}
+    bspc node @{west,south,north,east} -r 0.{1-9}
+
+super + {n,m}
+    bspc node -p ~{south,east}
+
+super + {t,f,F}
+    bspc node -t ~{tiled,floating,fullscreen}
+
+super + {q,Q}
+    bspc node -{c,k}
+
+super + {0-9}
+    bspc desktop -f {0-9}
+
+super + ctrl + {0-9}
+    bspc node -d {0-9}
+
+super + d
+    rofi -modi drun,run -show drun
+
+super + e
+    emacsclient -c
+
+super + Return
+    emacsclient -c -e "(vterm-new-session)"
+
+super + i
+    notify-send Date "$(date "+%r, %a, %F")"
+
+Print
+    screenshot region
+
+alt + Print
+    screenshot window
+
+shift + Print
+    screenshot display
+
+super + S
+    pkill -SIGUSR1 sxhkd
+
+@super + p
+    mpc -q toggle
+
+super + alt + {h,l}
+    mpc -q seek {-,+}8

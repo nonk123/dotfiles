@@ -4,10 +4,13 @@ case $1 in
     region)
         maim -s
         ;;
+    window)
+        maim -i $(xdotool getactivewindow)
+        ;;
     display)
         maim
         ;;
     *)
-        echo 'Pass "region" or "display"' > /dev/stderr
+        echo 'Pass "region", "window", or "display"' > /dev/stderr
         exit 1
 esac | xclip -quiet -sel clip -t image/png

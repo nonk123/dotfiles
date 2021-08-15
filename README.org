@@ -9,8 +9,9 @@ Arch.
   non-sensitive configuration files.
 - [[scripts]] contains scripts of my own creation.
 - [[shell]] is my Bash configuration.
-- [[emacs]] is my EXWM setup with its supplemental [[emacs/.xinitrc][.xinitrc]].
-- [[mpd]] includes my MPD and =mpdscribble= configuration.
+- [[emacs]] is my slightly configged init.el with included yasnippets.
+- [[bspwm]] is my bspwm setup.
+- [[mpd]] includes my MPD, beets, and mpdscribble configuration files.
 
 ** Installation
 
@@ -18,7 +19,7 @@ Symlink management is done with =stow=, and it is the preferred way of
 installation. Example script:
 
 #+BEGIN_SRC sh
-  stow -t ~ emacs mpd shell scripts
+  stow -t ~ emacs bspwm mpd shell scripts
   sudo stow -t / system
 #+END_SRC
 
