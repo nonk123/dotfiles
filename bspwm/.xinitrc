@@ -4,4 +4,6 @@ xset r rate 200 30
 dunst &
 sxhkd &
 
+lemonbar-status &
+
 exec bspwm

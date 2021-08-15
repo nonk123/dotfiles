@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+function left() {
+    echo -n "%{l}"
+}
+
+function right() {
+    echo -n "%{r}"
+}
+
+function center() {
+    echo -n "%{c}"
+}
+
+function separate() {
+    echo -n " | "
+}
+
+function desktops() {
+    focused=$(bspc query -D -d focused --names)
+
+    echo -n "%{F-B-}"
+
+    for desktop in $(bspc query -D --names); do
+        if [[ "$desktop" = "$focused" ]]; then
+            echo -n "%{F-B-R} $desktop%{F-B-}"
+        else
+            echo -n " $desktop"
+        fi
+    done
+}
+
+while :; do
+    {
+        left; desktops
+        center; xtitle
+        right; stardate; separate
+        date +%T
+    } | tr -d "\n"
+
+    sleep 1
+done | lemonbar -f "Hack:size=10" -b
