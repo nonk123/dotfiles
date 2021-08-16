@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+setxkbmap -layout "ch(de),ru" -option grp:win_space_toggle
+xset r rate 200 30
+
+dunst &
+sxhkd &
+
+lemonbar-status &
+
 bspc monitor -d {0..9}
 bspc config window_gap 0
 bspc config focus_follows_pointer true

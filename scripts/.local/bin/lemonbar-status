@@ -1,20 +1,6 @@
 #!/usr/bin/env bash
 
-function left() {
-    echo -n "%{l}"
-}
-
-function right() {
-    echo -n "%{r}"
-}
-
-function center() {
-    echo -n "%{c}"
-}
-
-function separate() {
-    echo -n " | "
-}
+trap "kill -- -$$" SIGINT SIGTERM EXIT
 
 function desktops() {
     focused=$(bspc query -D -d focused --names)
@@ -22,21 +8,29 @@ function desktops() {
     echo -n "%{F-B-}"
 
     for desktop in $(bspc query -D --names); do
+        echo -n "%{A:bspc desktop -f $desktop:}"
+
         if [[ "$desktop" = "$focused" ]]; then
-            echo -n "%{F-B-R} $desktop%{F-B-}"
+            echo -n " %{F-B-R}$desktop%{F-B-}"
         else
             echo -n " $desktop"
         fi
+
+        echo -n "%{A}"
     done
 }
 
-while :; do
-    {
-        left; desktops
-        center; xtitle
-        right; stardate; separate
-        date +%T
-    } | tr -d "\n"
+desktops_file=/tmp/lemonbar$$
 
-    sleep 1
-done | lemonbar -f "Hack:size=10" -b
+desktops > "$desktops_file"
+
+bspc subscribe desktop | while read line; do
+    if [[ $(echo "$line" | cut -f1 -d' ') = desktop_focus ]]; then
+        desktops > "$desktops_file"
+    fi
+done &
+
+while :; do
+    echo "%{l}$(cat "$desktops_file") %{c}$(xtitle) %{r}$(date +%T)"
+    sleep 0.1
+done | lemonbar -f "Hack:size=10" | bash
