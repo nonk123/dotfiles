@@ -20,17 +20,14 @@ function desktops() {
     done
 }
 
-desktops_file=/tmp/lemonbar$$
-
-desktops > "$desktops_file"
-
-bspc subscribe desktop | while read line; do
-    if [[ $(echo "$line" | cut -f1 -d' ') = desktop_focus ]]; then
-        desktops > "$desktops_file"
-    fi
-done &
-
 while :; do
-    echo "%{l}$(cat "$desktops_file") %{c}$(xtitle) %{r}$(date +%T)"
+    desktops=$(desktops)
+    title=$(xtitle)
+    mem_usage_b=$(free -t | tr -s ' ' | cut -d' ' -f3 | sed -n '$p')
+    mem_usage_gb=$(echo "scale = 2; $mem_usage_b / 1024^2" | bc -l)
+    time=$(date +%T)
+
+    echo "%{l}$desktops%{c}$title%{r}${mem_usage_gb}G | $time"
+
     sleep 0.1
 done | lemonbar -f "Hack:size=10" | bash

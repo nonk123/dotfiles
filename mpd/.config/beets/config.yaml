@@ -7,13 +7,11 @@ fetchart:
 
 lyrics:
   auto: no
-
-lastgenre:
-  auto: no
+  force: yes
 
 replaygain:
-    backend: gstreamer
-    overwrite: yes
+  backend: gstreamer
+  overwrite: yes
 
 import:
   move: yes

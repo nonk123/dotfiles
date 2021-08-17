@@ -31,9 +31,6 @@ super + e
 super + Return
     emacsclient -c -e "(vterm-new-session)"
 
-super + i
-    notify-send Date "$(date "+%r, %a, %F")"
-
 Print
     screenshot region
 
