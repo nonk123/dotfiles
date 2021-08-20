@@ -8,7 +8,7 @@ super + shift + {h,j,k,l}; {1-9}
     bspc node @{west,south,north,east} -r 0.{1-9}
 
 super + {n,m}
-    bspc node -p ~{south,east}
+    bspc node -p {south,east}
 
 super + {t,f,F}
     bspc node -t ~{tiled,floating,fullscreen}
@@ -43,7 +43,7 @@ shift + Print
 super + S
     pkill -SIGUSR1 sxhkd
 
-@super + p
+super + p
     mpc -q toggle
 
 super + alt + {h,l}
