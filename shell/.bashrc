@@ -1,1 +1,2 @@
-. ~/.bash_common
+# Start fish instead.
+exec fish

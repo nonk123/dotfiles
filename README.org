@@ -8,7 +8,8 @@ Arch.
 - [[system]] is installed into the root of the filesystem. It contains
   non-sensitive configuration files.
 - [[scripts]] contains scripts of my own creation.
-- [[shell]] is my Bash configuration.
+- [[shell]] is my Fish configuration with some Bash additions for
+  executable shell scripts.
 - [[emacs]] is my slightly configged init.el with included yasnippets.
 - [[bspwm]] is my bspwm setup.
 - [[mpd]] includes my MPD, beets, and mpdscribble configuration files.
