@@ -125,14 +125,14 @@
   :init
   ;; Annoying as hell.
   (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-lens-enable t)
   (setq lsp-signature-auto-activate t)
   (setq lsp-signature-doc-lines 1)
   (setq lsp-completion-provider :none)
   :config (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
-  :hook ((lsp-managed-mode . lsp-lens-mode)
-         (before-save . (lambda ()
-                          (when lsp-managed-mode
-                            (lsp-format-buffer)))))
+  :hook (before-save . (lambda ()
+                         (when lsp-managed-mode
+                           (lsp-format-buffer))))
   :bind (:map lsp-mode-map
               ("M-l" . lsp-format-buffer)
               ("M-RET" . lsp-execute-code-action)
