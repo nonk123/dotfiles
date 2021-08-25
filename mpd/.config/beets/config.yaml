@@ -1,17 +1,9 @@
 library: ~/.config/beets/library.db
 
-plugins: fetchart embedart lastgenre replaygain lyrics duplicates mpdupdate
-
-fetchart:
-  auto: no
-
-lyrics:
-  auto: no
-  force: yes
+plugins: >-
+  fish fetchart embedart thumbnails lastgenre replaygain lyrics
+  duplicates mpdupdate missing
 
 replaygain:
   backend: gstreamer
   overwrite: yes
-
-import:
-  move: yes
