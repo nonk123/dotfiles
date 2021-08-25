@@ -6,7 +6,7 @@ xset r rate 200 30
 dunst &
 sxhkd &
 
-lemonbar-status &
+polybar nonk &
 
 bspc monitor -d {0..9}
 
