@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-setxkbmap -layout "us,ru" -option grp:win_space_toggle
+setxkbmap -layout "us,ru" -option "grp:win_space_toggle,,compose:sclk"
 xset r rate 200 30
 
 dunst &
 sxhkd &
+xcompmgr &
 
 polybar nonk &
 

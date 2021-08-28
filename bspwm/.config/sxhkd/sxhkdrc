@@ -40,11 +40,14 @@ alt + Print
 shift + Print
     screenshot display
 
-super + S
+super + r
     pkill -SIGUSR1 sxhkd
 
-super + p
-    mpc -q toggle
+XF86Audio{Stop,Play}
+    mpc -q {stop,toggle}
 
-super + alt + {h,l}
-    mpc -q seek {-,+}8
+XF86Audio{Prev,Next}
+    mpc -q seek {-,+}5
+
+XF86Audio{Lower,Raise}Volume
+    pactl -- set-sink-volume 0 {-,+}10%
