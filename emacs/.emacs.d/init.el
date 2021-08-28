@@ -74,12 +74,6 @@
   :delight
   :hook (prog-mode . dtrt-indent-mode))
 
-;; Do something with whitespace.
-(use-package ws-butler
-  :delight
-  :init (setq ws-butler-keep-whitespace-before-point nil)
-  :hook (prog-mode . ws-butler-mode))
-
 ;; Jump to headings like a boss.
 (use-package outshine
   :delight outshine-mode
@@ -130,11 +124,7 @@
   (setq lsp-signature-doc-lines 1)
   (setq lsp-completion-provider :none)
   :config (define-key lsp-mode-map (kbd lsp-keymap-prefix) nil)
-  :hook (before-save . (lambda ()
-                         (when lsp-managed-mode
-                           (lsp-format-buffer))))
   :bind (:map lsp-mode-map
-              ("M-l" . lsp-format-buffer)
               ("M-RET" . lsp-execute-code-action)
               ("M-." . lsp-find-declaration)
               ("M-:" . lsp-find-definition)
@@ -142,6 +132,12 @@
 (use-package lsp-ui)
 (use-package ccls)
 (use-package lsp-java)
+
+;; Buffer formatting for all languages.
+(use-package format-all
+  :delight
+  :hook ((prog-mode . format-all-mode)
+         (prog-mode . format-all-ensure-formatter)))
 
 ;; Project manager.
 (use-package projectile
@@ -160,8 +156,8 @@
 (use-package treemacs
   :commands (treemacs treemacs-show)
   :functions (treemacs--init treemacs-do-add-project-to-workspace
-              projectile-project-root treemacs-get-local-buffer
-              treemacs-get-local-window)
+                             projectile-project-root treemacs-get-local-buffer
+                             treemacs-get-local-window)
   :init
   (defun treemacs-but-stay ()
     "Toggle treemacs view without altering the current window."
@@ -195,6 +191,24 @@
 (use-package treemacs-magit)
 (use-package lsp-treemacs)
 
+;; Smart commands for manipulating parentheses.
+(use-package smartparens
+  :commands smartparens-global-strict-mode
+  :init
+  (require 'smartparens-config)
+  (smartparens-global-strict-mode 1)
+  :bind
+  (:map smartparens-strict-mode-map
+        ("C-M-e" . sp-end-of-sexp)
+        ("C-M-a" . sp-beginning-of-sexp)
+        ("C-M-n" . sp-down-sexp)
+        ("C-M-p" . sp-up-sexp)
+        ("C-M-f" . sp-forward-sexp)
+        ("C-M-b" . sp-backward-sexp)
+        ("C-M-t" . sp-transpose-sexp)
+        ("C-M-k" . sp-kill-sexp)
+        ("C-M-<backspace>" . sp-backward-kill-sexp)))
+
 ;; The silver searcher support for Projectile.
 (use-package ag)
 
@@ -214,13 +228,7 @@
 
 (use-package rust-mode)
 
-;;;;; Org
-
-(use-package org
-  :hook (org-mode . org-mode-actions))
-
-;; Code formatting on export.
-(use-package htmlize)
+(use-package geiser-guile)
 
 ;;;;; Configure built-ins
 
@@ -243,7 +251,6 @@
           (awk-mode . "awk")
           (other . "gnu"))))
 
-
 (use-package time
   :init
   (setq display-time-default-load-average nil)
@@ -261,7 +268,6 @@
   (tool-bar-mode -1)
   (column-number-mode 1)
   (show-paren-mode 1)
-  (electric-pair-mode 1)
 
   ;; Default to 4-space indentation.
   (setq-default indent-tabs-mode nil)
@@ -285,6 +291,9 @@
          ("M-e" . eval-region-or-buffer)))
 
 ;;;; Miscellany
+
+;; Code formatting for org on export.
+(use-package htmlize)
 
 (use-package frames-only-mode
   :commands frames-only-mode
@@ -319,7 +328,7 @@
 (defun configure-theme (&optional ignored)
   "Configure font and theme on a newly opened graphical frame.
 
-IGNORED is ignored to silence Flycheck."
+IGNORED is ignored, to silence Flycheck."
   (use-package color-theme-sanityinc-tomorrow
     :commands color-theme-sanityinc-tomorrow-eighties
     :init
@@ -328,7 +337,10 @@ IGNORED is ignored to silence Flycheck."
       (setq theme-configured t)))
   (set-frame-font "Hack 9" nil t)
   (scroll-bar-mode -1)
-  (fringe-mode (cons nil 1)))
+  (fringe-mode (cons nil 1))
+  ;; Unbind C-z to prevent accidental freezes when minimizing the
+  ;; Emacs window under a tiling WM.
+  (global-set-key (kbd "C-z") nil))
 
 (add-hook 'after-make-frame-functions #'configure-theme)
 (add-hook 'server-after-make-frame-hook #'configure-theme)
