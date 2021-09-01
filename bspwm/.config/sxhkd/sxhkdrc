@@ -31,14 +31,8 @@ super + e
 super + Return
     emacsclient -c -e "(vterm-new-session)"
 
-Print
-    screenshot region
-
-alt + Print
-    screenshot window
-
-shift + Print
-    screenshot display
+{_,alt + , shift + }Print
+    screenshot {region,window,display}
 
 super + r
     pkill -SIGUSR1 sxhkd
