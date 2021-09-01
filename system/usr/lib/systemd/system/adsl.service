@@ -2,6 +2,7 @@
 Description=ADSL Daemon
 After=sys-subsystem-net-devices-enp2s0.device
 Requires=sys-subsystem-net-devices-enp2s0.device
+Before=network-online.target
 
 [Service]
 Type=forking
