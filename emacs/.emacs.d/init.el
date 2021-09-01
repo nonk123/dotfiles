@@ -207,7 +207,9 @@
         ("C-M-b" . sp-backward-sexp)
         ("C-M-t" . sp-transpose-sexp)
         ("C-M-k" . sp-kill-sexp)
-        ("C-M-<backspace>" . sp-backward-kill-sexp)))
+        ("C-M-<backspace>" . sp-backward-kill-sexp)
+        ("M-[" . sp-backward-unwrap-sexp)
+        ("M-]" . sp-unwrap-sexp)))
 
 ;; The silver searcher support for Projectile.
 (use-package ag)
@@ -230,6 +232,8 @@
 
 (use-package geiser-guile)
 
+(use-package fish-mode)
+
 ;;;;; Configure built-ins
 
 ;; A fix for Magit.
@@ -250,13 +254,6 @@
         '((java-mode . "java")
           (awk-mode . "awk")
           (other . "gnu"))))
-
-(use-package time
-  :init
-  (setq display-time-default-load-average nil)
-  (setq display-time-interval 1)
-  (setq display-time-format "%H:%M:%S %a %d.%m.%y")
-  (display-time-mode 1))
 
 (use-package display-line-numbers
   :hook (prog-mode . display-line-numbers-mode))
@@ -299,9 +296,13 @@
   :commands frames-only-mode
   :init (frames-only-mode 1))
 
+(use-package eterm-256color)
+
 (use-package vterm
   :commands vterm
   :init
+  (setq vterm-buffer-name-string "vterm %s")
+  (setq vterm-term-environment-variable "eterm-color")
   (defun vterm-new-session ()
     (interactive)
     (vterm t)))
@@ -336,8 +337,10 @@ IGNORED is ignored, to silence Flycheck."
       (color-theme-sanityinc-tomorrow-eighties)
       (setq theme-configured t)))
   (set-frame-font "Hack 9" nil t)
+  ;; Disable GUI tweaks.
   (scroll-bar-mode -1)
   (fringe-mode (cons nil 1))
+  (blink-cursor-mode -1)
   ;; Unbind C-z to prevent accidental freezes when minimizing the
   ;; Emacs window under a tiling WM.
   (global-set-key (kbd "C-z") nil))
@@ -345,7 +348,7 @@ IGNORED is ignored, to silence Flycheck."
 (add-hook 'after-make-frame-functions #'configure-theme)
 (add-hook 'server-after-make-frame-hook #'configure-theme)
 
-;;;; Finalisation
+;;;; Finalise Everything
 
 (when first-load
   (make-directory server-socket-dir t)
