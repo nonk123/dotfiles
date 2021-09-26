@@ -137,7 +137,8 @@
 (use-package format-all
   :delight
   :hook ((prog-mode . format-all-mode)
-         (prog-mode . format-all-ensure-formatter)))
+         (prog-mode . format-all-ensure-formatter))
+  :init (setq format-all-show-errors 'never))
 
 ;; Project manager.
 (use-package projectile
@@ -235,6 +236,9 @@
 (use-package fish-mode)
 
 ;;;;; Configure built-ins
+
+(use-package org
+  :init (setq org-adapt-indentation nil))
 
 ;; A fix for Magit.
 (use-package server
