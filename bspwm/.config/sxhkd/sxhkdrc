@@ -1,0 +1,47 @@
+super + {h,j,k,l}
+    bspc node -f {west,south,north,east}
+
+ctrl + super + {h,j,k,l}
+    bspc node -n {west,south,north,east}
+
+super + {n,m}
+    bspc node -p {south,east}
+
+super + {t,f,ctrl + f}
+    bspc node -t ~{tiled,floating,fullscreen}
+
+super + {comma,period}
+    bspc monitor -f {west,east}
+
+ctrl + super + {comma,period}
+    bspc node -m {west,east} --follow
+
+super + {q,ctrl + q}
+    bspc node -{c,k}
+
+super {_,+ ctrl} + {v,b}
+    bspc {desktop -f,node -d} {prev,next}.local
+
+super + d
+    rofi -modi drun,run -show drun
+
+super + Return
+    alacritty
+
+{_,alt + ,ctrl + }Print
+    screenshot {region,window,display}
+
+super + r
+    pkill -SIGUSR1 sxhkd
+
+@XF86Audio{Stop,Play}
+    mpc -q {stop,toggle}
+
+XF86Audio{Prev,Next}
+    mpc -q seek {-,+}5
+
+XF86Audio{Lower,Raise}Volume
+    pactl -- set-sink-volume 1 {-,+}1%
+
+super + i
+    notify-send "Date and time" "$(date "+%r, %a, %F")"

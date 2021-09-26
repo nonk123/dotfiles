@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+export LIBVA_DRIVER_NAME="vdpau"
+
+setxkbmap -layout "us,ru" -option "grp:win_space_toggle,,compose:sclk"
+xset r rate 200 30
+
+xrdb ~/.Xresources
+xrdb -merge ~/.Xresources-catpuccin
+
+eval $(gnome-keyring-daemon)
+
+/usr/lib/xfce4/notifyd/xfce4-notifyd &
+sxhkd &
+xcompmgr &
+
+bspc monitor ^1 -d 1{0..9}
+bspc monitor ^2 -d 2{0..9}
+bspc config window_gap 0
+bspc config focus_follows_pointer false
+bspc config presel_feedback false
+
+bspc rule -a Firefox state=tiled
+
+discord &
