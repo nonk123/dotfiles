@@ -6,6 +6,7 @@ xset r rate 200 30
 dunst &
 sxhkd &
 xcompmgr &
+redshift-gtk &
 
 polybar nonk &
 

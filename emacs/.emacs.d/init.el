@@ -203,14 +203,18 @@
         ("C-M-e" . sp-end-of-sexp)
         ("C-M-a" . sp-beginning-of-sexp)
         ("C-M-n" . sp-down-sexp)
-        ("C-M-p" . sp-up-sexp)
+        ("C-M-p" . sp-backward-up-sexp)
         ("C-M-f" . sp-forward-sexp)
         ("C-M-b" . sp-backward-sexp)
         ("C-M-t" . sp-transpose-sexp)
         ("C-M-k" . sp-kill-sexp)
         ("C-M-<backspace>" . sp-backward-kill-sexp)
         ("M-[" . sp-backward-unwrap-sexp)
-        ("M-]" . sp-unwrap-sexp)))
+        ("M-]" . sp-unwrap-sexp)
+        ("M-{" . sp-backward-slurp-sexp)
+        ("M-}" . sp-forward-slurp-sexp)
+        ("C-M-[" . sp-forward-barf-sexp)
+        ("C-M-]" . sp-backward-barf-sexp)))
 
 ;; The silver searcher support for Projectile.
 (use-package ag)
@@ -279,17 +283,10 @@
 
   ;; Always follow symlinks.
   (setq vc-follow-symlinks t)
-
-  (defun eval-region-or-buffer ()
-    "If region is active, evaluate it.  Evaluate the current buffer otherwise."
-    (interactive)
-    (if (region-active-p)
-        (eval-region (region-beginning) (region-end))
-      (eval-buffer)))
   :hook (text-mode . auto-fill-mode)
   :bind (("M-SPC" . cycle-spacing)
          :map emacs-lisp-mode-map
-         ("M-e" . eval-region-or-buffer)))
+         ("C-c C-b" . eval-buffer)))
 
 ;;;; Miscellany
 

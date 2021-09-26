@@ -1,11 +1,11 @@
 super + {h,j,k,l}
     bspc node -f {west,south,north,east}
 
-super + {_,control + }{h,j,k,l}
+super + {_,ctrl + }{h,j,k,l}
     bspc node -{f,s} {west,south,north,east}
 
-super + shift + {h,j,k,l}; {1-9}
-    bspc node @{west,south,north,east} -r 0.{1-9}
+super + {H,J,K,L}
+    bspc node -z bottom_right {-50 0,0 50,0 -50,50 0}
 
 super + {n,m}
     bspc node -p {south,east}
@@ -28,8 +28,8 @@ super + d
 super + e
     emacsclient -c
 
-super + Return
-    emacsclient -c -e "(vterm-new-session)"
+super + {Return,M}
+    emacsclient -c -e "({vterm-new-session,woman})"
 
 {_,alt + , shift + }Print
     screenshot {region,window,display}
