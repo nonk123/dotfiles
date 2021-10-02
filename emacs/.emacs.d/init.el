@@ -14,6 +14,8 @@
   (interactive)
   (load-file (expand-file-name "init.el" user-emacs-directory)))
 
+(setenv "HOME" (expand-file-name "~/"))
+
 ;;;; Initialise custom file
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
@@ -86,7 +88,7 @@
   :hook ((emacs-lisp-mode . outshine-mode)
          (outshine-mode . purge-outshine-keybindings))
   :bind (:map outline-minor-mode-map
-              ("<backtab>" . outline-cycle)
+              ("<C-tab>" . outline-cycle)
               ("M-N" . outline-next-visible-heading)
               ("M-P" . outline-previous-visible-heading)))
 
@@ -146,8 +148,10 @@
   :commands projectile-mode
   :init
   (setq projectile-completion-system 'default)
-  (setq projectile-project-search-path '(("~/Sources/" . 1)))
-  (projectile-mode)
+  (setq projectile-indexing-method 'native)
+  (setq projectile-project-search-path
+        `((,(expand-file-name "Sources" "~/../..") . 1)))
+  (projectile-mode 1)
   :bind-keymap ("C-c p" . projectile-command-map))
 (use-package flycheck-projectile
   :bind (:map projectile-command-map
@@ -244,7 +248,7 @@
 (use-package org
   :init (setq org-adapt-indentation nil))
 
-;; A fix for Magit.
+;; A fix for `server-start'.
 (use-package server
   :functions server-ensure-safe-dir
   :init (advice-add #'server-ensure-safe-dir :override (lambda (&rest ignored) t)))
@@ -284,7 +288,8 @@
   ;; Always follow symlinks.
   (setq vc-follow-symlinks t)
   :hook (text-mode . auto-fill-mode)
-  :bind (("M-SPC" . cycle-spacing)
+  :bind (("<backtab>" . completion-at-point)
+         ("M-SPC" . cycle-spacing)
          :map emacs-lisp-mode-map
          ("C-c C-b" . eval-buffer)))
 
@@ -292,21 +297,6 @@
 
 ;; Code formatting for org on export.
 (use-package htmlize)
-
-(use-package frames-only-mode
-  :commands frames-only-mode
-  :init (frames-only-mode 1))
-
-(use-package eterm-256color)
-
-(use-package vterm
-  :commands vterm
-  :init
-  (setq vterm-buffer-name-string "vterm %s")
-  (setq vterm-term-environment-variable "eterm-color")
-  (defun vterm-new-session ()
-    (interactive)
-    (vterm t)))
 
 ;; Fix the header snippet for `c-mode'.
 (use-package string-inflection)
@@ -325,34 +315,22 @@
 
 ;;;; Look and Feel
 
-(defvar theme-configured nil)
+(use-package color-theme-sanityinc-tomorrow
+  :commands color-theme-sanityinc-tomorrow-eighties
+  :init (when first-load
+          (color-theme-sanityinc-tomorrow-eighties)))
 
-(defun configure-theme (&optional ignored)
-  "Configure font and theme on a newly opened graphical frame.
+(set-frame-font "Hack 9" nil t)
 
-IGNORED is ignored, to silence Flycheck."
-  (use-package color-theme-sanityinc-tomorrow
-    :commands color-theme-sanityinc-tomorrow-eighties
-    :init
-    (unless theme-configured
-      (color-theme-sanityinc-tomorrow-eighties)
-      (setq theme-configured t)))
-  (set-frame-font "Hack 9" nil t)
-  ;; Disable GUI tweaks.
-  (scroll-bar-mode -1)
-  (fringe-mode (cons nil 1))
-  (blink-cursor-mode -1)
-  ;; Unbind C-z to prevent accidental freezes when minimizing the
-  ;; Emacs window under a tiling WM.
-  (global-set-key (kbd "C-z") nil))
-
-(add-hook 'after-make-frame-functions #'configure-theme)
-(add-hook 'server-after-make-frame-hook #'configure-theme)
+;; Disable GUI tweaks.
+(scroll-bar-mode -1)
+(fringe-mode (cons nil 1))
+(blink-cursor-mode -1)
+(setq visible-bell 1)
 
 ;;;; Finalise Everything
 
-(when first-load
-  (make-directory server-socket-dir t)
+(unless (server-running-p)
   (server-start))
 
 (setq first-load nil)
