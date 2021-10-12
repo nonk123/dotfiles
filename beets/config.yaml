@@ -1,0 +1,6 @@
+plugins: >-
+  fetchart embedart lastgenre replaygain duplicates missing
+
+replaygain:
+  backend: ffmpeg
+  overwrite: yes

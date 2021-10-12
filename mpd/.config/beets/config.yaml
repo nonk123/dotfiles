@@ -1,9 +1,0 @@
-library: ~/.config/beets/library.db
-
-plugins: >-
-  fish fetchart embedart thumbnails lastgenre replaygain lyrics
-  duplicates mpdupdate missing
-
-replaygain:
-  backend: gstreamer
-  overwrite: yes
