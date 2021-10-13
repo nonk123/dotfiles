@@ -151,8 +151,14 @@
   (setq projectile-indexing-method 'native)
   (setq projectile-project-search-path
         `((,(expand-file-name "Sources" "~/../..") . 1)))
+  (defun projectile-magit ()
+    "Open the Magit interface in the root of the current project."
+    (interactive)
+    (magit-status (projectile-acquire-root)))
   (projectile-mode 1)
-  :bind-keymap ("C-c p" . projectile-command-map))
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :bind (:map projectile-command-map
+              ("g" . projectile-magit)))
 (use-package flycheck-projectile
   :bind (:map projectile-command-map
               ("e" . flycheck-projectile-list-errors)))
