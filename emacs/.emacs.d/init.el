@@ -148,7 +148,7 @@
   :commands projectile-mode
   :init
   (setq projectile-completion-system 'default)
-  (setq projectile-indexing-method 'native)
+  (setq projectile-indexing-method 'alien)
   (setq projectile-project-search-path
         `((,(expand-file-name "Sources" "~/../..") . 1)))
   (defun projectile-magit ()
