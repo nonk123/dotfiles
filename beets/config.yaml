@@ -1,5 +1,5 @@
 plugins: >-
-  fetchart embedart lastgenre replaygain duplicates missing
+  fetchart embedart lastgenre replaygain duplicates missing lyrics
 
 replaygain:
   backend: ffmpeg
