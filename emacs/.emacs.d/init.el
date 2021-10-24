@@ -302,6 +302,14 @@
 
 ;;;; Miscellany
 
+(use-package wakatime-mode
+  :delight
+  :init
+  ;; Wakatime requires Python 3.8 for whatever reason.
+  (setq wakatime-cli-path
+        (expand-file-name "~/../Local/Programs/Python/Python38/Scripts/wakatime.exe"))
+  :hook ((geiser-mode lsp-managed-mode) . wakatime-mode))
+
 ;; Code formatting for org on export.
 (use-package htmlize)
 
