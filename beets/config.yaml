@@ -1,5 +1,6 @@
 plugins: >-
   fetchart embedart lastgenre replaygain duplicates missing lyrics
+  mbsync artistcountry bandcamp copyartifacts
 
 replaygain:
   backend: ffmpeg
