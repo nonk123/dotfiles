@@ -6,6 +6,7 @@ flycheck_init.el
 tramp
 
 .lsp-session-v*
+.dap-breakpoints
 projects
 
 */

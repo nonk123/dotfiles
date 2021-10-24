@@ -246,6 +246,7 @@
 (use-package rust-mode)
 
 (use-package geiser-guile)
+(use-package geiser-racket)
 
 (use-package fish-mode)
 
