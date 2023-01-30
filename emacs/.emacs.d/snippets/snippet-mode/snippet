@@ -1,9 +1,0 @@
-# key: s
-# name: snippet
-# --
-
-# key: $1
-# name: `(file-name-base (buffer-file-name))`
-# --
-
-$0

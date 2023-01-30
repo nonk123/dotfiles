@@ -1,7 +1,21 @@
 plugins: >-
   fetchart embedart lastgenre replaygain duplicates missing lyrics
-  mbsync artistcountry bandcamp copyartifacts
+  mbsync lidarrfields
+
+paths:
+  default: $releasegroupartist/$lidarralbum ($year)/%if{$audiodisctotal,$disc - }${track}. $title
+  comp: Various Artists/$lidarralbum ($year)/%if{$audiodisctotal,$disc - }${track}. $title
+
+per_disc_numbering: yes
+
+lyrics:
+  sources: musixmatch genius google
+
+lastgenre:
+  count: 10
+  separator: ;
 
 replaygain:
+  auto: yes
   backend: ffmpeg
   overwrite: yes
