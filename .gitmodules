@@ -1,0 +1,3 @@
+[submodule "external/zsh-renew-tmux-env"]
+	path = external/zsh-renew-tmux-env
+	url = https://github.com/lljbash/zsh-renew-tmux-env.git

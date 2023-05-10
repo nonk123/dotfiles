@@ -42,3 +42,9 @@ alias ll='ls -alF'
 alias la='ls -A'
 
 alias grep='grep --color=auto'
+
+function cfg() {
+	source ~/.zshenv
+	source ~/.zprofile
+	source ~/.zshrc
+}

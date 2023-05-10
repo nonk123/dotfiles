@@ -1,70 +1,153 @@
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-----------------------------------------------------------------------------------------
+--                                                                                     --
+--  nonk123's init.lua (tm)                                                            --
+--                                                                                     --
+--  ✅ Approved by LocalInsomniac and the rest of the Schwungus Software corporation.  --
+--                                                                                     --
+--         This init-file is dedicated to jrb0001. Rest in peace, jerbie.              --
+--                                                                                     --
+--                           Even though you aren't dead                               --
+--                                     ...yet                                          --
+--                                                                                     --
+-----------------------------------------------------------------------------------------
 
-vim.o.spell = true
+-- Most accessed configuration entries.
 
-vim.o.clipboard = 'unnamedplus'
+KEYS = {
+	{ '<leader>x', '<cmd>close<cr>' },
+	{ '<leader>h', '<cmd>nohlsearch<cr>' },
+}
 
-vim.o.termguicolors = true
+GLOBALS = {
+	loaded_netrw = 1,
+	loaded_netrwPlugin = 1,
 
-vim.o.ruler = true
-vim.o.showmode = true
-vim.o.hlsearch = true
+	mapleader = ' ',
+}
 
-vim.o.relativenumber = true
+OPTS = {
+	spell = true,
 
-vim.o.cursorline = true
+	wrap = true,
+	linebreak = true,
 
-vim.o.timeout = false
-vim.o.ttimeout = false
+	clipboard = 'unnamedplus',
 
-vim.o.timeoutlen = 150
+	termguicolors = true,
 
-vim.o.showmatch = true
+	ruler = true,
+	showmode = true,
+	hlsearch = true,
 
-vim.o.smarttab = true
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
+	relativenumber = true,
 
-vim.o.splitright = true
-vim.o.splitbelow = true
+	cursorline = true,
 
-vim.g.mapleader = ' '
+	timeout = false,
+	ttimeout = false,
 
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
+	showmatch = true,
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+	smarttab = true,
+	tabstop = 4,
+	shiftwidth = 4,
+
+	splitright = true,
+	splitbelow = true,
+}
+
+TREESITTER_PARSERS = {
+	'regex', 'bash', 'markdown', 'markdown_inline', 'lua', 'vim', 'rust', 'python', 'c', 'cpp', 'c_sharp', 'gdscript',
+	'go', 'css', 'scss', 'html', 'json', 'javascript', 'typescript', 'wgsl',
+}
+
+-- TODO: perhaps install mason and make it support this list?
+LSP_SERVERS = {
+	'gopls', 'rust_analyzer', 'clangd', 'gdscript', 'vimls', 'lua_ls', 'marksman'
+}
+
+NULL_LSP_PROGRAMS = {
+	'beautysh', 'fish_indent', 'fixjson', 'gersemi', 'isort', 'nginx_beautifier', 'remark', 'taplo', 'yamlfmt',
+}
+
+-- Now, for the actual initialization...
+
+for k, v in pairs(GLOBALS) do
+	vim.g[k] = v
+end
+
+for k, v in pairs(OPTS) do
+	vim.opt[k] = v
+end
+
+-- Lazy package-manager installation.
+
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 
 if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable",
+	vim.fn.system {
+		'git',
+		'clone',
+		'--filter=blob:none',
+		'https://github.com/folke/lazy.nvim.git',
+		'--branch=stable',
 		lazypath,
-	})
+	}
 end
 
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
+-- LOTS of plugin-specific configuration. This isn't meant to be changed too often.
+
+require('lazy').setup({
+	-----------------------------------------
+	-- /!\ EXTREMELY IMPORTANT PLUGINS /!\ --
+	-----------------------------------------
+
+	-- Required by various plugins. Also used to set up the keybindings.
 	{
 		'nvim-lua/plenary.nvim',
 		lazy = false,
-		priority = 1000,
+		priority = 1002,
+		-- Putting my keybindings here because `keys` is easier to use than `vim.keymap.set`.
+		keys = KEYS,
 	},
+
+	-- I want to track my coding time at any cost.
+	{
+		'wakatime/vim-wakatime',
+		lazy = false,
+		priority = 1001,
+	},
+
+	-- THE color scheme. Period.
 	{
 		'catppuccin/nvim',
 		name = 'catppuccin',
 		lazy = false,
+		priority = 1000,
 		config = function()
 			vim.cmd.colorscheme('catppuccin-macchiato')
 		end,
 	},
+
+	-- The CHAD tree.
+	{
+		'ms-jpq/chadtree',
+		branch = 'chad',
+		build = {
+			'python3 -m chadtree deps',
+			':CHADdeps',
+		},
+		keys = {
+			{ '<leader>v', '<cmd>CHADopen<cr>' },
+		}
+	},
+
+	--------------------------------------------------------
+	-- All the other plugins. Nothing special about them. --
+	--------------------------------------------------------
+
 	{
 		'nvim-tree/nvim-web-devicons',
 		lazy = true,
@@ -82,6 +165,15 @@ require("lazy").setup({
 		end
 	},
 	{
+		'lukas-reineke/indent-blankline.nvim',
+		lazy = false,
+		opts = {
+			space_char_blankline = ' ',
+			show_current_context = true,
+			show_current_context_start = true,
+		}
+	},
+	{
 		'alexghergh/nvim-tmux-navigation',
 		opts = {},
 		keys = {
@@ -92,14 +184,28 @@ require("lazy").setup({
 		},
 	},
 	{
+		"folke/todo-comments.nvim",
+		lazy = false,
+		dependencies = {
+			'folke/trouble.nvim',
+			'nvim-telescope/telescope.nvim',
+		},
+		cmd = { 'TodoTrouble', 'TodoTelescope' },
+		keys = {
+			{ ']t', '<cmd>lua require(\'todo-comments\').jump_next()<cr>' },
+			{ '[t', '<cmd>lua require(\'todo-comments\').jump_prev()<cr>' },
+		}
+	},
+	{
 		'ahmedkhalf/project.nvim',
-		main = "project_nvim",
+		main = 'project_nvim',
 		opts = {
 			patterns = { '>Sources' },
 		},
 	},
 	{
 		'lambdalisue/suda.vim',
+		lazy = false,
 		init = function()
 			vim.g.suda_smart_edit = 1
 		end,
@@ -120,7 +226,7 @@ require("lazy").setup({
 			local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 			local cmp = require('cmp')
 
-			cmp.setup({
+			cmp.setup {
 				snippet = {
 					expand = function(args)
 						vim.fn['vsnip#anonymous'](args.body)
@@ -141,7 +247,7 @@ require("lazy").setup({
 				}, {
 					{ name = 'buffer' },
 				})
-			})
+			}
 
 			cmp.setup.filetype('gitcommit', {
 				sources = cmp.config.sources({
@@ -202,6 +308,7 @@ require("lazy").setup({
 		dependencies = {
 			'nvim-treesitter/nvim-treesitter-textobjects',
 			'windwp/nvim-ts-autotag',
+			'RRethy/nvim-treesitter-endwise',
 			'andrewferrier/textobj-diagnostic.nvim',
 			'szebniok/tree-sitter-wgsl',
 			'HiPhish/nvim-ts-rainbow2',
@@ -210,14 +317,14 @@ require("lazy").setup({
 		build = ':TSUpdate',
 		config = function()
 			require('nvim-treesitter.configs').setup {
-				ensure_installed = {
-					'regex', 'bash', 'markdown', 'markdown_inline', 'lua', 'vim', 'rust', 'python', 'c', 'cpp',
-					'c_sharp', 'gdscript', 'go', 'css', 'scss', 'html', 'json', 'javascript', 'typescript', 'wgsl',
-				},
+				ensure_installed = TREESITTER_PARSERS,
 				highlight = {
 					enable = true,
 				},
 				autotag = {
+					enable = true,
+				},
+				endwise = {
 					enable = true,
 				},
 				rainbow = {
@@ -261,11 +368,14 @@ require("lazy").setup({
 			'nvim-treesitter/nvim-treesitter',
 			'folke/trouble.nvim',
 			'ahmedkhalf/project.nvim',
+			'folke/noice.nvim',
 			'rcarriga/nvim-notify',
 			'AckslD/nvim-neoclip.lua',
 		},
 		keys = {
 			{ '<leader>b',  '<cmd>Telescope buffers<cr>' },
+			{ '<leader>n',  '<cmd>Telescope notify<cr>' },
+			{ '<leader>t',  '<cmd>Trouble<cr>' },
 			{ '<leader>ff', '<cmd>Telescope find_files<cr>' },
 			{ '<leader>fg', '<cmd>Telescope live_grep<cr>' },
 			{ '<leader>fh', '<cmd>Telescope help_tags<cr>' },
@@ -292,13 +402,15 @@ require("lazy").setup({
 				},
 			}
 
+			telescope.load_extension('noice')
+			telescope.load_extension('notify')
 			telescope.load_extension('projects')
-			telescope.load_extension("notify")
-			telescope.load_extension("neoclip")
+			telescope.load_extension('neoclip')
 		end
 	},
 	{
 		'folke/noice.nvim',
+		lazy = false,
 		dependencies = {
 			'smjonas/inc-rename.nvim',
 			'hrsh7th/nvim-cmp',
@@ -308,9 +420,9 @@ require("lazy").setup({
 		opts = {
 			lsp = {
 				override = {
-					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-					["vim.lsp.util.stylize_markdown"] = true,
-					["cmp.entry.get_documentation"] = true,
+					['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+					['vim.lsp.util.stylize_markdown'] = true,
+					['cmp.entry.get_documentation'] = true,
 				},
 			},
 			presets = {
@@ -331,10 +443,15 @@ require("lazy").setup({
 			'hrsh7th/cmp-nvim-lsp',
 		},
 		config = function()
-			local function on_attach(client)
+			local function on_attach(client, bufnr)
 				require('lsp-format').on_attach(client)
 
 				local bufopts = { noremap = true, silent = true, buffer = bufnr }
+
+				vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, bufopts)
+				vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
+				vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
+				vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, bufopts)
 
 				vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
 				vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
@@ -344,7 +461,7 @@ require("lazy").setup({
 				vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
 				vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
 				vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
-				vim.keymap.set('n', '<leader>rn', ":IncRename ", bufopts)
+				vim.keymap.set('n', '<leader>rn', ':IncRename ', bufopts)
 				vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
 				vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
 				vim.keymap.set('n', '<leader><C-f>', function()
@@ -355,13 +472,9 @@ require("lazy").setup({
 			local capabilities = require('cmp_nvim_lsp').default_capabilities()
 			local s = { on_attach = on_attach, capabilities = capabilities }
 
-			local lsp_servers = {
-				'gopls', 'rust_analyzer', 'clangd', 'gdscript', 'vimls', 'lua_ls'
-			}
-
 			local lspc = require('lspconfig')
 
-			for _, v in ipairs(lsp_servers) do
+			for _, v in pairs(LSP_SERVERS) do
 				lspc[v].setup(s)
 			end
 		end
@@ -369,18 +482,21 @@ require("lazy").setup({
 	{
 		'rcarriga/nvim-notify',
 		config = function()
-			vim.notify = require("notify")
+			vim.notify = require('notify')
 
-			vim.notify.Config = {
+			vim.notify.setup {
 				fps = 60,
-				stages = "fade",
-				timeout = 5000,
+				stages = 'fade',
+				render = 'compact',
+				timeout = 2000,
 			}
 		end
 	},
 	{
 		'windwp/nvim-autopairs',
 		opts = {
+			check_ts = true,
+			enable_check_bracket_line = false,
 			disable_in_replace_mode = false,
 		},
 	},
@@ -389,19 +505,12 @@ require("lazy").setup({
 		config = function()
 			local null_ls = require('null-ls')
 
+			for idx, key in ipairs(NULL_LSP_PROGRAMS) do
+				NULL_LSP_PROGRAMS[idx] = null_ls.builtins.formatting[key]
+			end
+
 			null_ls.setup {
-				sources = {
-					null_ls.builtins.formatting.beautysh,
-					null_ls.builtins.formatting.cbfmt,
-					null_ls.builtins.formatting.fish_indent,
-					null_ls.builtins.formatting.fixjson,
-					null_ls.builtins.formatting.gersemi,
-					null_ls.builtins.formatting.isort,
-					null_ls.builtins.formatting.nginx_beautifier,
-					null_ls.builtins.formatting.remark,
-					null_ls.builtins.formatting.taplo,
-					null_ls.builtins.formatting.yamlfmt,
-				},
+				sources = NULL_LSP_PROGRAMS,
 			}
 		end
 	},
@@ -441,10 +550,11 @@ require("lazy").setup({
 	},
 	'chaoren/vim-wordmotion',
 	'marrub--/vim-zscript',
+	'JafarDakhan/vim-gml',
 	'jghauser/mkdir.nvim',
 }, {
 	dev = {
-		path = "~/Sources",
+		path = '~/Sources',
 	},
 	checker = {
 		enabled = true,

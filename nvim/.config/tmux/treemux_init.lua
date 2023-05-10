@@ -1,3 +1,5 @@
+-- The inferior init-file. I'm not going to say anything else about it.
+
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -184,6 +186,7 @@ require('lazy').setup({
 					side = 'left',
 				},
 				filters = {
+					dotfiles = false,
 					custom = { '.git' },
 				},
 			}
@@ -223,5 +226,9 @@ require('lazy').setup({
 		root = vim.fn.stdpath("state") .. "/treemux/lazy/readme",
 		files = { "README.md", "lua/**/README.md" },
 		skip_if_doc_exists = true,
+	},
+	checker = {
+		enabled = true,
+		frequency = 3600,
 	},
 })

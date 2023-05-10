@@ -26,7 +26,7 @@ super + d
     rofi -modi drun,run -show drun
 
 super + Return
-    alacritty
+    kitty
 
 {_,alt + ,ctrl + }Print
     screenshot {region,window,display}
