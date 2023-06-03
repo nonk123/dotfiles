@@ -41,7 +41,7 @@ XF86Audio{Prev,Next}
     mpc -q seek {-,+}5
 
 XF86Audio{Lower,Raise}Volume
-    pactl -- set-sink-volume 1 {-,+}1%
+    pactl -- set-sink-volume 0 {-,+}1%
 
 super + i
     notify-send "Date and time" "$(date "+%r, %a, %F")"
