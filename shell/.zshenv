@@ -20,7 +20,6 @@ path=( \
 	~/.cargo/bin \
 	~/go/bin \
 	~/.yarn/bin \
-	~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/ \
 	$path \
 )
 
