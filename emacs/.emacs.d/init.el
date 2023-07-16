@@ -10,11 +10,14 @@
 
 (defconst nonk/user-emacs-dir (expand-file-name user-emacs-directory))
 (defconst nonk/emacs-custom-file (file-name-concat nonk/user-emacs-dir "custom.el"))
+(defconst nonk/custom-packages-dir (expand-file-name "lisp" nonk/user-emacs-dir))
 (defconst nonk/site-packages-dir (file-name-concat nonk/user-emacs-dir "site-packages/"))
 (defconst nonk/sources-dir (expand-file-name "~/Sources"))
 (defconst nonk/dotfiles-dir (expand-file-name "dotfiles" nonk/sources-dir))
 
 ;;;; Early setup:
+
+(add-to-list 'load-path nonk/custom-packages-dir)
 
 (setq custom-file nonk/emacs-custom-file
       auto-save-list-file-prefix (file-name-concat nonk/user-emacs-dir "auto-save-list" ".saves-"))
@@ -194,10 +197,10 @@
 		 ("<escape>" . ignore))))
 
 (use-package emacs
+  :ensure nil
   :demand t
   :diminish
   outline-minor-mode
-  outline-mode
   subword-mode
   abbrev-mode
   auto-revert-mode
@@ -213,11 +216,11 @@
   :preface
   (add-to-list 'display-buffer-alist
 	       '("\\*Help\\*"
-		 display-buffer-in-direction
-		 (direction . rightmost)
-		 (window-width . 80)
-		 (dedicated . t)
-		 (preserve-size . (t . nil))))
+		 display-buffer-in-side-window
+		 (side . right)
+		 (slot . -100)
+		 (window-min-width . 80)
+		 (dedicated . t)))
   (add-to-list 'display-buffer-alist
 	       `(,(rx (| "*Warnings*" "*Backtrace*"))
 		 display-buffer-same-window))
@@ -256,8 +259,8 @@
 			 (: "*eldoc for " (+ anything) "*")))
 		 display-buffer-in-side-window
 		 (side . right)
-		 (slot . -100)
-		 (window-min-width . 60)
+		 (slot . 100)
+		 (window-min-width . 80)
 		 (dedicated . t)
 		 (window-parameters . ((no-delete-other-windows . t)))))
 
@@ -282,7 +285,12 @@
 
   (defun nonk/install-elisp-documentation-providers ()
     (add-hook 'eldoc-documentation-functions #'nonk/elisp-eldoc-display-variable-value 10 t))
-  :hook (emacs-lisp-mode . nonk/install-elisp-documentation-providers)
+
+  (defun nonk/disable-eldoc-mode ()
+    (eldoc-mode -1))
+  :hook
+  (emacs-lisp-mode . nonk/install-elisp-documentation-providers)
+  (special-mode . nonk/disable-eldoc-mode)
   :init
   (setq eldoc-display-functions
 	'(eldoc-display-in-buffer
@@ -316,9 +324,10 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package treesit-auto
+  :demand t
   :functions global-treesit-auto-mode
   :custom (treesit-auto-install nil)
-  :init (global-treesit-auto-mode 1))
+  :config (global-treesit-auto-mode 1))
 
 (use-package projectile
   :demand t
@@ -565,6 +574,56 @@
 		("W" . winner-redo))
   :config (winner-mode 1))
 
+(use-package vterm
+  :demand t
+  :preface
+  (defun nonk/fix-vterm ()
+    (setq-local kill-buffer-query-functions nil)
+    (meow-mode -1)
+    (hl-line-mode -1))
+  
+  (defvar nonk/quake-vterm-buffer-name "*QUAKE vterm*")
+  (defvar nonk/quake-vterm-window-height 20)
+
+  (add-to-list 'display-buffer-alist
+	       `(,(rx-to-string nonk/quake-vterm-buffer-name)
+		 display-buffer-in-side-window
+		 (side . top)
+		 (slot . -100)
+		 (window-height . ,nonk/quake-vterm-window-height)
+		 (dedicated . t)))
+
+  (defvar nonk/quake-vterm--scrolled-window nil)
+  
+  (defun nonk/quake-vterm ()
+    (interactive)
+    (let ((quake-console (get-buffer-window nonk/quake-vterm-buffer-name)))
+      (if (window-live-p quake-console)
+	  (progn
+	    (let ((kill-buffer-query-functions nil))
+	      (kill-buffer nonk/quake-vterm-buffer-name))
+	    (when (window-live-p nonk/quake-vterm--scrolled-window)
+	      (select-window nonk/quake-vterm--scrolled-window)
+	      (scroll-down nonk/quake-vterm-window-height))
+	    (setq nonk/quake-vterm--scrolled-window nil))
+	(let ((vterm-buffer-name nonk/quake-vterm-buffer-name))
+	  (setq nonk/quake-vterm--scrolled-window (selected-window))
+	  (scroll-up nonk/quake-vterm-window-height)
+	  (vterm nil)))))
+  :hook (vterm-mode . nonk/fix-vterm)
+  :meow (leader ("RET" . vterm)
+		("q" . nonk/quake-vterm)))
+
+(use-package buffer-name-relative
+  :demand t
+  :functions buffer-name-relative-mode
+  :custom (buffer-name-relative-prefix '("<" . ">/"))
+  :init (buffer-name-relative-mode 1))
+
+(use-package aggressive-indent
+  :diminish
+  :hook ((lisp-mode emacs-lisp-mode) . aggressive-indent-mode))
+
 (use-package rust-mode)
 
 (use-package lua-mode)
@@ -577,7 +636,13 @@
 
 (use-package glsl-mode)
 
-;;;; Personal configuration:
+(use-package cmake-mode)
+
+;;;; Tiny bits of configuration:
+
+;;;;; Custom packages:
+
+;;(require 'mpds-nuts)
 
 ;;;;; Mode-agnostic buffer formatting:
 
@@ -599,7 +664,6 @@ will signal a `user-error'."
 (add-hook 'lsp-mode-hook #'nonk/install-format-buffer-before-save-hook)
 
 (meow-leader-define-key '("F" . nonk/format-buffer))
-(meow-global-mode 1)
 
 ;;;;; Default file:
 
@@ -611,5 +675,44 @@ will signal a `user-error'."
   (find-file nonk/default-file))
 
 (add-hook 'emacs-startup-hook #'nonk/open-default-file)
+
+;;;;; Hiding the modeline conditionally:
+
+(defvar-local nonk/previous-mode-line nil)
+
+(defun nonk/toggle-mode-line (&optional state)
+  "Switch the current buffer's mode-line on or off.
+
+If STATE is nil or 0, toggle the mode-line.
+
+If STATE is a positive number, switch the mode-line on.  Do the
+opposite for a negative STATE."
+  (interactive "P")
+  (cond
+   ((and nonk/previous-mode-line
+	 (or (not state) (and (numberp state) (> state 0))))
+    (setq-local mode-line-format nonk/previous-mode-line)
+    (setq-local nonk/previous-mode-line nil))
+   ((and mode-line-format
+	 (or (not state) (and (numberp state) (< state 0))))
+    (setq-local nonk/previous-mode-line mode-line-format)
+    (setq-local mode-line-format nil))))
+
+(defun nonk/enable-mode-line ()
+  (interactive)
+  (nonk/toggle-mode-line 1))
+
+(defun nonk/disable-mode-line ()
+  (interactive)
+  (nonk/toggle-mode-line -1))
+
+(dolist (hook '(help-mode-hook treemacs-mode-hook))
+  (add-hook hook #'nonk/disable-mode-line))
+
+(meow-leader-define-key '("M" . nonk/toggle-mode-line))
+
+;;;;; Initialize `meow':
+
+(meow-global-mode 1)
 
 ;;; init.el ends here
