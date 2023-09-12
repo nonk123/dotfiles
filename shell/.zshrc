@@ -2,9 +2,10 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 fi
 
-autoload -Uz compinit promptinit
+autoload -Uz compinit bashcompinit promptinit
 
 compinit
+bashcompinit
 promptinit
 
 prompt clint

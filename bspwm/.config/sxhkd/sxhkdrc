@@ -8,7 +8,7 @@ super + {n,m}
     bspc node -p {south,east}
 
 super + {t,f,ctrl + f}
-    bspc node -t ~{tiled,floating,fullscreen}
+    bspc node -t {tiled,floating,fullscreen}
 
 super + {comma,period}
     bspc monitor -f {west,east}
@@ -45,3 +45,6 @@ XF86Audio{Lower,Raise}Volume
 
 super + i
     notify-send "Date and time" "$(date "+%r, %a, %F")"
+
+super + o
+    notify-send "CPU temperature" "$(sensors -A)"

@@ -100,6 +100,8 @@
 
 ;;;; Package configuration:
 
+;;;;; Assorted packages required by my configuration:
+
 (use-package meow
   :demand t
   :defines meow-char-thing-table
@@ -111,11 +113,17 @@
   meow-thing-register
   meow-define-keys
   :custom (meow-keypad-self-insert-undefined nil)
+  :bind (:map meow-keymap
+	      ("M-TAB" . completion-at-point)
+	      ("M-p" . scroll-down-line)
+	      ("M-n" . scroll-up-line))
   :meow ((motion ("j" . meow-next)
 		 ("k" . meow-prev)
 		 ("<escape>" . ignore))
-	 (leader ("j" . "H-j")
+	 (leader ("h" . "H-h")
+		 ("j" . "H-j")
 		 ("k" . "H-k")
+		 ("l" . "H-l")
 		 ("s" . save-buffer)
 		 ("." . xref-find-definitions)
 		 (">" . xref-find-apropos)
@@ -184,7 +192,6 @@
 		 ("t" . meow-till)
 		 ("u" . meow-undo)
 		 ("U" . meow-undo-in-selection)
-		 ("v" . meow-visit)
 		 ("w" . meow-mark-word)
 		 ("W" . meow-mark-symbol)
 		 ("x" . meow-line)
@@ -194,6 +201,8 @@
 		 ("z" . meow-pop-selection)
 		 ("'" . repeat)
 		 (":" . "M-x")
+		 ("<" . indent-rigidly-left-to-tab-stop)
+		 (">" . indent-rigidly-right-to-tab-stop)
 		 ("<escape>" . ignore))))
 
 (use-package emacs
@@ -206,13 +215,15 @@
   auto-revert-mode
   visual-line-mode
   :custom
+  (user-full-name "Sergey Sudakov")
+  (user-mail-address "me@nonkus.xyz")
+  (auth-sources '("~/.authinfo.gpg"))
   (show-paren-delay 0)
   (tab-always-indent t)
   (switch-to-buffer-obey-display-actions t)
   :hook
   (prog-mode . display-line-numbers-mode)
   (emacs-lisp-mode . outline-minor-mode)
-  :bind ("M-TAB" . completion-at-point)
   :preface
   (add-to-list 'display-buffer-alist
 	       '("\\*Help\\*"
@@ -253,7 +264,7 @@
       (if docs (display-buffer buffer)
 	(when-let ((window (get-buffer-window buffer)))
 	  (delete-window window)))))
-
+  
   (add-to-list 'display-buffer-alist
 	       `(,(rx (| "*eldoc*"
 			 (: "*eldoc for " (+ anything) "*")))
@@ -297,31 +308,57 @@
 	  nonk/display-eldoc-buffer))
   (global-eldoc-mode 1))
 
+(use-package gnus
+  :demand t
+  :custom
+  (gnus-select-method '(nnml ""))
+  (gnus-secondary-select-methods
+   (mapcar (lambda (user)
+	     `(nnimap ,user
+		      (nnimap-address "mail.schwungus.software")
+		      (nnimap-user ,user)
+		      (nnimap-stream ssl)))
+	   '("admin@nonk.dev" "me@nonk.dev" "admin@schwungus.software" "nonk@schwungus.software")))
+  (gnus-topic-topology '(("Gnus" visible)
+			 (("Email" visible)
+			  (("admin@nonk.dev" visible))
+			  (("me@nonk.dev" visible))
+			  (("admin@schwungus.software" visible))
+			  (("nonk@schwungus.software" visible)))
+			 ("Misc" visible)))
+  (gnus-topic-alist nil)
+  (mail-user-agent 'message-user-agent)
+  (message-send-mail-function #'smtpmail-send-it)
+  (send-mail-function #'smtpmail-send-it)
+  (gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+  :hook (gnus-group-mode . gnus-topic-mode))
+
+(use-package editorconfig
+  :diminish
+  :config (editorconfig-mode 1))
+
 (use-package evil-nerd-commenter
   :meow (leader (";" . evilnc-comment-or-uncomment-lines)
 		(":" . evilnc-comment-box)))
 
 (use-package all-the-icons)
 
+(use-package all-the-icons-dired
+  :custom (all-the-icons-dired-monochrome nil)
+  :hook (dired-mode . all-the-icons-dired-mode))
+
 (use-package modus-themes
   :config
   (load-theme 'modus-vivendi t)
   (set-frame-font nonk/default-font nil t))
 
-(use-package ligature
-  :if (display-graphic-p)
-  :functions ligature-set-ligatures global-ligature-mode
-  :config
-  (ligature-set-ligatures
-   t
-   '("<---" "<--"  "<<-" "<-" "->" "-->" "--->" "<->" "<-->" "<--->" "<---->" "<!--"
-     "<==" "<===" "<=" "=>" "=>>" "==>" "===>" ">=" "<=>" "<==>" "<===>" "<====>" "<!---"
-     "<~~" "<~" "~>" "~~>" "::" ":::" "==" "!=" "===" "!=="
-     ":=" ":-" ":+" "<*" "<*>" "*>" "<|" "<|>" "|>" "+:" "-:" "=:" "<******>" "++" "+++"))
-  (global-ligature-mode 1))
-
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package dtrt-indent
+  :demand t
+  :diminish
+  :config (dtrt-indent-global-mode 1))
 
 (use-package treesit-auto
   :demand t
@@ -351,7 +388,8 @@
   :custom
   (lsp-response-timeout nil)
   (lsp-keymap-prefix nil)
-  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-headerline-breadcrumb-enable t)
+  (lsp-headerline-breadcrumb-segments '(project file symbols))
   (lsp-enable-suggest-server-download nil)
   (lsp-completion-provider :none)
   (lsp-diagnostics-provider :flycheck)
@@ -363,9 +401,9 @@
   ;; Diminish `flycheck-mode' in `lsp-mode' buffers because it doesn't provide any info.
   (diminish 'flycheck-mode
 	    '((:eval (if lsp-mode ""
-		      (flycheck-mode-line-status-text)))))
+		       (flycheck-mode-line-status-text)))))
   :hook
-  ((c-mode rust-ts-mode python-ts-mode go-ts-mode c-ts-mode c++-ts-mode csharp-ts-mode js-ts-mode typescript-ts-mode) . lsp)
+  ((c-mode rust-ts-mode python-ts-mode go-ts-mode c-ts-mode c++-ts-mode csharp-ts-mode js-ts-mode typescript-ts-mode markdown-mode) . lsp)
   (lsp-lens-mode . nonk/diminish-lsp-lens-mode)
   :meow (leader ("l" . ,lsp-command-map)))
 
@@ -443,39 +481,21 @@
 (use-package company
   :demand t
   :after cape
-  :autoload company-files company-ispell company-dabbrev
+  :autoload company-files company-dabbrev-code company-yasnippet
   :custom (company-backends nil)
-  :init (setq-default
-	 completion-at-point-functions
-	 (mapcar #'cape-company-to-capf
-		 (list #'company-files #'company-ispell #'company-dabbrev))))
+  :config
+  (defvar nonk/capf-extras
+    (mapcar #'cape-company-to-capf
+	    (list #'company-files #'company-dabbrev-code #'company-yasnippet)))
+  (defun nonk/capf-extras--hack (orig-fun)
+    (let* ((completion-at-point-functions
+	    (reverse (cdr (reverse completion-at-point-functions))))
+	   (completion-at-point-functions
+	    (append completion-at-point-functions nonk/capf-extras)))
+      (funcall-interactively orig-fun)))
+  (advice-add #'completion-at-point :around #'nonk/capf-extras--hack))
 
 (use-package dap-mode)
-
-(use-package treemacs
-  :demand t
-  :functions treemacs-load-theme treemacs-project-follow-mode
-  :config (treemacs-project-follow-mode 1)
-  :meow (leader ("v" . treemacs-select-window)))
-
-(use-package treemacs-projectile
-  :after (treemacs projectile))
-
-(use-package lsp-treemacs
-  :after (treemacs lsp-mode)
-  :functions lsp-treemacs-sync-mode
-  :config (lsp-treemacs-sync-mode 1))
-
-(use-package treemacs-magit
-  :after (treemacs magit))
-
-(use-package treemacs-all-the-icons
-  :functions treemacs-load-theme
-  :after (treemacs all-the-icons)
-  :config (treemacs-load-theme "all-the-icons"))
-
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once))
 
 (use-package magit
   :demand t
@@ -484,11 +504,14 @@
 (use-package forge
   :after magit)
 
+(use-package magit-todos
+  :after magit)
+
 (use-package ace-window
   :demand t
   :custom
   (aw-background nil)
-  :meow (leader ("o" . ace-window)
+  :meow (leader ("<SPC>" . ace-window)
 		("d" . delete-window)
 		("%" . split-window-right)
 		("\"" . split-window-below)))
@@ -531,16 +554,15 @@
   :functions embark-eldoc-first-target
   :custom (prefix-help-command #'embark-prefix-help-command)
   :bind (("C-." . embark-dwim)
-	 ("C-," . embark-act)
-	 ("C-h B" . embark-bindings))
+	 ("C-," . embark-act))
   :init
   (add-to-list 'display-buffer-alist
 	       `(,(rx (: "*Embark Collect ("
 			 (| "Live" "Completions")
 			 ")*"))
                  nil (window-parameters (mode-line-format . none))))
-  :meow (normal ("<" . embark-act)
-		(">" . embark-dwim)))
+  :meow (normal ("v" . embark-act)
+		("V" . embark-dwim)))
 
 (use-package embark-consult
   :demand t
@@ -624,19 +646,36 @@
   :diminish
   :hook ((lisp-mode emacs-lisp-mode) . aggressive-indent-mode))
 
+;;;;; `org-mode'-specific configuration:
+
+(use-package org
+  :custom
+  (org-directory "~/Sources/org")
+  (org-default-notes-file (expand-file-name "/notes.org" org-directory))
+  :meow (leader ("o" . org-capture)
+ 		("a" . org-agenda)))
+
+(use-package org-brain
+  :functions org-brain-polymode
+  :custom (org-brain-path (expand-file-name "brain" org-directory))
+  :meow (leader ("B" . org-brain-visualize)))
+
+(use-package polymode
+  :hook (org-brain-visualize-mode . org-brain-polymode))
+
+;;;;; Misc. major-modes:
+
+(use-package bazel)
+(use-package yaml-mode)
 (use-package rust-mode)
-
 (use-package lua-mode)
-
 (use-package gdscript-mode)
-
 (use-package alda-mode)
-
 (use-package sxhkdrc-mode)
-
 (use-package glsl-mode)
-
 (use-package cmake-mode)
+(use-package dockerfile-mode)
+(use-package caddyfile-mode)
 
 ;;;; Tiny bits of configuration:
 
@@ -653,12 +692,18 @@ If INTERACTIVE is non-nil and no formatters are available, the command
 will signal a `user-error'."
   (interactive (list t))
   (cond
-   (buffer-read-only (user-error "Cannot format a read-only buffer"))
-   (lsp-mode (lsp-format-buffer))
-   (interactive (user-error "No formatter detected for current buffer"))))
+   (buffer-read-only
+    (user-error "Cannot format a read-only buffer"))
+   (lsp-mode
+    (lsp-format-buffer))
+   ((derived-mode-p 'prog-mode)
+    (whitespace-cleanup))
+   (interactive
+    (user-error "No formatter detected for current buffer"))))
 
 (defun nonk/install-format-buffer-before-save-hook ()
-  "Install `format-buffer' into the buffer-local `before-save-hook'."
+  "Install `nonk/format-buffer' into the buffer-local `before-save-hook'."
+  (electric-indent-mode -1)
   (add-hook 'before-save-hook #'nonk/format-buffer nil t))
 
 (add-hook 'lsp-mode-hook #'nonk/install-format-buffer-before-save-hook)
@@ -706,7 +751,7 @@ opposite for a negative STATE."
   (interactive)
   (nonk/toggle-mode-line -1))
 
-(dolist (hook '(help-mode-hook treemacs-mode-hook))
+(dolist (hook '(help-mode-hook))
   (add-hook hook #'nonk/disable-mode-line))
 
 (meow-leader-define-key '("M" . nonk/toggle-mode-line))
@@ -714,5 +759,10 @@ opposite for a negative STATE."
 ;;;;; Initialize `meow':
 
 (meow-global-mode 1)
+
+;;;; Server:
+
+(unless (server-running-p)
+  (server-start))
 
 ;;; init.el ends here
