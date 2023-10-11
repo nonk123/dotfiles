@@ -1,5 +1,0 @@
-*
-!.gitignore
-
-!tmux.conf
-!treemux_init.lua
