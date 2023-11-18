@@ -1,5 +1,13 @@
-export VISUAL=vscodium
+export VISUAL="foot helix"
 export EDITOR=helix
+
+export SSH_AGENT_PID=
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"
+
+export GPG_TTY=$(tty)
+gpg-connect-agent updatestartuptty /bye > /dev/null
+
+ssh-add 2> /dev/null
 
 export SOURCES_DIR="$HOME/Sources"
 [ ! -d "$SOURCES_DIR" ] && mkdir -p "$SOURCES_DIR"
@@ -11,6 +19,23 @@ if [ ! -d "$DOTFILES_DIR" ]; then
 	sleep 5
 	return 1
 fi
+
+export ZSH_SECRETS_FILE="$HOME/.zshsecrets"
+
+if [ -f "$ZSH_SECRETS_FILE" ]; then
+	source "$ZSH_SECRETS_FILE"
+else
+	echo "WARN: failed to find $ZSH_SECRETS_FILE; expect further warnings"
+fi
+
+function check-var() {
+	if ! env | grep "^$1=" > /dev/null; then
+		echo "WARN: secret $1 was left unset" > /dev/stderr
+	fi
+}
+
+check-var OPENAI_API_KEY
+check-var OPENAI_API_BASE
 
 typeset -U path PATH
 

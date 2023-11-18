@@ -5,9 +5,9 @@ Operation = Remove
 Type = Package
 Target = linux-zen
 Target = nvidia
-Target = grub
+Target = syslinux
 
 [Action]
-Depends = grub
+Depends = syslinux
 When = PostTransaction
-Exec = /usr/bin/env grub-mkconfig -o /boot/grub/grub.cfg
+Exec = /usr/bin/syslinux-install_update -u
