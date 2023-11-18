@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=dwl
+
+wlsunset -l 55.9 -L 43.0 &
+dunst &
+
+wl-paste --watch cliphist store &

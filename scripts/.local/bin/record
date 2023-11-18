@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+FLAGS=(--audio)
+
+case $1 in
+  region)
+    region=$(slurp)
+    [ -n "$region" ] && wf-recorder $FLAGS -g "$region"
+    ;;
+  screen)
+    wf-recorder $FLAGS
+    ;;
+  window)
+    echo "/!\\ NOT SUPPORTED YET /!\\" >> /dev/stderr
+    exit 1
+    ;;
+  *)
+    exit 1
+    ;;
+esac
