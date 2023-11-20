@@ -49,6 +49,7 @@
      ;; Utilities.
      ace-window
      aggressive-indent-mode
+     format-all
      editorconfig
      wakatime-mode
 
@@ -140,11 +141,26 @@
   (cape-wrap-nonexclusive orig))
 (advice-add #'elisp-completion-at-point :around #'nonk/wrap-elisp-capf)
 
+(defun nonk/format-buffer ()
+  (interactive)
+  (let ((fallback t))
+    (when lsp-mode
+      (when (or (lsp-feature? "textDocument/formatting")
+              (lsp-feature? "textDocument/rangeFormatting"))
+        (lsp-format-buffer)
+        (setq fallback nil)))
+    (when fallback
+      ;; Ignore the error to prevent quirks while saving the buffer.
+      (condition-case nil
+        (format-all-buffer)
+        (error nil)))))
+
 (defun nonk/start-coding ()
   (interactive)
   (when (-any-p #'derived-mode-p nonk/aggressive-indent-modes)
-    (aggressive-indent-mode))
+    (aggressive-indent-mode 1))
   (editorconfig-apply)
+  (add-hook 'before-save-hook #'nonk/format-buffer 99 t)
   (unless (-any-p #'derived-mode-p nonk/ignore-lsp-modes)
     (lsp nil)
     (lsp-ui-mode 1)))
@@ -176,10 +192,14 @@
 (global-wakatime-mode 1)
 (editorconfig-mode 1)
 
-(diminish 'eldoc-mode)
-(diminish 'auto-revert-mode)
-(diminish 'projectile-mode)
-(diminish 'abbrev-mode)
-(diminish 'company-mode)
-(diminish 'wakatime-mode)
-(diminish 'editorconfig-mode)
+(defun nonk/diminish-things ()
+  (diminish 'eldoc-mode)
+  (diminish 'auto-revert-mode)
+  (diminish 'projectile-mode)
+  (diminish 'abbrev-mode)
+  (diminish 'company-mode)
+  (diminish 'aggressive-indent-mode)
+  (diminish 'wakatime-mode)
+  (diminish 'editorconfig-mode))
+
+(add-hook 'after-init-hook #'nonk/diminish-things)
