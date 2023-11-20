@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=dwl
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots
 
 wlsunset -l 55.9 -L 43.0 &
 dunst &
