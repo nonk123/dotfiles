@@ -38,8 +38,8 @@ check-var DISTCC_HOSTS
 
 export DISTCC_FALLBACK=0
 
-export CMAKE_C_COMPILER_LAUNCHER="ccache;distcc"
-export CMAKE_CXX_COMPILER_LAUNCHER="ccache;distcc"
+export CMAKE_C_COMPILER_LAUNCHER="ccache;pump;distcc"
+export CMAKE_CXX_COMPILER_LAUNCHER="ccache;pump;distcc"
 
 # Seems to work best between an Arch master and Ubuntu slaves.
 export CC="/usr/bin/clang-16"
