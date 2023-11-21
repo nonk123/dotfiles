@@ -58,7 +58,9 @@
 
      ;; Various modes.
      markdown-mode
-     cmake-mode))
+     cmake-mode
+     dockerfile-mode
+     yaml-mode))
 
 (dolist (package package-list)
   (straight-use-package package))
@@ -110,6 +112,7 @@
 	("C-y" . consult-yank-from-kill-ring)
 	("M-y" . yank))
 
+(yas-global-mode 1)
 (global-flycheck-mode 1)
 
 (setq projectile-auto-discover t)
@@ -195,6 +198,7 @@
 (defun nonk/diminish-things ()
   (diminish 'eldoc-mode)
   (diminish 'auto-revert-mode)
+  (diminish 'yas-minor-mode)
   (diminish 'projectile-mode)
   (diminish 'abbrev-mode)
   (diminish 'company-mode)
