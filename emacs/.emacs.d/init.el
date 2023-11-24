@@ -87,8 +87,8 @@
 (electric-pair-mode 1)
 (electric-indent-mode 1)
 
-(setq completion-styles '(orderless partial-completion basic)
-  completion-category-defaults nil)
+(setq completion-styles '(orderless partial-completion basic))
+(setq completion-category-defaults nil)
 
 (marginalia-mode 1)
 (vertico-mode 1)
@@ -112,7 +112,16 @@
 	("C-y" . consult-yank-from-kill-ring)
 	("M-y" . yank))
 
+(setq ispell-alternate-dictionary "/usr/share/dict/words")
+
+(require 'yasnippet)
+(setq yas-snippet-dirs (list (concat user-emacs-directory "snippets")))
+(define-key yas-minor-mode-map (kbd "<tab>") nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
 (yas-global-mode 1)
+
+(add-to-list 'auto-mode-alist '("LICENSE\\'" . text-mode))
+
 (global-flycheck-mode 1)
 
 (setq projectile-auto-discover t)
@@ -125,13 +134,25 @@
 (bind-key "C-c p" projectile-command-map)
 
 (global-company-mode 1)
+(setq company-backends nil)
 (setq company-frontends nil)
-(bind-key "M-TAB" #'completion-at-point)
 
 ;; Avoiding `company' at all cost and using it just for the backends.
 (setq-default completion-at-point-functions
-	(mapcar #'cape-company-to-capf
-		(list #'company-files #'company-keywords #'company-dabbrev-code)))
+	(append
+    (mapcar (lambda (x) (cape-capf-nonexclusive (cape-company-to-capf x)))
+		  (list #'company-files #'company-keywords))
+    (list (cape-company-to-capf #'company-dabbrev))))
+
+(setq yas-fallback-behavior 'return-nil)
+
+(defun nonk/try-yas-then-cap ()
+  (interactive)
+  (unless (yas-expand)
+    (completion-at-point)))
+
+(global-set-key (kbd "M-TAB") #'nonk/try-yas-then-cap)
+(define-key company-mode-map (kbd "M-TAB") #'nonk/try-yas-then-cap)
 
 (setq completion-in-region-function #'consult-completion-in-region)
 
@@ -144,8 +165,8 @@
   (cape-wrap-nonexclusive orig))
 (advice-add #'elisp-completion-at-point :around #'nonk/wrap-elisp-capf)
 
-(defun nonk/format-buffer ()
-  (interactive)
+(defun nonk/format-buffer (&optional arg)
+  (interactive "p")
   (let ((fallback t))
     (when lsp-mode
       (when (or (lsp-feature? "textDocument/formatting")
@@ -167,6 +188,10 @@
   (unless (-any-p #'derived-mode-p nonk/ignore-lsp-modes)
     (lsp nil)
     (lsp-ui-mode 1)))
+
+(defun nonk/disable-auto-format ()
+  (interactive)
+  (remove-hook 'before-save-hook #'nonk/format-buffer t))
 
 (setq lsp-headerline-breadcrumb-enable nil
   lsp-ui-peek-enable nil
