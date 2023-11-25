@@ -65,6 +65,12 @@
 (dolist (package package-list)
   (straight-use-package package))
 
+(straight-use-package
+  '(cmake-utils :type git :host github :repo "nonk123/emacs-cmake-utils"))
+
+(require 'cmake-utils)
+(setq cmake-utils-jobs-count 24)
+
 (require 'dash)
 
 (defun nonk/disable-clutter ()
@@ -179,12 +185,24 @@
         (format-all-buffer)
         (error nil)))))
 
+(defvar nonk/mode-extras nil)
+
+(require 'cmake-mode)
+(setq nonk/mode-extras '((cmake-mode after-save-hook cmake-utils-configure)))
+
 (defun nonk/start-coding ()
   (interactive)
   (when (-any-p #'derived-mode-p nonk/aggressive-indent-modes)
     (aggressive-indent-mode 1))
   (editorconfig-apply)
   (add-hook 'before-save-hook #'nonk/format-buffer 99 t)
+  (let ((ptr nonk/mode-extras) (stop nil))
+    (while (and ptr (not stop))
+      (pcase-let ((`(,mode ,hook ,fn) (car ptr)))
+        (when (derived-mode-p mode)
+          (add-hook hook fn 99 t)
+          (setq stop t)))
+      (setq ptr (cdr ptr))))
   (unless (-any-p #'derived-mode-p nonk/ignore-lsp-modes)
     (lsp nil)
     (lsp-ui-mode 1)))
