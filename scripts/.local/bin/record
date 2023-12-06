@@ -1,20 +1,40 @@
 #!/usr/bin/env bash
 
-FLAGS=(--audio)
+OUTPUT=~/Videos/recording.mp4
+FLAGS=(-f "$OUTPUT")
+
+function prepare() {
+    rm -f "$OUTPUT"
+}
 
 case $1 in
-  region)
-    region=$(slurp)
-    [ -n "$region" ] && wf-recorder $FLAGS -g "$region"
-    ;;
-  screen)
-    wf-recorder $FLAGS
-    ;;
-  window)
-    echo "/!\\ NOT SUPPORTED YET /!\\" >> /dev/stderr
-    exit 1
-    ;;
-  *)
-    exit 1
-    ;;
+    region)
+	region=$(slurp)
+
+	if [ -n "$region" ]; then
+	    prepare
+	    wf-recorder "${FLAGS[@]}" -g "$region" &
+	else
+	    exit 0
+	fi
+
+	;;
+    screen)
+	prepare
+	wf-recorder "${FLAGS[@]}" &
+	;;
+    window)
+	echo "/!\\ NOT SUPPORTED YET /!\\" > /dev/stderr
+	exit 1
+	;;
+    *)
+	exit 1
+	;;
 esac
+
+notify-send -t 0 -w "Recording started" "Close notification to stop"
+
+kill -SIGINT $(jobs -p)
+wait
+
+exit 0
