@@ -13,9 +13,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; Annoying: collapsing the graphical window on a tiling WM freezes Emacs.
-(unbind-key "C-z")
-
 (defvar package-list nil)
 (setq package-list
   '( ;; Theme.
@@ -80,12 +77,22 @@
   (interactive)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
-  (scroll-bar-mode -1)
+  (scroll-bar-mode -1))
 
-  (load-theme 'modus-vivendi t nil)
-  (set-frame-font "LiterationMono Nerd Font:spacing=100:pixelsize=12" nil t))
+(defvar nonk/theme-set-p nil)
+
+(defun nonk/apply-theming (&optional force)
+  (interactive "p")
+  (when (or force (not nonk/theme-set-p))
+    (set-face-font 'default "LiterationMono Nerd Font:spacing=100:pixelsize=12")
+    (load-theme 'modus-vivendi t nil)
+    (setq nonk/theme-set-p t)))
 
 (add-hook 'after-init-hook #'nonk/disable-clutter)
+
+;; Ensure the correct theme is set even in server mode.
+(add-hook 'server-after-make-frame-hook #'nonk/apply-theming)
+(add-hook 'after-make-frame-hook #'nonk/apply-theming)
 
 (setq eldoc-documentation-strategy #'eldoc-documentation-compose)
 (global-eldoc-mode 1)
@@ -167,6 +174,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.tpp\\'" . c++-mode))
 
+(require 'aggressive-indent)
 (defvar nonk/aggressive-indent-modes '(lisp-data-mode))
 (defvar nonk/ignore-lsp-modes '(sh-mode lisp-data-mode))
 
