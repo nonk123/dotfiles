@@ -4,5 +4,12 @@ dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT
 
 wlsunset -l 55.9 -L 43.0 &
 dunst &
+waybar &
 
 wl-paste --watch cliphist store &
+
+WALLPAPER=~/.wallpaper.png
+
+if [ -f "${WALLPAPER}" ]; then
+    swaybg -i "$WALLPAPER" -m fill &
+fi

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<labwc_config>
+  <core>
+    <gap>10</gap>
+  </core>
+
+  <theme>
+    <name>nonk</name>
+    <cornerRadius>8</cornerRadius>
+    <font name="LiterationMono Nerd Font" size="10"/>
+  </theme>
+
+  <keyboard>
+    <default/>
+    <numlock>on</numlock>
+    <layoutScope>global</layoutScope>
+    <repeatRate>30</repeatRate>
+    <repeatDelay>200</repeatDelay>
+    <keybind key="W-Return">
+      <action name="Execute" command="foot"/>
+    </keybind>
+    <keybind key="W-r">
+      <action name="Execute" command="bemenu-run"/>
+    </keybind>
+    <keybind key="W-d">
+      <action name="Execute" command="bemenu-desktop"/>
+    </keybind>
+  </keyboard>
+
+  <mouse>
+    <default/>
+  </mouse>
+</labwc_config>

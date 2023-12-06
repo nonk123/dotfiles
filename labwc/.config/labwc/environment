@@ -1,0 +1,10 @@
+XKB_DEFAULT_LAYOUT=us
+XKB_DEFAULT_LAYOUT=us,ru
+XKB_DEFAULT_OPTIONS=grp:win_space_toggle
+
+MOZ_ENABLE_WAYLAND=1
+_JAVA_AWT_WM_NONREPARENTING=1
+
+XDG_CURRENT_DESKTOP=wlroots
+
+BEMENU_OPTS=-l 10 -c -n -W 0.3 -f -B 3 -R 3 --fixed-height -w --scrollbar none

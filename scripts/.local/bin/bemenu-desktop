@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+from gi.repository import Gio
+
+import subprocess
+
+all_apps = Gio.AppInfo.get_all()
+all_apps = { app.get_display_name() : app.get_filename() for app in all_apps }
+
+app_names = "\n".join(all_apps.keys());
+
+proc = subprocess.Popen(["/usr/bin/bemenu"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+output, err = proc.communicate(app_names)
+
+ret = proc.wait()
+
+if ret == 0:
+    pass
+elif ret == 1:
+    exit(0)
+else:
+    exit(ret)
+
+output = output.strip()
+
+path = all_apps.get(output)
+
+if path is None:
+    exit(1)
+
+subprocess.run(["/usr/bin/gio", "launch", path])
