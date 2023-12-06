@@ -57,6 +57,7 @@
      magit
 
      ;; Various modes.
+     jinja2-mode
      markdown-mode
      cmake-mode
      dockerfile-mode
@@ -72,6 +73,8 @@
 (setq cmake-utils-jobs-count 24)
 
 (require 'dash)
+
+(setq wdired-allow-to-change-permissions t)
 
 (defun nonk/disable-clutter ()
   (interactive)
@@ -103,7 +106,7 @@
 (setq prefix-help-command #'embark-prefix-help-command)
 (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)
 
-(bind-keys ("C-." . embark-act) ("M-." . embark-dwim))
+(bind-keys ("C-." . embark-act) ("M-." . xref-find-definitions))
 
 (defvar consult-remap-alist nil)
 (setq consult-remap-alist
@@ -157,8 +160,8 @@
   (unless (yas-expand)
     (completion-at-point)))
 
-(global-set-key (kbd "M-TAB") #'nonk/try-yas-then-cap)
-(define-key company-mode-map (kbd "M-TAB") #'nonk/try-yas-then-cap)
+(global-set-key (kbd "<backtab>") #'nonk/try-yas-then-cap)
+(define-key company-mode-map (kbd "<backtab>") #'nonk/try-yas-then-cap)
 
 (setq completion-in-region-function #'consult-completion-in-region)
 
@@ -192,6 +195,7 @@
 
 (defun nonk/start-coding ()
   (interactive)
+  (diminish 'auto-revert-mode) ; something re-enables it unless run inside a hook???
   (when (-any-p #'derived-mode-p nonk/aggressive-indent-modes)
     (aggressive-indent-mode 1))
   (editorconfig-apply)
@@ -211,11 +215,13 @@
   (interactive)
   (remove-hook 'before-save-hook #'nonk/format-buffer t))
 
+(require 'lsp-mode)
+(require 'lsp-ui)
+
 (setq lsp-headerline-breadcrumb-enable nil
   lsp-ui-peek-enable nil
   lsp-ui-sideline-enable nil)
 
-(require 'lsp-mode)
 (bind-key "C-c l" lsp-command-map)
 
 (dolist (mode '(prog-mode markdown-mode cmake-mode))
@@ -240,7 +246,6 @@
 
 (defun nonk/diminish-things ()
   (diminish 'eldoc-mode)
-  (diminish 'auto-revert-mode)
   (diminish 'yas-minor-mode)
   (diminish 'projectile-mode)
   (diminish 'abbrev-mode)
