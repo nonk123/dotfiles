@@ -54,6 +54,8 @@
      magit
 
      ;; Various modes.
+     rust-mode
+     zig-mode
      jinja2-mode
      markdown-mode
      cmake-mode
@@ -176,7 +178,7 @@
 
 (require 'aggressive-indent)
 (defvar nonk/aggressive-indent-modes '(lisp-data-mode))
-(defvar nonk/ignore-lsp-modes '(sh-mode lisp-data-mode))
+(defvar nonk/ignore-lsp-modes '(sh-mode ld-script-mode lisp-data-mode))
 
 (defun nonk/wrap-elisp-capf (orig)
   (cape-wrap-nonexclusive orig))
