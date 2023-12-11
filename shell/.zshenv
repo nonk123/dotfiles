@@ -1,5 +1,5 @@
-export VISUAL="foot helix"
-export EDITOR=helix
+export VISUAL=emacsclient
+export EDITOR=emacsclient
 
 export SSH_AGENT_PID=
 export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"
