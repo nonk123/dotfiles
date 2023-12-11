@@ -1,5 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(load-file custom-file)
+
 (defvar bootstrap-version 6)
 
 (let ((bootstrap-file

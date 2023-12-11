@@ -1,0 +1,10 @@
+*
+!.gitignore
+
+!1cv8t
+!record
+!xpra-run
+!volumectl
+!pick-color
+!bemenu-desktop
+!wayland-initrc

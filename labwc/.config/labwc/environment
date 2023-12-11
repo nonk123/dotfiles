@@ -7,4 +7,4 @@ _JAVA_AWT_WM_NONREPARENTING=1
 
 XDG_CURRENT_DESKTOP=wlroots
 
-BEMENU_OPTS=-l 12 -c -n -W 0.43 -f -B 3 -R 3 --fixed-height -w --scrollbar none
+BEMENU_OPTS=--fn "Literation Mono Nerd Font 11" -l 12 -c -n -W 0.43 -f -B 3 -R 3 --fixed-height -w --scrollbar none
