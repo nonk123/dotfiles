@@ -46,6 +46,8 @@ export CXX="/usr/bin/g++"
 
 export CMAKE_EXPORT_COMPILE_COMMANDS=on
 
+export DOTNET_ROOT=~/.dotnet
+
 typeset -U path PATH
 
 path=( \
@@ -53,6 +55,8 @@ path=( \
       ~/.cargo/bin \
       ~/go/bin \
       ~/.yarn/bin \
+      $DOTNET_ROOT \
+      $DOTNET_ROOT/tools \
       $path \
 )
 
