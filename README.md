@@ -1,3 +1,3 @@
 # dotfiles
 
-The 6th iteration of my dotfiles. Back to Arch, baby!
+The 7th iteration of my dotfiles. Void Linux time! And no more Emacs clutter in this repo!
