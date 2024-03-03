@@ -29,6 +29,9 @@
     <keybind key="W-v">
       <action name="Execute" command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'"/>
     </keybind>
+    <keybind key="W-p">
+      <action name="Execute" command="copy-gopass"/>
+    </keybind>
     <keybind key="Print">
       <action name="Execute" command="grimshot copy area"/>
     </keybind>
