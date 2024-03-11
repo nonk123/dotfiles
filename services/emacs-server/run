@@ -1,3 +1,4 @@
 #!/bin/sh
 
+cd $HOME
 exec zsh -i -c "emacs --fg-daemon"

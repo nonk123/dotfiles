@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd $HOME
+XDG_RUNTIME_DIR=/run/user/$(id -u) exec /usr/local/bin/kak -s $USER -d

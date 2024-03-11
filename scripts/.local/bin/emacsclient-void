@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+exec emacsclient -c -s /tmp/emacs$(id -u)/server "$@"

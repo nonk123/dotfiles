@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+SESSION=nonk
+
+FLAGS=()
+
+if kak -l | grep -qF "$SESSION"; then
+    FLAGS=(-c $SESSION)
+else
+    FLAGS=(-s $SESSION)
+fi
+
+exec kak "${FLAGS[@]}" "$@"

@@ -9,3 +9,5 @@
 !bemenu-desktop
 !wayland-initrc
 !copy-gopass
+!emacsclient-void
+!k
