@@ -2,6 +2,7 @@
 
 <labwc_config>
   <core>
+    <decoration>client</decoration>
     <gap>10</gap>
   </core>
 
