@@ -9,8 +9,10 @@ evaluate-commands %sh{
 
 bundle-noload kak-bundle https://github.com/jdugan6240/kak-bundle
 
+bundle kakoune-wakatime https://github.com/wakatime/kakoune-wakatime
+
 bundle kak-lsp https://github.com/kak-lsp/kak-lsp %{
-    hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp|csharp) %{
+    hook global WinSetOption filetype=(rust|python|go|javascript|typescript|c|cpp|csharp|html|css) %{
         lsp-enable-window
         hook window BufWritePre .* lsp-formatting-sync
     }
@@ -28,15 +30,12 @@ bundle kak-lsp https://github.com/kak-lsp/kak-lsp %{
 }
 
 bundle-install-hook kak-lsp %{
-    cargo install --locked --force --path .
+    cargo install --locked --path .
 }
 
 bundle-cleaner kak-lsp %{
     rm ~/.cargo/bin/kak-lsp
 }
-
-# Borked:
-#bundle kakoune-wakatime https://github.com/WhatNodyn/kakoune-wakatime.git
 
 hook global WinCreate .* %{ editorconfig-load }
 

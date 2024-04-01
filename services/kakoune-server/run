@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 cd $HOME
-XDG_RUNTIME_DIR=/run/user/$(id -u) exec /usr/local/bin/kak -s $USER -d
+
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+if [ -n "$(kak -l)" ]; then
+    kak -clear
+fi
+
+exec zsh -lc "kak -s $USER -d"
