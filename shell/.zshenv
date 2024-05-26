@@ -32,14 +32,12 @@ function check-var() {
     fi
 }
 
-check-var OPENAI_API_KEY
-check-var OPENAI_API_BASE
-check-var DISTCC_HOSTS
+#check-var DISTCC_HOSTS
 
-export DISTCC_FALLBACK=0
+#export DISTCC_FALLBACK=0
 
-export CMAKE_C_COMPILER_LAUNCHER="sccache"
-export CMAKE_CXX_COMPILER_LAUNCHER="sccache"
+#export CMAKE_C_COMPILER_LAUNCHER="sccache"
+#export CMAKE_CXX_COMPILER_LAUNCHER="sccache"
 
 export CC="/usr/bin/gcc"
 export CXX="/usr/bin/g++"
