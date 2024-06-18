@@ -5,7 +5,7 @@
     "spacing": 10,
     "modules-left": ["tray"],
     "modules-center": ["wlr/taskbar"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "clock"],
+    "modules-right": ["pulseaudio", "network", "temperature", "battery", "clock"],
     "wlr/taskbar": {
 	"all-outputs": true,
 	"format": "{icon}",
