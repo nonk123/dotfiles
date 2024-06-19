@@ -1,5 +1,5 @@
 * {
-    font-family: "LiterationMono Nerd Font", FontAwesome;
+    font-family: "Literation Nerd Font", sans-serif;
     font-size: 12px;
     border-radius: 0;
 }
@@ -10,15 +10,15 @@ button {
 }
 
 window#waybar {
-    background: transparent;
-    color: #ffffff;
+    background: rgba(0, 0, 0, 0.5);
+    color: rgb(255, 255, 255);
     transition-property: background-color;
     transition-duration: .5s;
 }
 
 #workspaces button {
     padding: 0 5px;
-    color: #ffffff;
+    color: rgb(255, 255, 255);
     border-radius: 8px;
 }
 
@@ -38,10 +38,10 @@ window#waybar {
 #idle_inhibitor,
 #scratchpad,
 #mpd {
-    background: rgba(0.0, 0.0, 0.0, 0.3);
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 5px;
     padding: 0 12px;
-    color: #ffffff;
+    color: rgb(255, 255, 255);
 }
 
 #window,
@@ -59,8 +59,8 @@ window#waybar {
 
 @keyframes blink {
     to {
-        background-color: #ffffff;
-        color: #000000;
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
     }
 }
 
@@ -98,5 +98,5 @@ window#waybar {
 
 #privacy-item {
     padding: 0 5px;
-    color: white;
+    color: rgb(255, 255, 255);
 }
