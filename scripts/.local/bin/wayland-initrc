@@ -6,6 +6,8 @@ wlsunset -l 55.9 -L 43.0 &
 dunst &
 waybar &
 
+foot --server &
+
 wl-paste --watch cliphist store &
 
 WALLPAPER=~/.wallpaper.png
