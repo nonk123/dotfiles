@@ -24,8 +24,8 @@ fi
 offset=$(echo "$slurp_out" | cut -d' ' -f1 | tr ',' '+')
 size=$(echo "$slurp_out" | cut -d' ' -f2)
 
-magick -extract "$size+$offset" "$OUTPUT" "$OUTPUT".1
-wl-copy -t image/png < "$OUTPUT".1
+magick -extract "$size+$offset" "$OUTPUT" "$OUTPUT"
+wl-copy -t image/png < "$OUTPUT"
 
 cleanup
 exit 0
