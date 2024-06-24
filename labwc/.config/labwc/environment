@@ -1,3 +1,5 @@
+WLR_DRM_NO_ATOMIC=1 # for tearing
+
 XKB_DEFAULT_LAYOUT=us,ru
 XKB_DEFAULT_OPTIONS=grp:win_space_toggle
 

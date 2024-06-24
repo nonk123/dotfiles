@@ -2,9 +2,16 @@
 
 <labwc_config>
   <core>
-    <decoration>client</decoration>
     <gap>10</gap>
+    <decoration>server</decoration>
+    <adaptiveSync>yes</adaptiveSync>
+    <allowTearing>yes</allowTearing>
+    <reuseOutputMode>yes</reuseOutputMode>
   </core>
+
+  <placement>
+    <policy>automatic</policy>
+  </placement>
 
   <theme>
     <name>nonk</name>
