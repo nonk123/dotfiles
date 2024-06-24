@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-OUTPUT=$(mktemp screenieXXXXXX.png)
+OUTPUT=$(mktemp --tmpdir screenieXXXXXX.png)
 
 if ! grim "$OUTPUT"; then
     exit 1
