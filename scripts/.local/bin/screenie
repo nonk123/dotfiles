@@ -14,10 +14,13 @@ function succ() {
 }
 
 SLURP_OUT=$(slurp || succ)
+
 OFFSET=$(echo "$SLURP_OUT" | cut -d' ' -f1 | tr ',' '+')
 SIZE=$(echo "$SLURP_OUT" | cut -d' ' -f2)
 
-magick -extract "$SIZE+$OFFSET" "$OUTPUT" "$OUTPUT"
+EXTRACT=$SIZE+$OFFSET
+
+magick -extract "$EXTRACT" "$OUTPUT" "$OUTPUT"
 wl-copy -t image/png < "$OUTPUT"
 
 succ
