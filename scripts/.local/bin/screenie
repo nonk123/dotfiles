@@ -2,30 +2,22 @@
 
 OUTPUT=$(mktemp --tmpdir screenieXXXXXX.png)
 
-if ! grim "$OUTPUT"; then
-    exit 1
-fi
+grim "$OUTPUT" || exit 1
 
-imv -f "$OUTPUT" &
-export imv_pid=$!
+imv -s none -f "$OUTPUT" &
+imv_pid=$!
 
-function cleanup() {
+function succ() {
     kill "$imv_pid"
     wait
+    exit 0
 }
 
-slurp_out=$(slurp)
+SLURP_OUT=$(slurp || succ)
+OFFSET=$(echo "$SLURP_OUT" | cut -d' ' -f1 | tr ',' '+')
+SIZE=$(echo "$SLURP_OUT" | cut -d' ' -f2)
 
-if [ -z "$slurp_out" ]; then
-    cleanup
-    exit 0
-fi
-
-offset=$(echo "$slurp_out" | cut -d' ' -f1 | tr ',' '+')
-size=$(echo "$slurp_out" | cut -d' ' -f2)
-
-magick -extract "$size+$offset" "$OUTPUT" "$OUTPUT"
+magick -extract "$SIZE+$OFFSET" "$OUTPUT" "$OUTPUT"
 wl-copy -t image/png < "$OUTPUT"
 
-cleanup
-exit 0
+succ
