@@ -4,11 +4,7 @@
 !1cv8t
 !record
 !screenie
-!xpra-run
 !volumectl
-!pick-color
 !bemenu-desktop
 !wayland-initrc
 !copy-gopass
-!emacsclient-void
-!k

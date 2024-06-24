@@ -2,6 +2,6 @@
 
 selection=$(gopass --nosync ls -f | bemenu)
 
-if [ -n "$selection" ]; then
+if [[ -n "$selection" ]]; then
     gopass --nosync show -o "$selection" | wl-copy
 fi

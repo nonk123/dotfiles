@@ -12,6 +12,6 @@ wl-paste --watch cliphist store &
 
 WALLPAPER=~/.wallpaper.png
 
-if [ -f "${WALLPAPER}" ]; then
+if [[ -f "${WALLPAPER}" ]]; then
     swaybg -i "$WALLPAPER" -m fill &
 fi

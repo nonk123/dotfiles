@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-xpra attach tcp://192.168.192.169:1488 --start=$1
