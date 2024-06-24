@@ -34,7 +34,7 @@
       <action name="Execute" command="copy-gopass"/>
     </keybind>
     <keybind key="Print">
-      <action name="Execute" command="grimshot copy area"/>
+      <action name="Execute" command="screenie"/>
     </keybind>
     <keybind key="S-Print">
       <action name="Execute" command="grimshot copy output"/>

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+OUTPUT=$(mktemp screenieXXXXXX.png)
+
+if ! grim "$OUTPUT"; then
+    exit 1
+fi
+
+imv -f "$OUTPUT" &
+export imv_pid=$!
+
+function cleanup() {
+    kill "$imv_pid"
+    wait
+}
+
+slurp_out=$(slurp)
+
+if [ -z "$slurp_out" ]; then
+    cleanup
+    exit 0
+fi
+
+offset=$(echo "$slurp_out" | cut -d' ' -f1 | tr ',' '+')
+size=$(echo "$slurp_out" | cut -d' ' -f2)
+
+magick -extract "$size+$offset" "$OUTPUT" "$OUTPUT".1
+wl-copy -t image/png < "$OUTPUT".1
+
+cleanup
+exit 0
