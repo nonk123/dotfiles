@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-selection=$(gopass --nosync ls -f | bemenu)
-
-if [[ -n "$selection" ]]; then
-    gopass --nosync show -o "$selection" | wl-copy
-fi
+gopass=(/usr/bin/gopass --nosync)
+selection=$($gopass ls -f | bemenu)
+[[ -n "$selection" ]] && $gopass show -o "$selection" | wl-copy
