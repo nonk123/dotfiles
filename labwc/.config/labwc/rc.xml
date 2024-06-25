@@ -38,7 +38,7 @@
       <action name="Execute" command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'"/>
     </keybind>
     <keybind key="W-p">
-      <action name="Execute" command="copy-gopass"/>
+      <action name="Execute" command="gopass-clip"/>
     </keybind>
     <keybind key="Print">
       <action name="Execute" command="screenie"/>
