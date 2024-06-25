@@ -44,7 +44,7 @@
       <action name="Execute" command="screenie"/>
     </keybind>
     <keybind key="S-Print">
-      <action name="Execute" command="grimshot copy output"/>
+      <action name="Execute" command="bash -c 'grim /tmp/fullscreen.png &amp;&amp; wl-copy -t image/png &lt; /tmp/fullscreen.png'"/>
     </keybind>
     <keybind key="C-Print">
       <action name="Execute" command="record region"/>
