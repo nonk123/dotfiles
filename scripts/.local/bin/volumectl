@@ -4,18 +4,13 @@ SINK=0
 AMOUNT=1%
 
 function adjust() {
-    pactl -- set-sink-volume "$SINK" "$1"
+    exec pactl -- set-sink-volume "$SINK" "$1"
 }
 
 case $1 in
-    raise)
-	adjust +"$AMOUNT"
-	;;
-    lower)
-	adjust -"$AMOUNT"
-	;;
+    raise) adjust +"$AMOUNT" ;;
+    lower) adjust -"$AMOUNT" ;;
     *)
 	echo "The hell do you want me to do?" > /dev/stderr
 	exit 1
-	;;
 esac
