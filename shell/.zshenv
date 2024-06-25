@@ -13,17 +13,9 @@ export SOURCES_DIR="$HOME/Sources"
 export DOTFILES_DIR="$SOURCES_DIR/dotfiles"
 
 if [[ ! -d "$DOTFILES_DIR" ]]; then
-    echo "nonk123/dotfiles must be installed into $SOURCES_DIR" > /dev/stderr
+    echo "`nonk123/dotfiles` must be installed into $SOURCES_DIR" > /dev/stderr
     sleep 5
     exit 1
-fi
-
-export ZSH_SECRETS_FILE="$HOME/.zshsecrets"
-
-if [[ -f "$ZSH_SECRETS_FILE" ]]; then
-    source "$ZSH_SECRETS_FILE"
-else
-    echo "WARN: failed to find $ZSH_SECRETS_FILE; expect further warnings" > /dev/stderr
 fi
 
 export WLR_DRM_NO_ATOMIC=1 # for labwc tearing
