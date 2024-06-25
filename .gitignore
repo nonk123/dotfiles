@@ -1,2 +1,5 @@
 \#*
 *~
+
+scripts/.local/*
+!scripts/.local/bin
