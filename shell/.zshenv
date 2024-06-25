@@ -20,8 +20,11 @@ fi
 
 export WLR_DRM_NO_ATOMIC=1 # for labwc tearing
 
-export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
-export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
+if which maybe-sccache &> /dev/null; then
+    export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
+    export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
+    export RUSTC_WRAPPER=maybe-sccache
+fi
 
 export CC=/usr/bin/gcc
 export CXX=/usr/bin/g++
