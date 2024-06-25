@@ -26,6 +26,8 @@ else
     echo "WARN: failed to find $ZSH_SECRETS_FILE; expect further warnings" > /dev/stderr
 fi
 
+export WLR_DRM_NO_ATOMIC=1 # for labwc tearing
+
 export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
 export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
 
