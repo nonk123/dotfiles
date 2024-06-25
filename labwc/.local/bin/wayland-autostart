@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+dunst &
+waybar &
+
+sleep 3 # give time for `waybar` to start
+
+foot --server &
+
+discord &
+telegram-desktop &

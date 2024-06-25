@@ -3,11 +3,6 @@
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots
 
 wlsunset -l 55.9 -L 43.0 &
-dunst &
-waybar &
-
-foot --server &
-
 wl-paste --watch cliphist store &
 
 WALLPAPER=~/.wallpaper.png
@@ -15,3 +10,5 @@ WALLPAPER=~/.wallpaper.png
 if [[ -f "${WALLPAPER}" ]]; then
     swaybg -i "$WALLPAPER" -m fill &
 fi
+
+source $(which wayland-autostart)
