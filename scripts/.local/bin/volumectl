@@ -7,7 +7,10 @@ function adjust() {
     exec pactl -- set-sink-volume "$SINK" "$1"
 }
 
-case $1 in
+COMMAND=$1
+shift
+
+case $COMMAND in
     raise) adjust +"$AMOUNT" ;;
     lower) adjust -"$AMOUNT" ;;
     *)
