@@ -1,1 +1,0 @@
-export WLR_DRM_NO_ATOMIC=1

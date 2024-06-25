@@ -8,28 +8,26 @@ export GPG_TTY=$(tty)
 gpg-connect-agent updatestartuptty /bye > /dev/null
 
 export SOURCES_DIR="$HOME/Sources"
-[ ! -d "$SOURCES_DIR" ] && mkdir -p "$SOURCES_DIR"
+[[ ! -d "$SOURCES_DIR" ]] && mkdir -p "$SOURCES_DIR"
 
 export DOTFILES_DIR="$SOURCES_DIR/dotfiles"
 
-if [ ! -d "$DOTFILES_DIR" ]; then
+if [[ ! -d "$DOTFILES_DIR" ]]; then
     echo "nonk123/dotfiles must be installed into $SOURCES_DIR" > /dev/stderr
     sleep 5
-    return 1
+    exit 1
 fi
 
 export ZSH_SECRETS_FILE="$HOME/.zshsecrets"
 
-if [ -f "$ZSH_SECRETS_FILE" ]; then
+if [[ -f "$ZSH_SECRETS_FILE" ]]; then
     source "$ZSH_SECRETS_FILE"
 else
-    echo "WARN: failed to find $ZSH_SECRETS_FILE; expect further warnings"
+    echo "WARN: failed to find $ZSH_SECRETS_FILE; expect further warnings" > /dev/stderr
 fi
 
 function check-var() {
-    if ! env | grep "^$1=" > /dev/null; then
-	echo "WARN: secret $1 was left unset" > /dev/stderr
-    fi
+    env | grep "^$1=" > /dev/null || echo "WARN: secret $1 was left unset" > /dev/stderr
 }
 
 #check-var DISTCC_HOSTS
@@ -39,10 +37,10 @@ function check-var() {
 #export CMAKE_C_COMPILER_LAUNCHER="sccache"
 #export CMAKE_CXX_COMPILER_LAUNCHER="sccache"
 
-export CC="/usr/bin/gcc"
-export CXX="/usr/bin/g++"
+export CC=/usr/bin/gcc
+export CXX=/usr/bin/g++
 
-export CMAKE_EXPORT_COMPILE_COMMANDS=on
+export CMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 export DOTNET_ROOT=~/.dotnet
 

@@ -1,7 +1,3 @@
-if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-    alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
-fi
-
 autoload -Uz compinit bashcompinit promptinit
 
 compinit
@@ -48,15 +44,18 @@ alias la='ls -A'
 
 alias grep='grep --color=auto'
 
+function cfg_file() {
+    [[ -f "$1" ]] && source "$1"
+}
+
 function cfg() {
-	source ~/.zshenv
-	source ~/.zprofile
-	source ~/.zshrc
+    cfg_file ~/.zshenv
+    cfg_file ~/.zshrc
 }
 
 syntax_path=~/Sources/zsh-syntax-highlighting
-[ -d "$syntax_path" ] || git clone "https://github.com/dracula/zsh-syntax-highlighting" "$syntax_path"
-[ -d "$syntax_path" ] && source "$syntax_path/zsh-syntax-highlighting.sh"
+[[ -d "$syntax_path" ]] || git clone "https://github.com/dracula/zsh-syntax-highlighting" "$syntax_path"
+[[ -d "$syntax_path" ]] && source "$syntax_path/zsh-syntax-highlighting.sh"
 
 highlighting_path=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -f "$highlighting_path" ] && source "$highlighting_path"
+[[ -f "$highlighting_path" ]] && source "$highlighting_path"
