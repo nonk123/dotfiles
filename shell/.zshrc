@@ -42,6 +42,8 @@ alias la='/bin/ls --color=auto'
 alias ls='la -A'
 alias ll='ls -lF'
 
+alias less='less --use-color'
+
 alias grep='grep --color=auto'
 
 function cfg_file() {
