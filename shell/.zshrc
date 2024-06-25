@@ -38,9 +38,9 @@ function clear-screen-and-scrollback() {
 zle -N clear-screen-and-scrollback
 bindkey '^L' clear-screen-and-scrollback
 
-alias ls='ls --color=auto'
-alias ll='ls -alF'
-alias la='ls -A'
+alias la='/bin/ls --color=auto'
+alias ls='la -A'
+alias ll='ls -lF'
 
 alias grep='grep --color=auto'
 
