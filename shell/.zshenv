@@ -26,14 +26,6 @@ else
     echo "WARN: failed to find $ZSH_SECRETS_FILE; expect further warnings" > /dev/stderr
 fi
 
-function check-var() {
-    env | grep "^$1=" > /dev/null || echo "WARN: secret $1 was left unset" > /dev/stderr
-}
-
-#check-var DISTCC_HOSTS
-
-#export DISTCC_FALLBACK=0
-
 export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
 export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
 
