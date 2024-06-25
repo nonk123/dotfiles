@@ -34,8 +34,8 @@ function check-var() {
 
 #export DISTCC_FALLBACK=0
 
-#export CMAKE_C_COMPILER_LAUNCHER="sccache"
-#export CMAKE_CXX_COMPILER_LAUNCHER="sccache"
+export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
+export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
 
 export CC=/usr/bin/gcc
 export CXX=/usr/bin/g++
