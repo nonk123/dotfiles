@@ -21,6 +21,7 @@ fi
 export WLR_DRM_NO_ATOMIC=1 # for labwc tearing
 
 if which maybe-sccache &> /dev/null; then
+    export SCCACHE_DIR=~/.cache/sccache SCCACHE_DIRECT=true SCCACHE_LOCAL_RW_MODE=READ_WRITE SCCACHE_CACHE_SIZE=30G
     export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
     export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
     export RUSTC_WRAPPER=maybe-sccache
