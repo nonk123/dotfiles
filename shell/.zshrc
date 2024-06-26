@@ -4,7 +4,7 @@ compinit
 bashcompinit
 promptinit
 
-prompt clint
+prompt redhat
 
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
