@@ -1,0 +1,24 @@
+live_config_reload = false
+ipc_socket = false
+
+[window]
+dynamic_padding = true
+
+[font]
+size = 8
+offset = { x = 0, y = 0 }
+glyph_offset = { x = 0, y = 0 }
+builtin_box_drawing = true
+
+[font.normal]
+family = "Monaspace Neon"
+style = "Regular"
+
+[font.bold]
+style = "Bold"
+
+[font.bold_italic]
+style = "Bold Italic"
+
+[font.italic]
+style = "Italic"
