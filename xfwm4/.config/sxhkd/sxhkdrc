@@ -4,5 +4,8 @@ super + Return
 super + r
     dmenu_run
 
+Print
+    screenie
+
 ctrl + alt + q
     pkill xfwm4

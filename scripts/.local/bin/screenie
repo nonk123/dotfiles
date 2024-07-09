@@ -2,7 +2,7 @@
 
 OUTPUT=$(mktemp --tmpdir screenieXXXXXX.png)
 
-grim "$OUTPUT" || exit 1
+maim --window root "$OUTPUT" || exit 1
 
 imv -s none -f "$OUTPUT" &
 imv_pid=$!
@@ -15,14 +15,14 @@ function succ() {
     exit 0
 }
 
-SLURP_OUT=$(slurp || succ)
+DIM_OUT=$(slop || succ)
 
-OFFSET=$(echo "$SLURP_OUT" | cut -d' ' -f1 | tr ',' '+')
-SIZE=$(echo "$SLURP_OUT" | cut -d' ' -f2)
+OFFSET=$(echo "$DIM_OUT" | cut -d'+' -f2-)
+SIZE=$(echo "$DIM_OUT" | cut -d'+' -f1)
 
 EXTRACT=$SIZE+$OFFSET
 
 magick -extract "$EXTRACT" "$OUTPUT" "$OUTPUT"
-wl-copy -t image/png < "$OUTPUT"
+xclip -i -selection clipboard -t image/png "$OUTPUT"
 
 succ
