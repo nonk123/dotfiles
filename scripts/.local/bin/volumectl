@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 SINK=0
-AMOUNT=1%
+AMOUNT=4%
 
 function adjust() {
-    exec pactl -- set-sink-volume "$SINK" "$1"
+    pactl -- set-sink-volume "$SINK" "$1"
 }
 
 COMMAND=$1
@@ -14,6 +14,6 @@ case $COMMAND in
     raise) adjust +"$AMOUNT" ;;
     lower) adjust -"$AMOUNT" ;;
     *)
-	echo "The hell do you want me to do?" > /dev/stderr
-	exit 1
+        echo "The hell do you want me to do?" > /dev/stderr
+        exit 1
 esac
