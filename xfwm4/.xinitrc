@@ -4,7 +4,7 @@ AUTOSTART=(discord telegram-desktop steam)
 export WALLPAPER=~/.wallpaper.png
 export X11_TERM=alacritty
 
-setxkbmap -layout us,ru -option grp:win_space_toggle
+setxkbmap -layout us,ru -option grp:win_space_toggle -option compose:ins
 xset r rate 200 30
 
 dunst &
