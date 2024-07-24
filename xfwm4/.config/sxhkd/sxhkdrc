@@ -4,6 +4,9 @@ super + Return
 super + r
     dmenu_run
 
+super + v
+    clipcat-menu
+
 Print
     screenie
 

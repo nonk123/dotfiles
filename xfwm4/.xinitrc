@@ -9,6 +9,7 @@ xset r rate 200 30
 
 dunst &
 sxhkd &
+clipcatd --no-daemon &
 
 xfce4-panel &
 redshift -l 55.9:43.0 -m randr &
