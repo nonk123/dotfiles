@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+export WINEPREFIX=~/.wine64_fl
+cd ~/.wine64_fl/drive_c/Program\ Files/Image-Line/FL\ Studio\ 21
+exec wine FL64.exe
