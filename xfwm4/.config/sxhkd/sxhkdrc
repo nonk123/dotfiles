@@ -15,3 +15,6 @@ XF86Audio{Lower,Raise}Volume
 
 ctrl + alt + q
     pkill xfwm4
+
+ctrl + alt + r
+    pkill -SIGUSR1 sxhkd
