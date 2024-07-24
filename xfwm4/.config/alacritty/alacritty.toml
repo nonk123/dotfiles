@@ -22,3 +22,36 @@ style = "Bold Italic"
 
 [font.italic]
 style = "Italic"
+
+[cursor]
+unfocused_hollow = false
+
+[cursor.style]
+shape = "Block"
+blinking = "Never"
+
+# Quite literally copy-pasted from ChatGPT:
+
+[colors.primary]
+background = "0x000000"
+foreground = "0xffffff"
+
+[colors.normal]
+black   = "0x000000"
+red     = "0xff8059"
+green   = "0x44bc44"
+yellow  = "0xeecc00"
+blue    = "0x33bbff"
+magenta = "0xfeacd0"
+cyan    = "0x00d3d0"
+white   = "0xf0f0f0"
+
+[colors.bright]
+black   = "0x606060"
+red     = "0xff6973"
+green   = "0x70d73d"
+yellow  = "0xffd700"
+blue    = "0x00afff"
+magenta = "0xffa7ba"
+cyan    = "0x5bc8c8"
+white   = "0xffffff"
