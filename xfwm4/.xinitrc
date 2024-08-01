@@ -4,8 +4,18 @@ AUTOSTART=(discord telegram-desktop steam)
 export WALLPAPER=~/.wallpaper.png
 export X11_TERM=alacritty
 
-# TODO TODO TODO...
-[[ $NONK ]] && xrandr &>/dev/null
+# Custom screen setup.
+[[ $NONK ]] && {
+    left_w=1920
+    left_h=1080
+
+    right_w=1366
+    right_h=768
+
+    xrandr --fb $((left_w + right_w))x${left_h} \
+           --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
+           --output LVDS1 --pos ${left_w}x$((left_h - right_h)) --size ${right_w}x${right_h}
+}
 
 setxkbmap -layout us,ru -option grp:win_space_toggle -option compose:ins
 xset r rate 200 30
