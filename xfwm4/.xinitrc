@@ -12,13 +12,20 @@ export X11_TERM=alacritty
     right_w=1366
     right_h=768
 
-    xrandr --fb $((left_w + right_w))x${left_h} \
-           --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
-           --output LVDS1 --pos ${left_w}x$((left_h - right_h)) --size ${right_w}x${right_h}
+    xrandr -q | grep -i 'vga1 connected' > /dev/null \
+        && xrandr --fb ${left_w}x${left_h} \
+                  --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
+                  --output LVDS1 --off
+
+    # NOTE: ditched in favor of a single-screen setup.
+    #xrandr --fb $((left_w + right_w))x${left_h} \
+    #       --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
+    #       --output LVDS1 --pos ${left_w}x$((left_h - right_h)) --size ${right_w}x${right_h}
 }
 
 setxkbmap -layout us,ru -option grp:win_space_toggle -option compose:ins
 xset r rate 200 30
+xset s off
 
 dunst &
 sxhkd &
