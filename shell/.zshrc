@@ -4,6 +4,7 @@ compinit
 bashcompinit
 promptinit
 
+autoload -Uz vcs_info
 prompt redhat
 
 HISTFILE=~/.zsh_history
@@ -54,10 +55,3 @@ function cfg() {
     cfg_file ~/.zshenv
     cfg_file ~/.zshrc
 }
-
-syntax_path=~/Sources/zsh-syntax-highlighting
-[[ -d "$syntax_path" ]] || git clone "https://github.com/dracula/zsh-syntax-highlighting" "$syntax_path"
-[[ -d "$syntax_path" ]] && source "$syntax_path/zsh-syntax-highlighting.sh"
-
-highlighting_path=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[[ -f "$highlighting_path" ]] && source "$highlighting_path"
