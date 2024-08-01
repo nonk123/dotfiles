@@ -17,18 +17,19 @@ clipcatd --no-daemon &
 xfce4-panel &
 redshift -l 55.9:43.0 -m randr &
 
-# TODO: port `cliphist` watching for X11.
-#wl-paste --watch cliphist store &
-
 if [[ -f "${WALLPAPER}" ]]; then
     # TODO: unbreak.
     #feh --bg-fill "${WALLPAPER}"
     echo bruh......
 fi
 
+autostart_delay=3
+autostart_interval=1
+autostart_idx=0
+
 for cmd in $AUTOSTART; do
-    sleep 0.5
-    "$cmd" &
+    delay=$((autostart_delay + autostart_interval * autostart_idx++))
+    { sleep ${delay}; "$cmd" } &
 done
 
 exec xfwm4 --compositor=on
