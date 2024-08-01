@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AUTOSTART=(discord telegram-desktop steam)
+AUTOSTART=(discord steam)
 export WALLPAPER=~/.wallpaper.png
 export X11_TERM=alacritty
 
