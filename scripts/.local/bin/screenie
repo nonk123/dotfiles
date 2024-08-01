@@ -1,28 +1,22 @@
 #!/usr/bin/env bash
 
-OUTPUT=$(mktemp --tmpdir screenieXXXXXX.png)
+OUTPUT=$(mktemp --tmpdir screenie-XXXXXX.png)
 
 maim --window root "$OUTPUT" || exit 1
-
 imv -s none -f "$OUTPUT" &
 imv_pid=$!
 
 sleep 1 # give `imv` some time to spawn
 
 function succ() {
-    kill "$imv_pid"
-    wait
-    exit 0
+    kill "$imv_pid"; wait; exit 0
 }
 
-DIM_OUT=$(slop || succ)
+dim_out=$(slop || succ)
+offset=$(echo "$dim_out" | cut -d+ -f2-)
+size=$(echo "$dim_out" | cut -d+ -f1)
 
-OFFSET=$(echo "$DIM_OUT" | cut -d'+' -f2-)
-SIZE=$(echo "$DIM_OUT" | cut -d'+' -f1)
-
-EXTRACT=$SIZE+$OFFSET
-
-magick -extract "$EXTRACT" "$OUTPUT" "$OUTPUT"
+magick -extract "$size+$offset" "$OUTPUT" "$OUTPUT"
 xclip -i -selection clipboard -t image/png "$OUTPUT"
 
 succ
