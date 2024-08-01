@@ -1,3 +1,5 @@
+[[ "$USER" = nonk ]] && export NONK=yesssss # gain permission to do personal, non-generalized jackshit
+
 export VISUAL=emacsclient
 export EDITOR=vim
 
