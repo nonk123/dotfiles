@@ -44,11 +44,10 @@ autostart_delay=3
 autostart_interval=1
 autostart_idx=0
 
-[[ $NONK ]] && {
-    for cmd in $AUTOSTART; do
-        delay=$((autostart_delay + autostart_interval * autostart_idx++))
-        { sleep ${delay}; "$cmd" } &
+[[ $NONK ]] && \
+    for cmd in $AUTOSTART; do \
+        delay=$((autostart_delay + autostart_interval * autostart_idx++)) \
+        { sleep ${delay}; "$cmd" } & \
     done
-}
 
 exec xfwm4 --compositor=on
