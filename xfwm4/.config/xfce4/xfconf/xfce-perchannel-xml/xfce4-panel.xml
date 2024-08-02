@@ -27,6 +27,8 @@
       <property name="background-style" type="uint" value="0"/>
       <property name="mode" type="uint" value="0"/>
       <property name="enable-struts" type="bool" value="true"/>
+      <property name="span-monitors" type="bool" value="true"/>
+      <property name="output-name" type="string" value="Automatic"/>
     </property>
   </property>
   <property name="plugins" type="empty">
@@ -49,6 +51,7 @@
     <property name="plugin-6" type="string" value="systray">
       <property name="square-icons" type="bool" value="true"/>
       <property name="known-items" type="array">
+        <value type="string" value="obs"/>
         <value type="string" value="TelegramDesktop"/>
         <value type="string" value="strawberry"/>
         <value type="string" value="steam"/>
@@ -57,6 +60,9 @@
       <property name="icon-size" type="int" value="0"/>
       <property name="single-row" type="bool" value="true"/>
       <property name="hide-new-items" type="bool" value="false"/>
+      <property name="known-legacy-items" type="array">
+        <value type="string" value="javaembeddedframe"/>
+      </property>
     </property>
     <property name="plugin-12" type="string" value="clock">
       <property name="mode" type="uint" value="2"/>
