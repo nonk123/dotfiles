@@ -1,6 +1,9 @@
 super + Return
     alacritty
 
+super + p
+    alacritty -e htop
+
 super + r
     dmenu_run
 
