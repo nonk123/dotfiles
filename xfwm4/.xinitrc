@@ -4,6 +4,13 @@ AUTOSTART=(discord steam)
 export WALLPAPER=~/.wallpaper.png
 export X11_TERM=alacritty
 
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+ibus-daemon -rxRd
+
+xset r rate 200 30
+
 # Custom screen setup.
 [[ $NONK ]] && {
     left_w=1920
@@ -22,10 +29,6 @@ export X11_TERM=alacritty
     #       --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
     #       --output LVDS1 --pos ${left_w}x$((left_h - right_h)) --size ${right_w}x${right_h}
 }
-
-setxkbmap -layout us,ru -option grp:win_space_toggle -option compose:ins
-xset r rate 200 30
-xset s off
 
 dunst &
 sxhkd &
