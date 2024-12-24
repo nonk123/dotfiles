@@ -9,8 +9,7 @@ export X11_TERM=alacritty
 #export XMODIFIERS=@im=ibus
 #ibus-daemon -rxRd
 
-xset r rate 200 30
-setxkbmap -layout us,ru -option grp:win_space_toggle
+fixkbd
 
 # Custom screen setup.
 [[ $NONK ]] && {
