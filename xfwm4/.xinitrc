@@ -4,12 +4,13 @@ AUTOSTART=(discord steam)
 export WALLPAPER=~/.wallpaper.png
 export X11_TERM=alacritty
 
-export GTK_IM_MODULE=ibus
-export QT_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-ibus-daemon -rxRd
+#export GTK_IM_MODULE=ibus
+#export QT_IM_MODULE=ibus
+#export XMODIFIERS=@im=ibus
+#ibus-daemon -rxRd
 
 xset r rate 200 30
+setxkbmap -layout us,ru -option grp:win_space_toggle
 
 # Custom screen setup.
 [[ $NONK ]] && {
