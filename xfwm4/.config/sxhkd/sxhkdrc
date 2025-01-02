@@ -16,6 +16,9 @@ Print
 XF86Audio{Lower,Raise}Volume
     volumectl {lower,raise}
 
+super + bracket{left,right}
+    volumectl {lower,raise}
+
 ctrl + alt + q
     pkill xfwm4
 

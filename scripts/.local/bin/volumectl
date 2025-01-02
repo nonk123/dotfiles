@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SINK=0
-AMOUNT=4%
+AMOUNT=2%
 
 function adjust() {
     pactl -- set-sink-volume "$SINK" "$1"
