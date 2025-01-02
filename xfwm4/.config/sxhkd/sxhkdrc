@@ -7,6 +7,9 @@ super + p
 super + r
     dmenu_run
 
+super + e
+    emacsclient -c
+
 super + v
     clipcat-menu
 
