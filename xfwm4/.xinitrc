@@ -19,10 +19,10 @@ fixkbd
     right_w=1366
     right_h=768
 
-    xrandr -q | grep -i 'vga-1 connected' > /dev/null \
+    xrandr -q | grep -i 'vga1 connected' > /dev/null \
         && xrandr --fb ${left_w}x${left_h} \
-                  --output VGA-1 --pos 0x0 --size ${left_w}x${left_h} \
-                  --output LVDS-1 --off
+                  --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
+                  --output LVDS1 --off
 
     # NOTE: ditched in favor of a single-screen setup.
     #xrandr --fb $((left_w + right_w))x${left_h} \
