@@ -27,6 +27,7 @@ if which maybe-sccache &> /dev/null; then
     export CMAKE_C_COMPILER_LAUNCHER=maybe-sccache
     export CMAKE_CXX_COMPILER_LAUNCHER=maybe-sccache
     export RUSTC_WRAPPER=maybe-sccache
+    mkdir -p "$SCCACHE_DIR"
 fi
 
 export CC=/usr/bin/gcc
