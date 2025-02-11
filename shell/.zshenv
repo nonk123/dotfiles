@@ -1,6 +1,6 @@
 [[ "$USER" = nonk ]] && export NONK=yesssss # permission to do weird shit?
 
-export VISUAL=emacsclient
+export VISUAL=vscode-insiders
 export EDITOR=vim
 
 export SSH_AGENT_PID=
