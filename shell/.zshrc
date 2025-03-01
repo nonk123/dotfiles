@@ -55,3 +55,5 @@ function cfg() {
     cfg_file ~/.zshenv
     cfg_file ~/.zshrc
 }
+
+[[ -s "/home/nonk/.bun/_bun" ]] && source "/home/nonk/.bun/_bun"

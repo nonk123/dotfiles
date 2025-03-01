@@ -1,6 +1,6 @@
 [[ "$USER" = nonk ]] && export NONK=yesssss # permission to do weird shit?
 
-export VISUAL=vscode-insiders
+export VISUAL=code-insiders
 export EDITOR=vim
 
 export SSH_AGENT_PID=
@@ -35,7 +35,8 @@ export CXX=/usr/bin/g++
 
 export CMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-export DOTNET_ROOT=~/.dotnet
+export DOTNET_ROOT=$HOME/.dotnet
+export BUN_INSTALL=$HOME/.bun
 
 typeset -U path PATH
 
@@ -44,6 +45,7 @@ path=( \
       ~/.cargo/bin \
       ~/go/bin \
       ~/.yarn/bin \
+      $BUN_INSTALL/bin \
       $DOTNET_ROOT \
       $DOTNET_ROOT/tools \
       $path \
