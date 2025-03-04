@@ -30,6 +30,8 @@ fixkbd
     #       --output LVDS1 --pos ${left_w}x$((left_h - right_h)) --size ${right_w}x${right_h}
 }
 
+picom -b
+
 dunst &
 sxhkd &
 clipcatd --no-daemon &
@@ -54,4 +56,4 @@ autostart_idx=0
         { sleep ${delay}; "$cmd" } & \
     done
 
-exec xfwm4 --compositor=on
+exec xfwm4 --compositor=off
