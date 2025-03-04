@@ -41,7 +41,7 @@ bindkey '^L' clear-screen-and-scrollback
 
 alias la='/bin/ls --color=auto'
 alias ls='la -A'
-alias ll='ls -lF'
+alias ll='ls -lFh'
 
 alias less='less --use-color'
 
