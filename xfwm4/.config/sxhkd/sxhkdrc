@@ -11,7 +11,10 @@ super + v
     clipcat-menu
 
 Print
-    screenie
+    flameshot gui -c
+
+shift + Print
+    flameshot screen -c
 
 XF86Audio{Lower,Raise}Volume
     volumectl {lower,raise}

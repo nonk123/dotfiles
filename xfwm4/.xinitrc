@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AUTOSTART=(discord steam)
+AUTOSTART=(discord telegram-desktop)
 export WALLPAPER=~/.wallpaper.png
 export X11_TERM=alacritty
 
@@ -33,6 +33,7 @@ fixkbd
 dunst &
 sxhkd &
 clipcatd --no-daemon &
+flameshot &
 
 xfce4-panel &
 redshift -l 55.9:43.0 -m randr &
