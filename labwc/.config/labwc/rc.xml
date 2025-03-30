@@ -35,6 +35,18 @@
         <keybind key="W-d">
             <action name="Execute" command="bemenu-desktop" />
         </keybind>
+        <keybind key="W-bracketleft">
+            <action name="Execute" command="volumectl lower" />
+        </keybind>
+        <keybind key="W-bracketright">
+            <action name="Execute" command="volumectl raise" />
+        </keybind>
+        <keybind key="XF86AudioLowerVolume">
+            <action name="Execute" command="volumectl lower" />
+        </keybind>
+        <keybind key="XF86AudioRaiseVolume">
+            <action name="Execute" command="volumectl raise" />
+        </keybind>
         <keybind key="W-v">
             <action name="Execute"
                 command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'" />
