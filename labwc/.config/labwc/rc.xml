@@ -1,60 +1,64 @@
 <?xml version="1.0"?>
 
 <labwc_config>
-  <core>
-    <gap>10</gap>
-    <decoration>server</decoration>
-    <adaptiveSync>yes</adaptiveSync>
-    <allowTearing>yes</allowTearing>
-    <reuseOutputMode>yes</reuseOutputMode>
-  </core>
+    <core>
+        <gap>10</gap>
+        <decoration>server</decoration>
+        <adaptiveSync>yes</adaptiveSync>
+        <allowTearing>yes</allowTearing>
+        <reuseOutputMode>yes</reuseOutputMode>
+    </core>
 
-  <placement>
-    <policy>automatic</policy>
-  </placement>
+    <placement>
+        <policy>automatic</policy>
+    </placement>
 
-  <theme>
-    <name>nonk</name>
-    <cornerRadius>8</cornerRadius>
-    <font name="LiterationMono Nerd Font" size="10"/>
-  </theme>
+    <theme>
+        <name>nonk</name>
+        <cornerRadius>8</cornerRadius>
+        <font name="Monaspace Neon" size="10" />
+    </theme>
 
-  <keyboard>
-    <default/>
-    <numlock>on</numlock>
-    <layoutScope>global</layoutScope>
-    <repeatRate>30</repeatRate>
-    <repeatDelay>200</repeatDelay>
-    <keybind key="W-Return">
-      <action name="Execute" command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'"/>
-    </keybind>
-    <keybind key="W-r">
-      <action name="Execute" command="bemenu-run"/>
-    </keybind>
-    <keybind key="W-d">
-      <action name="Execute" command="bemenu-desktop"/>
-    </keybind>
-    <keybind key="W-v">
-      <action name="Execute" command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'"/>
-    </keybind>
-    <keybind key="W-p">
-      <action name="Execute" command="gopass-clip"/>
-    </keybind>
-    <keybind key="Print">
-      <action name="Execute" command="screenie"/>
-    </keybind>
-    <keybind key="S-Print">
-      <action name="Execute" command="bash -c 'grim /tmp/fullscreen.png &amp;&amp; wl-copy -t image/png &lt; /tmp/fullscreen.png'"/>
-    </keybind>
-    <keybind key="C-Print">
-      <action name="Execute" command="record region"/>
-    </keybind>
-    <keybind key="C-S-Print">
-      <action name="Execute" command="record screen"/>
-    </keybind>
-  </keyboard>
+    <keyboard>
+        <default />
+        <numlock>on</numlock>
+        <layoutScope>global</layoutScope>
+        <repeatRate>30</repeatRate>
+        <repeatDelay>200</repeatDelay>
+        <keybind key="W-Return">
+            <action name="Execute"
+                command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
+        </keybind>
+        <keybind key="W-r">
+            <action name="Execute" command="bemenu-run" />
+        </keybind>
+        <keybind key="W-d">
+            <action name="Execute" command="bemenu-desktop" />
+        </keybind>
+        <keybind key="W-v">
+            <action name="Execute"
+                command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'" />
+        </keybind>
+        <keybind key="W-p">
+            <action name="Execute" command="gopass-clip" />
+        </keybind>
+        <keybind key="Print">
+            <action name="Execute" command="grimshot copy area" />
+        </keybind>
+        <keybind key="S-Print">
+            <action name="Execute" command="grimshot copy screen" />
+        </keybind>
+        <!--
+        <keybind key="C-Print">
+            <action name="Execute" command="record region" />
+        </keybind>
+        <keybind key="C-S-Print">
+            <action name="Execute" command="record screen" />
+        </keybind>
+        -->
+    </keyboard>
 
-  <mouse>
-    <default/>
-  </mouse>
+    <mouse>
+        <default />
+    </mouse>
 </labwc_config>

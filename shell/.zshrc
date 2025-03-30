@@ -12,8 +12,16 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
 
+export ZSH_CACHE_DIR=$HOME/.cache/zsh
+mkdir -p "$ZSH_CACHE_DIR"
+
 zstyle ':completion:*' menu select
 zstyle ':completion:*' rehash true
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' squeeze-slashes true
+zstyle ':completion:*' cache-path "$ZSH_CACHE_DIR/.zcompcache"
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 bindkey -e
 
@@ -57,3 +65,7 @@ function cfg() {
 }
 
 [[ -s "/home/nonk/.bun/_bun" ]] && source "/home/nonk/.bun/_bun"
+
+if which dnscontrol &> /dev/null; then
+    eval "$(dnscontrol shell-completion zsh)"
+fi

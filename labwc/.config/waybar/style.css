@@ -13,7 +13,7 @@ window#waybar {
     background: rgba(0, 0, 0, 0.5);
     color: rgb(255, 255, 255);
     transition-property: background-color;
-    transition-duration: .5s;
+    transition-duration: 0.5s;
 }
 
 #workspaces button {
@@ -59,8 +59,8 @@ window#waybar {
 
 @keyframes blink {
     to {
-	background-color: rgb(255, 255, 255);
-	color: rgb(0, 0, 0);
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
     }
 }
 

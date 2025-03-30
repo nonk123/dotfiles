@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+wlsunset -l 55.9 -L 43.0 &
+wl-paste --watch cliphist store &
+
 dunst &
 waybar &
 
-sleep 3 # give time for `waybar` to start
-
 foot --server &
 
+AmneziaVPN &
 discord &
 telegram-desktop &

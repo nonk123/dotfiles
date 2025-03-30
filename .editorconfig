@@ -9,3 +9,15 @@ indent_style = space
 
 [*.conf]
 indent_size = 2
+
+[*.{json,xml,css}]
+indent_size = 4
+
+[labwc/.config/waybar/{config,*.css}]
+indent_size = 4
+
+[**/bin/*]
+indent_size = 4
+
+[**/.xinitrc]
+indent_size = 4

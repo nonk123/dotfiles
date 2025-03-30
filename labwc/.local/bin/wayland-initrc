@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=wlroots
+WALLPAPER=~/.wallpaper.jpg
 
-wlsunset -l 55.9 -L 43.0 &
-wl-paste --watch cliphist store &
+systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+dbus-update-activation-environment 2>/dev/null &&
+    dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
-WALLPAPER=~/.wallpaper.png
+wlr-randr --output VGA-1 --pos 0,0 --output LVDS-1 --off
 
-if [[ -f "${WALLPAPER}" ]]; then
+if [[ -f "$WALLPAPER" ]]; then
     swaybg -i "$WALLPAPER" -m fill &
 fi
 

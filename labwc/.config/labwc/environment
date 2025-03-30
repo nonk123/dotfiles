@@ -3,7 +3,10 @@ XKB_DEFAULT_OPTIONS=grp:win_space_toggle
 
 MOZ_ENABLE_WAYLAND=1
 _JAVA_AWT_WM_NONREPARENTING=1
+SDL_VIDEODRIVER=wayland
+QT_QPA_PLATFORM=wayland
 
 XDG_CURRENT_DESKTOP=wlroots
+XDG_SESSION_DESKTOP=wlroots
 
 BEMENU_OPTS=--fn "Monaspace Neon 10" -l 12 -c -n -W 0.43 -f -B 3 -R 3 --fixed-height -w --scrollbar none

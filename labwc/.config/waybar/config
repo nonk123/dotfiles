@@ -3,31 +3,41 @@
     "position": "bottom",
     "height": 32,
     "spacing": 10,
-    "modules-left": ["tray"],
-    "modules-center": ["wlr/taskbar"],
-    "modules-right": ["pulseaudio", "network", "temperature", "battery", "clock"],
+    "modules-left": [
+        "tray"
+    ],
+    "modules-center": [
+        "wlr/taskbar"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "network",
+        "temperature",
+        "battery",
+        "clock"
+    ],
     "wlr/taskbar": {
-	"all-outputs": true,
-	"format": "{icon}",
-	"icon-size": 21,
-	"tooltip-format": "{title}",
-	"on-click": "minimize-raise",
-	"on-click-middle": "close",
-	"rewrite": {
+        "all-outputs": true,
+        "format": "{icon}",
+        "icon-size": 21,
+        "tooltip-format": "{title}",
+        "on-click": "minimize-raise",
+        "on-click-middle": "close",
+        "rewrite": {
             "Firefox Web Browser": "Firefox",
             "Foot Server": "Terminal"
-	}
+        }
     },
     "tray": {
         "icon-size": 21,
         "spacing": 10,
-	"show-passive-items": true
+        "show-passive-items": true
     },
     "clock": {
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-	"format": "{:%H:%M:%S}",
-	"format-alt": "{:%Y-%m-%d}",
-	"interval": 1,
+        "format": "{:%H:%M:%S}",
+        "format-alt": "{:%Y-%m-%d}",
+        "interval": 1
     },
     "temperature": {
         "thermal-zone": 2,
@@ -35,7 +45,11 @@
         "critical-threshold": 65,
         "format-critical": "{temperatureC}°C {icon}",
         "format": "{temperatureC}°C {icon}",
-        "format-icons": ["", "", ""]
+        "format-icons": [
+            "",
+            "",
+            ""
+        ]
     },
     "battery": {
         "states": {
@@ -49,7 +63,13 @@
         "format-alt": "{time} {icon}",
         "format-good": "",
         "format-full": "",
-        "format-icons": ["", "", "", "", ""]
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
     },
     "network": {
         "interface": "wlan0",
@@ -75,7 +95,11 @@
             "phone": "",
             "portable": "",
             "car": "",
-            "default": ["", "", ""]
+            "default": [
+                "",
+                "",
+                ""
+            ]
         },
         "on-click": "pavucontrol"
     }
