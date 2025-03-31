@@ -55,10 +55,10 @@
             <action name="Execute" command="gopass-clip" />
         </keybind>
         <keybind key="Print">
-            <action name="Execute" command="grimshot copy area" />
+            <action name="Execute" command="env XDG_CURRENT_DESKTOP=sway flameshot gui -c" />
         </keybind>
         <keybind key="S-Print">
-            <action name="Execute" command="grimshot copy screen" />
+            <action name="Execute" command="env XDG_CURRENT_DESKTOP=sway flameshot screen -c" />
         </keybind>
         <!--
         <keybind key="C-Print">
