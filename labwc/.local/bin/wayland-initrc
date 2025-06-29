@@ -6,7 +6,7 @@ systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 dbus-update-activation-environment 2>/dev/null &&
     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
-wlr-randr --output VGA-1 --pos 0,0 --output LVDS-1 --off
+#wlr-randr --output VGA-1 --pos 0,0 --output LVDS-1 --off
 
 if [[ -f "$WALLPAPER" ]]; then
     swaybg -i "$WALLPAPER" -m fill &
