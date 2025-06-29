@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AUTOSTART=(discord telegram-desktop)
+AUTOSTART=(AmneziaVPN discord Telegram)
 export WALLPAPER=~/.wallpaper.jpg
 export X11_TERM=alacritty
 
@@ -11,8 +11,8 @@ export X11_TERM=alacritty
 
 fixkbd
 
-# Custom screen setup.
-[[ $NONK ]] && {
+# Custom screen setup. No longer used (for now).
+[[ $NONK ]] && false && {
     left_w=1920
     left_h=1080
 
@@ -29,8 +29,6 @@ fixkbd
     #       --output VGA1 --pos 0x0 --size ${left_w}x${left_h} \
     #       --output LVDS1 --pos ${left_w}x$((left_h - right_h)) --size ${right_w}x${right_h}
 }
-
-picom -b
 
 dunst &
 sxhkd &
@@ -55,4 +53,4 @@ autostart_idx=0
         "$cmd" } &
     done
 
-exec xfwm4 --compositor=off
+exec xfwm4
