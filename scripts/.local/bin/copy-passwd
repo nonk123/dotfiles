@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+MENU=dmenu
+GOPASS=(gopass --no-sync)
+
+res=$($GOPASS ls -f | $MENU -p "Search:")
+[[ -n "$res" ]] && $GOPASS show -c "$res"
