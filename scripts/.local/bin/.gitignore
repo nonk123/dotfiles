@@ -1,6 +1,7 @@
 *
 !.gitignore
 
+# Homebrewn scripts.
 !1cv8t
 !ec
 !record
@@ -10,3 +11,7 @@
 !gopass-clip
 !run-fl
 !copy-passwd
+
+# Wrappers.
+!telegram
+!discord

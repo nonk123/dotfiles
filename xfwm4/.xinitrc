@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AUTOSTART=(AmneziaVPN discord Telegram)
+AUTOSTART=(discord telegram)
 export WALLPAPER=~/.wallpaper.jpg
 export X11_TERM=alacritty
 

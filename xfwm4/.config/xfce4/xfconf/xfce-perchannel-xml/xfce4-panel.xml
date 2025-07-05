@@ -150,7 +150,7 @@
     </property>
     <property name="plugin-8" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
-      <property name="known-players" type="string" value="firefox"/>
+      <property name="known-players" type="string" value="Chromium;firefox"/>
     </property>
     <property name="plugin-10" type="string" value="separator">
       <property name="style" type="uint" value="0"/>
