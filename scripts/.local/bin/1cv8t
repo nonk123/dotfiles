@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-cd /opt/1cv8t/x86_64/8.3.23.1688
-exec env LC_ALL=ru_RU.utf-8 LD_PRELOAD=/usr/lib/libstdc++.so.6 ./1cv8t
+cd $(find /opt/1cv8t/x86_64 -name '8.3.*')
+export LC_ALL=ru_RU.utf-8
+export LD_PRELOAD=/usr/lib/libstdc++.so.6:/usr/lib/libgcc_s.so.1
+exec ./1cv8t
