@@ -1,0 +1,13 @@
+# /usr/lib/systemd/system/tun2socks.service
+
+[Unit]
+Description=tun2socks crap
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/tun2socks -proxy "FIXME" -device tun0 -interface enp2s0
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
