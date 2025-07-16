@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Rendering the route useless is enough; no need to stop the service.
+sudo ip route change default via 198.18.0.1 dev tun0 metric 100

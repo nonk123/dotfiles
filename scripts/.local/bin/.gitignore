@@ -15,3 +15,6 @@
 # Wrappers.
 !telegram
 !discord
+
+# More homemade utils.
+!t2s-*

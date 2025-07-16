@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+ROUTE=(default via 198.18.0.1 dev tun0)
+
+if sudo ip route get $ROUTE &> /dev/null; then
+    sudo ip route change $ROUTE metric 1
+else
+    sudo ip route add $ROUTE metric 1
+fi
