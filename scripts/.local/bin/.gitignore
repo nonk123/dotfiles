@@ -13,8 +13,6 @@
 !copy-passwd
 
 # Wrappers.
-!telegram
-!discord
 !UltimMC
 
 # More homemade utils.
