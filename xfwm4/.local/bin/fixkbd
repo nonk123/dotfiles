@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+LAYOUT=us,ru
+OPTS=grp:win_space_toggle,compose:menu
+
+if [[ -n "$1" ]]; then
+    sudo localectl set-x11-keymap "$LAYOUT" "" "" "$OPTS"
+fi
+
 xset r rate 200 30
-setxkbmap -layout us,ru -option grp:win_space_toggle
+setxkbmap -layout "$LAYOUT" -option "$OPTS"
 exit 0
