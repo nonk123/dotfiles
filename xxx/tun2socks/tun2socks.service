@@ -3,10 +3,11 @@
 [Unit]
 Description=tun2socks crap
 After=network.target
+Requires=xray.service
 
 [Service]
 User=root
-ExecStart=/usr/local/bin/tun2socks -proxy "FIXME" -device tun0 -interface enp2s0
+ExecStart=/usr/local/bin/tun2socks -proxy socks5://127.0.0.1:1080 -device tun0 -interface enp2s0 -loglevel warn
 Restart=on-failure
 
 [Install]
