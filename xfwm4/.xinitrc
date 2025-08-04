@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-AUTOSTART=(discord telegram)
+AUTOSTART=(discord Telegram)
 export WALLPAPER=~/.wallpaper.jpg
 export X11_TERM=alacritty
 
@@ -48,9 +48,8 @@ autostart_idx=0
 
 [[ $NONK ]] &&
     for cmd in $AUTOSTART; do
-        delay=$((autostart_delay + autostart_interval * autostart_idx++)) \
-            { sleep ${delay}
-        "$cmd" } &
+        delay=$((autostart_delay + autostart_interval * autostart_idx++))
+        { sleep $delay; "$cmd"; } &
     done
 
 exec xfwm4

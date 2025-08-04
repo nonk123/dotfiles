@@ -2,9 +2,9 @@
     monitor = 0
     follow = keyboard
     width = (300, 800)
-    height = 200
+    height = (0, 200)
     origin = top-right
-    offset = 8x8
+    offset = (8, 8)
     scale = 1
     notification_limit = 3
     progress_bar = true
