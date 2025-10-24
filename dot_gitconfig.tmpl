@@ -8,5 +8,5 @@
 	rebase = true
 {{ if eq .chezmoi.os "windows" -}}
 [gpg]
-	program = {{ joinPath .chezmoi.homeDir "AppData\\\\Local\\\\Programs\\\\GnuPG\\\\bin\\\\gpg.exe" }}
+	program = {{ joinPath .chezmoi.homeDir "AppData\\\\Local\\\\Programs\\\\GnuPG\\\\bin\\\\gpg.exe" | quote }}
 {{- end }}
