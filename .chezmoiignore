@@ -1,2 +1,5 @@
 README.md
 UNLICENSE
+{{ if ne .chezmoi.os "windows" }}
+AppData/Roaming/*
+{{ end }}

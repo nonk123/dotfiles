@@ -1,0 +1,4 @@
+{{ range . -}}
+machine mx.q7x.ru login {{ . }} password {{ print "Email/Hosted/" . | gopass }} port imaps
+machine mx.q7x.ru login {{ . }} password {{ print "Email/Hosted/" . | gopass }} port 465
+{{ end -}}
