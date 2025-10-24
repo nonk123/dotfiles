@@ -6,3 +6,7 @@
 	gpgsign = true
 [pull]
 	rebase = true
+{{ if eq .chezmoi.os "windows" -}}
+[gpg]
+	program = {{ .chezmoi.homeDir }}\\AppData\\Local\\Programs\\GnuPG\\bin\\gpg.exe
+{{- end }}
