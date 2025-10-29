@@ -9,4 +9,6 @@
 {{ if eq .chezmoi.os "windows" -}}
 [gpg]
 	program = {{ joinPath .chezmoi.homeDir "AppData\\\\Local\\\\Programs\\\\GnuPG\\\\bin\\\\gpg.exe" | quote }}
+[http]
+	sslBackend = openssl
 {{- end }}
