@@ -1,0 +1,2 @@
+(setq self-hosted-email-addrs
+  '({{ range . }}{{ quote . }} {{ end }}))
