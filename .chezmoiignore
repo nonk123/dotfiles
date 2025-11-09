@@ -6,3 +6,6 @@ UNLICENSE
 {{ else }}
 AppData/Roaming/*
 {{ end }}
+
+# My misc. tweaks...
+*.reg

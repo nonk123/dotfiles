@@ -1,0 +1,4 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\SystemFileAssociations\image\shell\edit\command]
+@="\"C:\Program Files\Paint.NET\paintdotnet.exe\" \"%1\""
