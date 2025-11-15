@@ -1,5 +1,5 @@
 machine api.github.com login nonk123^forge password {{ gopass "Forge/GitHub" }}
 {{ range . -}}
-machine mx.q7x.ru login {{ . }} password {{ print "Email/Hosted/" . | gopass }} port imaps
+machine mx.q7x.ru login {{ . }} password {{ print "Email/Hosted/" . | gopass }} port 993
 machine mx.q7x.ru login {{ . }} password {{ print "Email/Hosted/" . | gopass }} port 465
 {{ end -}}
