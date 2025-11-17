@@ -5,6 +5,7 @@ UNLICENSE
 /.authinfo # uses `AppData/Roaming/.authinfo`
 {{ else }}
 AppData
+Documents # pwsh profile
 {{ end }}
 
 # My misc. tweaks...
