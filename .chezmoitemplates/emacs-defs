@@ -1,2 +1,2 @@
-(setq self-hosted-email-addrs
+(setq nonk/self-hosted-email-addrs
   '({{ range . }}{{ quote . }} {{ end }}))
