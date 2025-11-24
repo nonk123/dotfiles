@@ -1,3 +1,4 @@
 emailAddresses:
   - me@nonk.dev
   - contact@schwung.us
+proxy: socks5://localhost:10808
