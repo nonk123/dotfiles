@@ -14,8 +14,9 @@
 [gpg]
 	program = {{ joinPath .chezmoi.homeDir "AppData\\\\Local\\\\Programs\\\\GnuPG\\\\bin\\\\gpg.exe" | quote }}
 [http]
+	sslBackend = openssl
+{{- end }}
+[http]
 {{- if .proxy }}
 	proxy = {{ .proxy }}
-{{- end }}
-	sslBackend = openssl
 {{- end }}
