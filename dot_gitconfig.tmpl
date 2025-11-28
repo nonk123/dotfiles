@@ -10,6 +10,8 @@
 	gpgsign = true
 [pull]
 	rebase = true
+[init]
+	defaultBranch = master
 {{ if eq .chezmoi.os "windows" -}}
 [gpg]
 	program = {{ joinPath .chezmoi.homeDir "AppData\\\\Local\\\\Programs\\\\GnuPG\\\\bin\\\\gpg.exe" | quote }}
