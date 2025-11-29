@@ -2,5 +2,5 @@
 api_key = {{ gopass "MiscKeys/Wakatime" }}
 {{ if .proxy -}}proxy = {{ .proxy }}{{- end }}
 exclude =
-  ^COMMIT_EDITMSG$
-  ^TAG_EDITMSG$
+  COMMIT_EDITMSG$
+  TAG_EDITMSG$
