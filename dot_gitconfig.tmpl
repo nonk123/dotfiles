@@ -1,7 +1,7 @@
 [user]
 	name = nonk123
 	email = me@nonk.dev
-	signingkey = 90B413C74ABDC40C2041AA026328CDD9A818A53D
+	signingkey = ~/.ssh/id_ed25519.pub
 [core]
 	autocrlf = input
 [github]
@@ -12,13 +12,12 @@
 	rebase = true
 [init]
 	defaultBranch = master
-{{ if eq .chezmoi.os "windows" -}}
 [gpg]
-	program = {{ joinPath .chezmoi.homeDir "AppData\\\\Local\\\\Programs\\\\GnuPG\\\\bin\\\\gpg.exe" | quote }}
+	format = ssh
 [http]
+{{- if eq .chezmoi.os "windows" }}
 	sslBackend = openssl
 {{- end }}
-[http]
 {{- if .proxy }}
 	proxy = {{ .proxy }}
 {{- end }}
