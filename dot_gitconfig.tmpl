@@ -4,6 +4,9 @@
 	signingkey = ~/.ssh/id_ed25519.pub
 [core]
 	autocrlf = input
+{{- if eq .chezmoi.os "windows" }}
+	editor = notepad
+{{- end }}
 [github]
 	user = nonk123
 [commit]
