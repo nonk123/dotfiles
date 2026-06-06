@@ -4,8 +4,6 @@
     <core>
         <gap>10</gap>
         <decoration>server</decoration>
-        <adaptiveSync>yes</adaptiveSync>
-        <allowTearing>yes</allowTearing>
         <reuseOutputMode>yes</reuseOutputMode>
     </core>
 
