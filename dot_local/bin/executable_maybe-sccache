@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if which sccache &> /dev/null; then
+    exec sccache "$@"
+else
+    echo '/!\ WARN /!\ - sccache not found; please install it to hide this warning' > /dev/stderr
+    exec "$@"
+fi
