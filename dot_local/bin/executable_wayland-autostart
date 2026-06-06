@@ -5,7 +5,7 @@ wl-paste --watch cliphist store &
 
 dunst &
 waybar &
-env XDG_CURRENT_DESKTOP=sway flameshot &
+flameshot &
 
 foot --server &
 
