@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+wlsunset -l 55.9 -L 43.0 &
+wl-paste --watch cliphist store &
+
+dunst &
+waybar &
+env XDG_CURRENT_DESKTOP=sway flameshot &
+
+foot --server &
+
+AmneziaVPN &
+discord &
+Telegram &

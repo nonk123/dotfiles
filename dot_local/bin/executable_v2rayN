@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd /opt/v2rayn-bin
+exec ./v2rayN
