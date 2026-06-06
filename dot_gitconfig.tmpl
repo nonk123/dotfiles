@@ -21,6 +21,3 @@
 {{- if eq .chezmoi.os "windows" }}
 	sslBackend = openssl
 {{- end }}
-{{- if .proxy }}
-	proxy = {{ .proxy }}
-{{- end }}
