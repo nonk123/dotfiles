@@ -10,5 +10,4 @@ env XDG_CURRENT_DESKTOP=sway flameshot &
 foot --server &
 
 v2rayN &
-discord &
 telegram-desktop &
