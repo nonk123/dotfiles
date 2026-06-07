@@ -24,9 +24,9 @@ Modify the `root=UUID=` part to match the UUID of your root partition, e.g.:
 $ lsblk -f
 NAME   FSTYPE FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
 sda
-├─sda1 vfat   FAT32       5DE0-FFF7                             510,7M     0% /boot/efi
-└─sda2 ext4   1.0         1446fff4-91d0-48e2-bc13-51471809dafd  419,2G     5% /
-zram0  swap   1     zram0 eb378660-b006-474f-8921-cfdf50e903d6                [SWAP]
+├─sda1 vfat   FAT32       5DE0-FFF7                               313M    39% /boot
+└─sda2 ext4   1.0         1446fff4-91d0-48e2-bc13-51471809dafd  419,7G     5% /
+zram0  swap   1     zram0 acbdc2a4-c431-456e-bf5d-713ce799040f                [SWAP]
 ```
 
 And change `initramfs-linux.img` & `vmlinuz-linux` if you are using a different kernel image.
