@@ -13,8 +13,8 @@ TODO: document contents and usage.
 ```sh
 sudo efibootmgr --create \
  --disk /dev/sda --part 1 \
- --label "Arch Linux" \
- --loader /vmlinuz-linux \
+ --label 'Arch Linux' \
+ --loader '\vmlinuz-linux' \
  --unicode 'root=UUID=1446fff4-91d0-48e2-bc13-51471809dafd rw loglevel=3 nowatchdog initrd=\initramfs-linux.img'
 ```
 
