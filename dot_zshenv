@@ -46,3 +46,7 @@ path=( \
 )
 
 export PATH
+
+if [[ -d /opt/cuda/lib64 ]]; then
+    export LD_LIBRARY_PATH=/opt/cuda/lib64
+fi
