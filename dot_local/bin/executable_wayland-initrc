@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-WALLPAPER=~/.wallpaper.jpg
-
-systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-dbus-update-activation-environment 2>/dev/null &&
-    dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-
-if [[ -f "$WALLPAPER" ]]; then
-    swaybg -i "$WALLPAPER" -m fill &
-fi
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+/usr/lib/xdg-desktop-portal -r &
 
 source $(which wayland-autostart)
