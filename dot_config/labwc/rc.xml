@@ -27,6 +27,10 @@
             <action name="Execute"
                 command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
         </keybind>
+	<keybind key="C-A-t"> <!-- TODO: deduplicate -->
+            <action name="Execute"
+                command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
+        </keybind>
         <keybind key="W-r">
             <action name="Execute" command="bemenu-run" />
         </keybind>
