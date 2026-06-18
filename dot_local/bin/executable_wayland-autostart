@@ -13,6 +13,7 @@ wayvnc 10.69.69.69 & # so i can game on this bitch from work
 dunst &
 waybar &
 flameshot &
+sunshine &
 
 foot --server &
 
