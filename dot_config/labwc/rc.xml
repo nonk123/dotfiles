@@ -60,7 +60,7 @@
             <action name="Execute" command="flameshot gui -c" />
         </keybind>
         <keybind key="S-Print">
-            <action name="Execute" command="flameshot screen -c" />
+            <action name="Execute" command="flameshot full -c" />
         </keybind>
         <!--
         <keybind key="C-Print">
