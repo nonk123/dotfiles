@@ -4,28 +4,27 @@
     "height": 32,
     "spacing": 10,
     "modules-left": [
-        "tray"
-    ],
-    "modules-center": [
         "wlr/taskbar"
     ],
+    "modules-center": [],
     "modules-right": [
+        "sway/language",
         "pulseaudio",
         "temperature",
         "battery",
-        "clock"
+        "clock",
+        "tray"
     ],
+    "sway/language": {
+        "format": "{}"
+    },
     "wlr/taskbar": {
         "all-outputs": true,
         "format": "{icon}",
         "icon-size": 21,
         "tooltip-format": "{title}",
         "on-click": "minimize-raise",
-        "on-click-middle": "close",
-        "rewrite": {
-            "Firefox Web Browser": "Firefox",
-            "Foot Server": "Terminal"
-        }
+        "on-click-middle": "close"
     },
     "tray": {
         "icon-size": 21,
