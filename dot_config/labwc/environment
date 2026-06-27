@@ -10,3 +10,7 @@ XDG_SESSION_TYPE=wayland
 XDG_CURRENT_DESKTOP=wlroots
 
 BEMENU_OPTS=--fn "Monaspace Neon 10" -l 12 -c -n -W 0.43 -f -B 3 -R 3 --fixed-height -w --scrollbar none
+
+__NV_PRIME_RENDER_OFFLOAD=1
+__GLX_VENDOR_LIBRARY_NAME=nvidia
+STEAM_USE_X11=1
