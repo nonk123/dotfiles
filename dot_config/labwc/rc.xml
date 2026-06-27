@@ -2,7 +2,6 @@
 
 <labwc_config>
     <core>
-        <gap>10</gap>
         <decoration>server</decoration>
         <reuseOutputMode>yes</reuseOutputMode>
         <xwaylandPersistence>yes</xwaylandPersistence>
@@ -13,8 +12,7 @@
     </placement>
 
     <theme>
-        <name>nonk</name>
-        <cornerRadius>8</cornerRadius>
+        <name>Pelangi</name>
         <font name="Monaspace Neon" size="10" />
     </theme>
 
