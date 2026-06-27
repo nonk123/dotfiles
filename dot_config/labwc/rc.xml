@@ -25,12 +25,11 @@
         <repeatRate>30</repeatRate>
         <repeatDelay>200</repeatDelay>
         <keybind key="W-Return">
-            <action name="Execute"
-                command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
+            <action name="Execute" command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
         </keybind>
-	<keybind key="C-A-t"> <!-- TODO: deduplicate -->
-            <action name="Execute"
-                command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
+        <!-- TODO: deduplicate -->
+        <keybind key="C-A-t">
+            <action name="Execute" command="bash -c 'footclient; if [[ $? -eq 220 ]]; then foot; fi'" />
         </keybind>
         <keybind key="W-r">
             <action name="Execute" command="bemenu-run" />
@@ -51,8 +50,7 @@
             <action name="Execute" command="volumectl raise" />
         </keybind>
         <keybind key="W-v">
-            <action name="Execute"
-                command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'" />
+            <action name="Execute" command="bash -c 'cliphist list | bemenu | cliphist decode | wl-copy'" />
         </keybind>
         <keybind key="W-p">
             <action name="Execute" command="gopass-clip" />
