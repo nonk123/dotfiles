@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+	<match target="font">
+		<edit name="antialias" mode="assign">
+			<bool>true</bool>
+		</edit>
+		<edit name="hinting" mode="assign">
+			<bool>true</bool>
+		</edit>
+	</match>
+	{{ range list "sans-serif" "serif" "monospace" }}
+	<match target="pattern">
+		<test qual="any" name="family">
+			<string>{{ . }}</string>
+		</test>
+		<edit name="family" mode="append" binding="weak">
+			<string>Noto Color Emoji</string>
+		</edit>
+	</match>
+	{{ end }}
+</fontconfig>

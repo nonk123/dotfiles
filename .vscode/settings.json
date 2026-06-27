@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "fonts.conf": "xml",
+        "config": "json"
+    }
+}
