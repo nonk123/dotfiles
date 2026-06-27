@@ -15,7 +15,7 @@ sudo efibootmgr --create \
  --disk /dev/sda --part 1 \
  --label 'Arch Linux' \
  --loader '\vmlinuz-linux' \
- --unicode 'root=UUID=1446fff4-91d0-48e2-bc13-51471809dafd rw loglevel=3 nowatchdog initrd=\initramfs-linux.img'
+ --unicode 'root=UUID=1446fff4-91d0-48e2-bc13-51471809dafd rw loglevel=3 nowatchdog initrd=\initramfs-linux.img nvidia-drm.modeset=1'
 ```
 
 Modify the `root=UUID=` part to match the UUID of your root partition, e.g.:
