@@ -47,9 +47,8 @@
     "pulseaudio": {
         "on-click": "pavucontrol",
         "scroll-step": 2,
-        "format": "{format_source} {icon}",
-        "format-source": "{volume}%",
-        "format-source-muted": "🔇",
+        "format": "{volume}% {icon}",
+        "format-muted": "🔇",
         "format-icons": {
             "default": [
                 "🔈",
