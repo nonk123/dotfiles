@@ -1,8 +1,13 @@
 {
     "layer": "top",
     "position": "bottom",
-    "height": 32,
-    "spacing": 10,
+    "mod": "dock",
+    "exclusive": true,
+    "gtk-layer-shell": true,
+    "margin-bottom": -1,
+    "passthrough": false,
+    "height": 41,
+    "spacing": 16,
     "modules-left": [
         "wlr/taskbar"
     ],
@@ -37,12 +42,9 @@
         "thermal-zone": 1,
         "warning-threshold": 50,
         "critical-threshold": 65,
-        "format": "{temperatureC}°C {icon}",
-        "format-icons": [
-            "🔥",
-            "♨️",
-            "🌡️"
-        ]
+        "format": "{temperatureC}°C 🌡️",
+        "format-warning": "{temperatureC}°C ♨️",
+        "format-critical": "{temperatureC}°C 🔥"
     },
     "pulseaudio": {
         "on-click": "pavucontrol",
