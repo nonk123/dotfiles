@@ -3,7 +3,7 @@
 WALLPAPER=~/.wallpaper.jpg
 
 if [[ -f "$WALLPAPER" ]]; then
-    swaybg -i "$WALLPAPER" -m fill &
+	swaybg -i "$WALLPAPER" -m fill &
 fi
 
 #wlsunset -l 55.9 -L 43.0 &
@@ -14,6 +14,7 @@ dunst &
 waybar &
 flameshot &
 sunshine &
+steam -silent &
 
 foot --server &
 
