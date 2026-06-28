@@ -5,10 +5,29 @@
 		<edit name="antialias" mode="assign">
 			<bool>true</bool>
 		</edit>
+	</match>
+
+	<match target="font">
+		<edit name="rgba" mode="assign">
+			<const>rgb</const>
+		</edit>
+	</match>
+
+	<match target="font">
 		<edit name="hinting" mode="assign">
 			<bool>true</bool>
 		</edit>
+		<edit name="hintstyle" mode="assign">
+			<const>hintslight</const>
+		</edit>
 	</match>
+
+	<match target="font">
+		<edit name="embeddedbitmap" mode="assign">
+			<bool>false</bool>
+		</edit>
+	</match>
+
 	{{ range list "sans-serif" "serif" "monospace" }}
 	<match target="pattern">
 		<test qual="any" name="family">
