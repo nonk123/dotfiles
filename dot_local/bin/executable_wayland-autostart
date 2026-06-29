@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+WALLPAPER=~/.wallpaper.jpg
+
+if [[ -f "$WALLPAPER" ]]; then
+	swaybg -i "$WALLPAPER" -m fill &
+fi
+
+#wlsunset -l 55.9 -L 43.0 &
+wl-paste --watch cliphist store &
+wayvnc 10.69.69.69 & # so i can code on this bitch from work
+
+dunst &
+waybar &
+flameshot &
+sunshine & # so i can game on this bitch from work
+steam -silent &
+
+foot --server &
+
+v2rayN &
+telegram-desktop &

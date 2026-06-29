@@ -1,4 +1,0 @@
-daemonize = true
-max_history = 50
-synchronize_selection_with_clipboard = true
-clear_history_on_start = false

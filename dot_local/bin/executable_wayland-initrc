@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+/usr/lib/xdg-desktop-portal -r &
+
+source $(which wayland-autostart)
