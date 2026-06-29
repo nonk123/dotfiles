@@ -1,0 +1,8 @@
+finder = "rofi"
+grpc_max_message_size = 8388608
+
+[rofi]
+line_length = 100
+menu_length = 30
+menu_prompt = "Clipcat"
+extra_arguments = ["-mesg", "Please select a clip"]

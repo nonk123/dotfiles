@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+exec /usr/bin/Xorg \
+	-nolisten tcp -nolisten local \
+	-ardelay 200 -arinterval 33 \
+	"$@"

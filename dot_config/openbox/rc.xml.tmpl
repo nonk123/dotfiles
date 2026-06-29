@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<openbox_config>
+	<placement>
+		<policy>Smart</policy>
+		<center>no</center>
+	</placement>
+
+	<theme>
+		<name>Pelangi</name>
+		<font name="Monaspace Neon" size="12" />
+		<titleLayout>N L I M C</titleLayout>
+	</theme>
+
+	<desktops>
+		<number>1</number>
+		<firstdesk>1</firstdesk>
+	</desktops>
+
+	<keyboard>
+		<rebindOnMappingNotify>yes</rebindOnMappingNotify>
+		<chainQuitKey>C-g</chainQuitKey>
+
+		<keybind key="A-Tab">
+			<action name="NextWindow">
+				<dialog>icons</dialog>
+				<raise>yes</raise>
+			</action>
+		</keybind>
+
+		<keybind key="A-S-Tab">
+			<action name="PreviousWindow">
+				<dialog>icons</dialog>
+				<raise>yes</raise>
+			</action>
+		</keybind>
+
+        {{ range list "C-A-t" "W-Return" }}
+		<keybind key="{{ . }}">
+			<action name="Execute">
+				<command>alacritty</command>
+			</action>
+		</keybind>
+        {{ end }}
+
+        {{ range list "C-A-r" "W-r" }}
+		<keybind key="{{ . }}">
+			<action name="Execute">
+				<command>rofi -show run</command>
+			</action>
+		</keybind>
+        {{ end }}
+
+		<keybind key="W-bracketleft">
+			<action name="Execute">
+				<command>volumectl lower</command>
+			</action>
+		</keybind>
+
+		<keybind key="W-bracketright">
+			<action name="Execute">
+				<command>volumectl raise</command>
+			</action>
+		</keybind>
+
+		<keybind key="XF86AudioLowerVolume">
+			<action name="Execute">
+				<command>volumectl lower</command>
+			</action>
+		</keybind>
+
+		<keybind key="XF86AudioRaiseVolume">
+			<action name="Execute">
+				<command>volumectl raise</command>
+			</action>
+		</keybind>
+
+		<keybind key="W-v">
+			<action name="Execute">
+				<command>clipcat-menu</command>
+			</action>
+		</keybind>
+
+		<keybind key="Print">
+			<action name="Execute">
+				<command>flameshot gui -c</command>
+			</action>
+		</keybind>
+
+		<keybind key="S-Print">
+			<action name="Execute">
+				<command>flameshot full -c</command>
+			</action>
+		</keybind>
+
+		<keybind key="A-Print">
+			<action name="Execute">
+				<command>flameshot full -c</command>
+			</action>
+		</keybind>
+	</keyboard>
+</openbox_config>
