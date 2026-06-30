@@ -1,5 +1,5 @@
 /*base background color*/
-@define-color bg_main rgba(25, 25, 25, 0.65);
+@define-color bg_main #2f343f;
 @define-color bg_main_tooltip rgba(0, 0, 0, 0.7);
 
 /*base background color of selections */
@@ -11,9 +11,9 @@
 @define-color border_main rgba(255, 255, 255, 0.2);
 
 /*text color for entries, views and content in general */
-@define-color content_main white;
+@define-color content_main #f8f8f2;
 /*text color for entries that are unselected */
-@define-color content_inactive rgba(255, 255, 255, 0.25);
+@define-color content_inactive #8a8a8a;
 
 * {
     text-shadow: none;
@@ -122,6 +122,11 @@ widget:hover {
     margin-right: 5px;
 }
 
+#tray > widget > image {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 #tray > .passive {
     border-bottom: none;
 }
@@ -134,21 +139,13 @@ widget:hover {
     border-bottom: 3px solid @warning_color;
 }
 
-#pulseaudio {
-    padding-left: 3px;
-    padding-right: 3px;
-}
-
+#pulseaudio,
 #network {
     padding-left: 3px;
     padding-right: 3px;
 }
 
-#language {
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
+#language,
 #clock {
     padding-right: 5px;
     padding-left: 5px;
