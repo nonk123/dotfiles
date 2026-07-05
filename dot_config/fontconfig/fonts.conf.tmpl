@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+
+{{ $emojiFont := "Noto Color Emoji" }}
+
 <fontconfig>
 	<match target="font">
 		<edit name="antialias" mode="assign">
@@ -33,9 +36,18 @@
 		<test qual="any" name="family">
 			<string>{{ . }}</string>
 		</test>
-		<edit name="family" mode="append" binding="weak">
-			<string>Noto Color Emoji</string>
+		<edit name="family" mode="prepend" binding="weak">
+			<string>{{ $emojiFont }}</string>
 		</edit>
 	</match>
 	{{ end }}
+
+	<match target="font">
+		<test name="family" qual="any">
+			<string>{{ $emojiFont }}</string>
+		</test>
+		<edit name="embeddedbitmap" mode="assign">
+			<bool>true</bool>
+		</edit>
+	</match>
 </fontconfig>
