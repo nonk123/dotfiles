@@ -8,7 +8,7 @@ fi
 
 #wlsunset -l 55.9 -L 43.0 &
 wl-paste --watch cliphist store &
-wayvnc 10.69.69.69 & # so i can code on this bitch from work
+wayvnc 10.69.69.69 100.64.0.2 & # so i can code on this bitch from work
 
 dunst &
 waybar &
