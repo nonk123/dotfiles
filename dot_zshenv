@@ -1,6 +1,6 @@
 [[ "$USER" = nonk ]] && export NONK=yesssss # permission to do weird shit?
 
-export VISUAL=code-insiders
+export VISUAL="code-insiders --wait"
 export EDITOR=vim
 
 export LANG=en_US.UTF-8
