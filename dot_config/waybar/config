@@ -13,6 +13,7 @@
     ],
     "modules-center": [],
     "modules-right": [
+        "mango/language",
         "pulseaudio",
         "temperature",
         "clock",
@@ -25,6 +26,11 @@
         "tooltip-format": "{title}",
         "on-click": "minimize-raise",
         "on-click-middle": "close"
+    },
+    "mango/language": {
+        "format": "{short}",
+        "format-us": "US",
+        "format-ru": "RU"
     },
     "tray": {
         "icon-size": 21,
