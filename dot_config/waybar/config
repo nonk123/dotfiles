@@ -28,8 +28,7 @@
         "on-click-middle": "close"
     },
     "mango/language": {
-        "format": "{short}",
-        "format-us": "US",
+        "format-en": "EN",
         "format-ru": "RU"
     },
     "tray": {
