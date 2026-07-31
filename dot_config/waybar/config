@@ -8,10 +8,10 @@
     "passthrough": false,
     "height": 41,
     "spacing": 16,
-    "modules-left": [
+    "modules-left": [],
+    "modules-center": [
         "wlr/taskbar"
     ],
-    "modules-center": [],
     "modules-right": [
         "mango/language",
         "pulseaudio",
