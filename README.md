@@ -36,9 +36,11 @@ And change `initramfs-linux.img` & `vmlinuz-linux` if you are using a different 
 ```sh
 ln -fs .src/aero_arrow default
 ln -fs .src/aero_arrow left_ptr
+ln -fs .src/aero_arrow right_ptr
 ln -fs .src/aero_arrow arrow
 ln -fs .src/aero_arrow top_left_arrow
 ln -fs .src/aero_arrow draft_small
+ln -fs .src/aero_arrow_xl draft_large
 ln -fs .src/aero_beam xterm
 ln -fs .src/aero_beam text
 ln -fs .src/aero_beam ibeam
@@ -48,6 +50,7 @@ ln -fs .src/aero_busy 08e8e1c95fe2fc01f976f1e063a24ccd
 ln -fs .src/aero_cross cross
 ln -fs .src/aero_cross crosshair
 ln -fs .src/aero_cross tcross
+ln -fs .src/aero_cross plus
 ln -fs .src/aero_help help
 ln -fs .src/aero_help question_arrow
 ln -fs .src/aero_help whats_this
