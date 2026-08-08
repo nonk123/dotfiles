@@ -1,5 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 
+include "%L"
+
 <Multi_key> <w> <r> : "🥀"
 <Multi_key> <f> <r> : "🔥"
 <Multi_key> <s> <w> : "卐"
