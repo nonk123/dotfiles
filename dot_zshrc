@@ -67,8 +67,6 @@ function cfg() {
     cfg_file ~/.zshrc
 }
 
-[[ -s "/home/nonk/.bun/_bun" ]] && source "/home/nonk/.bun/_bun"
-
 if which dnscontrol &> /dev/null; then
     eval "$(dnscontrol shell-completion zsh)"
 fi

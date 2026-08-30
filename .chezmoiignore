@@ -1,5 +1,6 @@
 README.md
 UNLICENSE
+
 {{ if eq .chezmoi.os "windows" }}
 .emacs.d # resides in `AppData/Roaming`
 /.authinfo # uses `AppData/Roaming/.authinfo`
