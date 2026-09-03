@@ -50,23 +50,17 @@ function clear-screen-and-scrollback() {
 zle -N clear-screen-and-scrollback
 bindkey '^L' clear-screen-and-scrollback
 
-alias la='/bin/ls --color=auto'
-alias ls='la -A'
-alias ll='ls -lFh'
-
-alias less='less --use-color'
-
-alias grep='grep --color=auto'
-
-function cfg_file() {
-    [[ -f "$1" ]] && source "$1"
-}
-
-function cfg() {
-    cfg_file ~/.zshenv
-    cfg_file ~/.zshrc
-}
-
 if which dnscontrol &> /dev/null; then
     eval "$(dnscontrol shell-completion zsh)"
 fi
+
+alias rm='rm -v'
+alias cp='cp -v'
+alias mv='mv -v'
+
+alias ls='ls --color=auto'
+alias la='ls -A'
+alias ll='ls -lFh'
+
+alias less='less --use-color'
+alias grep='grep --color=auto'

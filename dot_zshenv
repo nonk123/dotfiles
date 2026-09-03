@@ -1,5 +1,3 @@
-[[ "$USER" = nonk ]] && export NONK=yesssss # permission to do weird shit?
-
 export VISUAL="code --wait"
 export EDITOR=vim
 
