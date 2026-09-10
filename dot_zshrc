@@ -61,7 +61,7 @@ alias cp='cp -v'
 alias mv='mv -v'
 
 alias ls='ls -A --color=auto'
-alias ll='ls -lFh'
+alias ll='ls -alFh'
 
 alias less='less --use-color'
 alias grep='grep --color=auto'
