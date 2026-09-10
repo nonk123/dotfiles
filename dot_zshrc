@@ -60,8 +60,7 @@ alias rm='rm -v'
 alias cp='cp -v'
 alias mv='mv -v'
 
-alias ls='ls --color=auto'
-alias la='ls -A'
+alias ls='ls -A --color=auto'
 alias ll='ls -lFh'
 
 alias less='less --use-color'
