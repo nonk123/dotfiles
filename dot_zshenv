@@ -1,4 +1,4 @@
-export VISUAL="cursor --wait"
+export VISUAL="code --wait"
 export EDITOR=vim
 
 export LANG=en_US.UTF-8
