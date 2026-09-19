@@ -2,8 +2,14 @@
 
 include "%L"
 
+<Multi_key> <s> <w> : "卐"
+<Multi_key> <l> <a> : "la yī ya ya yī ya la yō wèi"
+
+<Multi_key> <z> <a> : ":zaebic:"
+<Multi_key> <k> <o> : ":kovarniy2:"
+<Multi_key> <j> <i> : ":jidko_pokakal:"
+<Multi_key> <c> <a> : "🤙"
+<Multi_key> <p> <r> : "🫃"
 <Multi_key> <w> <r> : "🥀"
 <Multi_key> <f> <r> : "🔥"
-<Multi_key> <s> <w> : "卐"
-
-<Multi_key> <l> <a> : "la yī ya ya yī ya la yō wèi"
+<Multi_key> <t> <e> : "🔻🔴🔻"
