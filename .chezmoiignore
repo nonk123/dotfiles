@@ -9,5 +9,5 @@ AppData
 Documents # pwsh profile
 {{ end }}
 
-# My misc. tweaks...
 *.reg
+dconf.ini
