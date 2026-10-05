@@ -1,4 +1,5 @@
 {
+    "editor.formatOnSave": true,
     "files.associations": {
         "fonts.conf": "xml",
         "config": "json"
