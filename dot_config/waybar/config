@@ -1,13 +1,16 @@
 {
     "layer": "top",
-    "position": "bottom",
+    "position": "top",
     "mod": "dock",
     "exclusive": true,
     "gtk-layer-shell": true,
     "passthrough": false,
     "height": 32,
-    "spacing": 16,
-    "modules-left": [],
+    "spacing": 8,
+    "modules-left": [
+        "mango/workspaces",
+        "mango/layout"
+    ],
     "modules-center": [
         "wlr/taskbar"
     ],
@@ -16,8 +19,15 @@
         "pulseaudio",
         "temperature",
         "clock",
+        "user",
         "tray"
     ],
+    "mango/layout": {},
+    "mango/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "on-click-right": "toggle"
+    },
     "wlr/taskbar": {
         "all-outputs": true,
         "format": "{icon}",
@@ -61,5 +71,8 @@
                 "🔊"
             ]
         }
+    },
+    "user": {
+        "format": "up {work_d}d {work_H}:{work_M}"
     }
 }

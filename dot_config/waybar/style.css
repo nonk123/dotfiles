@@ -1,11 +1,17 @@
 * {
     text-shadow: none;
     box-shadow: none;
+
     border: none;
     border-radius: 0;
+
+    padding: 0;
+    margin: 0;
+
     font-family: Ubuntu, sans-serif;
     font-weight: 600;
     font-size: 14px;
+
     transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -22,12 +28,15 @@ tooltip {
     background: #2f343f;
     margin-top: 2px;
     margin-bottom: 2px;
-    margin-left: 0;
-    margin-right: 0;
 }
 
-label.module {
+label.module,
+#user > label {
     padding: 0 8px;
+}
+
+button {
+    padding: 0 5px;
 }
 
 .modules-left .module:first-child {
