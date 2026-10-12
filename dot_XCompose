@@ -13,3 +13,54 @@ include "%L"
 <Multi_key> <w> <r> : "🥀"
 <Multi_key> <f> <r> : "🔥"
 <Multi_key> <t> <e> : "🔻🔴🔻"
+
+<Multi_key> <asterisk> <a> : "α" U03B1 # ALPHA
+<Multi_key> <asterisk> <b> : "β" U03B2 # BETA
+<Multi_key> <asterisk> <g> : "γ" U03B3 # GAMMA
+<Multi_key> <asterisk> <d> : "δ" U03B4 # DELTA
+<Multi_key> <asterisk> <e> : "ε" U03B5 # EPSILON
+<Multi_key> <asterisk> <z> : "ζ" U03B6 # ZETA
+<Multi_key> <asterisk> <h> : "η" U03B7 # ETA
+<Multi_key> <asterisk> <q> : "θ" U03B8 # THETA
+<Multi_key> <asterisk> <i> : "ι" U03B9 # IOTA
+<Multi_key> <asterisk> <k> : "κ" U03BA # KAPPA
+<Multi_key> <asterisk> <l> : "λ" U03BB # LAMBDA
+<Multi_key> <asterisk> <m> : "μ" U03BC # MU
+<Multi_key> <asterisk> <n> : "ν" U03BD # NU
+<Multi_key> <asterisk> <c> : "ξ" U03BE # XI
+<Multi_key> <asterisk> <o> : "ο" U03BF # OMICRON
+<Multi_key> <asterisk> <p> : "π" U03C0 # PI
+<Multi_key> <asterisk> <r> : "ρ" U03C1 # RHO
+<Multi_key> <asterisk> <s> : "σ" U03C3 # SIGMA
+<Multi_key> <asterisk> <t> : "τ" U03C4 # TAU
+<Multi_key> <asterisk> <u> : "υ" U03C5 # UPSILON
+<Multi_key> <asterisk> <f> : "φ" U03C6 # PHI
+<Multi_key> <asterisk> <x> : "χ" U03C7 # CHI
+<Multi_key> <asterisk> <y> : "ψ" U03C8 # PSI
+<Multi_key> <asterisk> <w> : "ω" U03C9 # OMEGA
+<Multi_key> <asterisk> <v> : "ς" U03C2 # GREEK SMALL LETTER FINAL SIGMA
+
+<Multi_key> <asterisk> <A> : "Α" U0391 # ALPHA
+<Multi_key> <asterisk> <B> : "Β" U0392 # BETA
+<Multi_key> <asterisk> <G> : "Γ" U0393 # GAMMA
+<Multi_key> <asterisk> <D> : "Δ" U0394 # DELTA
+<Multi_key> <asterisk> <E> : "Ε" U0395 # EPSILON
+<Multi_key> <asterisk> <Z> : "Ζ" U0396 # ZETA
+<Multi_key> <asterisk> <H> : "Η" U0397 # ETA
+<Multi_key> <asterisk> <Q> : "Θ" U0398 # THETA
+<Multi_key> <asterisk> <I> : "Ι" U0399 # IOTA
+<Multi_key> <asterisk> <K> : "Κ" U039A # KAPPA
+<Multi_key> <asterisk> <L> : "Λ" U039B # LAMBDA
+<Multi_key> <asterisk> <M> : "Μ" U039C # MU
+<Multi_key> <asterisk> <N> : "Ν" U039D # NU
+<Multi_key> <asterisk> <C> : "Ξ" U039E # XI
+<Multi_key> <asterisk> <O> : "Ο" U039F # OMICRON
+<Multi_key> <asterisk> <P> : "Π" U03A0 # PI
+<Multi_key> <asterisk> <R> : "Ρ" U03A1 # RHO
+<Multi_key> <asterisk> <S> : "Σ" U03A3 # SIGMA
+<Multi_key> <asterisk> <T> : "Τ" U03A4 # TAU
+<Multi_key> <asterisk> <U> : "Υ" U03A5 # UPSILON
+<Multi_key> <asterisk> <F> : "Φ" U03A6 # PHI
+<Multi_key> <asterisk> <X> : "Χ" U03A7 # CHI
+<Multi_key> <asterisk> <Y> : "Ψ" U03A8 # PSI
+<Multi_key> <asterisk> <W> : "Ω" U03A9 # OMEGA
