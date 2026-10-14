@@ -1,8 +1,10 @@
 context.modules = [
 {   name = libpipewire-module-filter-chain
     args = {
+        node.name =  "rnnoise_source"
         node.description =  "Noise Canceling source"
         media.name =  "Noise Canceling source"
+
         filter.graph = {
             nodes = [
                 {
@@ -18,13 +20,14 @@ context.modules = [
                 }
             ]
         }
+
         capture.props = {
             node.name =  "capture.rnnoise_source"
             node.passive = true
             audio.rate = 48000
         }
+
         playback.props = {
-            node.name =  "rnnoise_source"
             media.class = Audio/Source
             audio.rate = 48000
             priority.driver = 2000
