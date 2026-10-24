@@ -45,9 +45,9 @@
         "show-passive-items": true
     },
     "clock": {
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format": "{:%H:%M:%S}",
-        "format-alt": "{:%Y-%m-%d}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "format": "{:%a 🕔 %H:%M:%S}",
+        "format-alt": "{:%a 📅 %d.%m.%Y}",
         "interval": 1
     },
     "temperature": {
