@@ -47,7 +47,7 @@ tooltip label {
 }
 
 #custom-os_button {
-    padding: 0 4px;
+    padding: 0 5px;
 }
 
 button:hover,
@@ -57,7 +57,7 @@ widget:hover {
 }
 
 #tray image {
-    padding: 0 8px;
+    padding: 0 5px;
 }
 
 #taskbar button:first-child {
