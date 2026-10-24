@@ -13,28 +13,26 @@
     font-size: 14px;
 
     transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    color: #{{ .wm.theme.fg }};
 }
 
 window#waybar {
-    background: transparent;
-    color: #f8f8f2;
+    background: none;
 }
-
-/* https://colorhunt.co/palette/09232812544f2a835f8bbb92 */
 
 .module,
 tooltip {
-    background: rgb(9, 35, 40);
-    border: 2px rgb(18, 84, 79) solid;
+    background: #{{ .wm.theme.bg }};
+    border: 2px #{{ .wm.theme.border }} solid;
 }
 
 button:hover,
 widget:hover {
-    background: rgb(42, 131, 95);
+    background: #{{ .wm.theme.accent }};
 }
 
 #taskbar button.active {
-    background: rgb(18, 84, 79);
+    background: #{{ .wm.theme.border }};
 }
 
 label.module,
@@ -75,8 +73,4 @@ tooltip,
 #tray *:last-child {
     border-top-right-radius: {{ .wm.innerBorderRadius }}px;
     border-bottom-right-radius: {{ .wm.innerBorderRadius }}px;
-}
-
-#temperature.critical {
-    color: #dd7700;
 }

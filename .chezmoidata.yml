@@ -6,3 +6,8 @@ wm:
   outerGap: 6
   outerBorderRadius: 8
   innerBorderRadius: 6
+  theme: # https://colorhunt.co/palette/09232812544f2a835f8bbb92
+    fg: f8f8f2
+    bg: 092328
+    border: 12544F
+    accent: 2A835F
