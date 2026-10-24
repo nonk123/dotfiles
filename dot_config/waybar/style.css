@@ -20,12 +20,20 @@ window#waybar {
     color: #f8f8f2;
 }
 
+/* https://colorhunt.co/palette/09232812544f2a835f8bbb92 */
+
+.module,
 tooltip {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgb(9, 35, 40);
 }
 
-.module {
-    background: #2f343f;
+button:hover,
+widget:hover {
+    background: rgb(42, 131, 95);
+}
+
+#taskbar button.active {
+    background: rgb(18, 84, 79);
 }
 
 label.module,
@@ -42,36 +50,28 @@ tooltip,
     border-radius: 5px;
 }
 
-tooltip label {
-    color: #f8f8f2;
-}
-
 #custom-os_button {
     padding: 0 5px;
 }
 
-button:hover,
-widget:hover {
-    background: rgba(200, 200, 200, 0.3);
-    color: #f8f8f2;
+#custom-os_button:hover {
+    background: none;
 }
 
 #tray image {
     padding: 0 5px;
 }
 
-#taskbar button:first-child {
+.module button:first-child,
+#tray *:first-child {
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
 }
 
-#taskbar button:last-child {
+.module button:last-child,
+#tray *:last-child {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-}
-
-#taskbar button.active {
-    background: rgba(255, 255, 255, 0.3);
 }
 
 #temperature.critical {
