@@ -3,6 +3,6 @@ emailAddresses:
   - me@nonk.dev
   - contact@schwung.us
 wm:
-  outerGap: 4
+  outerGap: 6
   outerBorderRadius: 8
   innerBorderRadius: 6
