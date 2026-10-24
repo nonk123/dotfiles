@@ -25,6 +25,7 @@ window#waybar {
 .module,
 tooltip {
     background: rgb(9, 35, 40);
+    border: 2px rgb(18, 84, 79) solid;
 }
 
 button:hover,
@@ -47,7 +48,7 @@ button {
 
 tooltip,
 .module {
-    border-radius: 5px;
+    border-radius: {{ .wm.outerBorderRadius }}px;
 }
 
 #custom-os_button {
@@ -55,7 +56,9 @@ tooltip,
 }
 
 #custom-os_button:hover {
+    margin: 0 2px;
     background: none;
+    border: none;
 }
 
 #tray image {
@@ -64,14 +67,14 @@ tooltip,
 
 .module button:first-child,
 #tray *:first-child {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    border-top-left-radius: {{ .wm.innerBorderRadius }}px;
+    border-bottom-left-radius: {{ .wm.innerBorderRadius }}px;
 }
 
 .module button:last-child,
 #tray *:last-child {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: {{ .wm.innerBorderRadius }}px;
+    border-bottom-right-radius: {{ .wm.innerBorderRadius }}px;
 }
 
 #temperature.critical {
