@@ -1,14 +1,13 @@
 {
     "layer": "top",
     "position": "top",
-    "mod": "dock",
     "exclusive": true,
-    "gtk-layer-shell": true,
     "passthrough": false,
     "height": 28,
-    "spacing": 8,
+    "spacing": 6,
     "margin": "4 4 0 4",
     "modules-left": [
+        "custom/os_button",
         "mango/workspaces",
         "mango/layout"
     ],
@@ -75,5 +74,16 @@
     },
     "user": {
         "format": "⏳ {work_d}d {work_H}:{work_M}"
+    },
+    "custom/os_button": {
+        "tooltip": false,
+        "image-path": "{{ .chezmoi.homeDir }}/.config/waybar/icon.png",
+        "menu": "on-click",
+        "menu-file": "{{ .chezmoi.homeDir }}/.config/waybar/menu.xml",
+        "menu-actions": {
+            "apply": "chezmoi apply",
+            "reload-waybar-config": "chezmoi apply; pkill -SIGUSR2 waybar",
+            "restart-mangowm": "mmsg dispatch quit"
+        }
     }
 }
