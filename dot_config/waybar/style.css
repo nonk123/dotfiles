@@ -26,8 +26,6 @@ tooltip {
 
 .module {
     background: #2f343f;
-    margin-top: 2px;
-    margin-bottom: 2px;
 }
 
 label.module,
@@ -37,14 +35,6 @@ label.module,
 
 button {
     padding: 0 5px;
-}
-
-.modules-left .module:first-child {
-    margin-left: 2px;
-}
-
-.modules-right .module:last-child {
-    margin-right: 2px;
 }
 
 tooltip,

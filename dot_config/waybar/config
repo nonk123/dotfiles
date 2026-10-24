@@ -5,8 +5,9 @@
     "exclusive": true,
     "gtk-layer-shell": true,
     "passthrough": false,
-    "height": 32,
+    "height": 28,
     "spacing": 8,
+    "margin": "4 4 0 4",
     "modules-left": [
         "mango/workspaces",
         "mango/layout"
