@@ -73,6 +73,6 @@
         }
     },
     "user": {
-        "format": "up {work_d}d {work_H}:{work_M}"
+        "format": "⏳ {work_d}d {work_H}:{work_M}"
     }
 }
