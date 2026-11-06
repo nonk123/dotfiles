@@ -16,12 +16,13 @@
     color: #{{ .wm.theme.fg }};
 }
 
-window#waybar {
+window#waybar,
+tooltip {
     background: none;
 }
 
 .module,
-tooltip {
+tooltip label {
     background: #{{ .wm.theme.bg }};
     border: 2px #{{ .wm.theme.border }} solid;
 }
@@ -36,7 +37,8 @@ widget:hover {
 }
 
 label.module,
-#user > label {
+#user > label,
+tooltip label {
     padding: 0 8px;
 }
 
@@ -44,7 +46,7 @@ button {
     padding: 0 5px;
 }
 
-tooltip,
+tooltip label,
 .module {
     border-radius: {{ .wm.outerBorderRadius }}px;
 }
