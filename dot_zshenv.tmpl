@@ -4,6 +4,18 @@ export EDITOR=vim
 export LANG=en_US.UTF-8
 export LC_ALL=ru_RU.UTF-8 LANGUAGE=$LANG
 
+export BEMENU_OPTS="\
+--fn 'Monaspace Neon 10' -l 12 -c -n -W 0.43 -f -B 3 \
+--fixed-height -w --scrollbar none \
+-R {{ .wm.outerBorderRadius }} \
+--bdr #{{ .wm.theme.border }} \
+--tf #{{ .wm.theme.fg }} --tb #{{ .wm.theme.bg }} \
+--ff #{{ .wm.theme.fg }} --fb #{{ .wm.theme.bg }} \
+--nf #{{ .wm.theme.fg }} --nb #{{ .wm.theme.bg }} \
+--af #{{ .wm.theme.fg }} --ab #{{ .wm.theme.bg }} \
+--sf #{{ .wm.theme.fg }} --sb #{{ .wm.theme.bg }} \
+--hf #{{ .wm.theme.fg }} --hb #{{ .wm.theme.accent }}"
+
 export SSH_AGENT_PID=
 export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh"
 
