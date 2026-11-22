@@ -2,7 +2,8 @@
     "editor.formatOnSave": true,
     "files.associations": {
         "fonts.conf": "xml",
-        "config": "json"
+        "config": "json",
+        "*.conf.tmpl": "properties"
     },
     "css.validate": false
 }
