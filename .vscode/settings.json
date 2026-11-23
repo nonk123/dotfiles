@@ -3,7 +3,8 @@
     "files.associations": {
         "fonts.conf": "xml",
         "config": "json",
-        "*.conf.tmpl": "properties"
+        "*.conf.tmpl": "properties",
+        "*.toml.tmpl": "toml"
     },
     "css.validate": false
 }
