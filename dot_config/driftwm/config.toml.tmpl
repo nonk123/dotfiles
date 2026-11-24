@@ -639,7 +639,7 @@ path    = "xwayland-satellite"  # path to xwayland-satellite binary ($PATH looku
 # #   export __GL_VRR_ALLOWED=0
 # #   export __GL_MaxFramesAllowed=1
 # #   export NVD_BACKEND=direct
-wait_for_frame_completion = false  # GPU fence wait before every page flip (already automatic where the driver needs it)
+wait_for_frame_completion = true   # GPU fence wait before every page flip (already automatic where the driver needs it)
 disable_direct_scanout = false     # always composite with EGL
 disable_hardware_cursor = false    # draw the cursor into the frame (direct scan-out stays on); fixes a stuttering cursor on NVIDIA
 # FPS cap for screen recording and casting

@@ -30,6 +30,12 @@ export CC=/usr/bin/gcc
 export CXX=/usr/bin/g++
 export CMAKE_EXPORT_COMPILE_COMMANDS=ON
 
+export SMITHAY_USE_LEGACY=1 # legacy DRM API instead of atomic modesetting
+export __GL_GSYNC_ALLOWED=0
+export __GL_VRR_ALLOWED=0
+export __GL_MaxFramesAllowed=1
+export NVD_BACKEND=direct
+
 typeset -U path PATH
 
 path=( \
