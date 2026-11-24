@@ -68,10 +68,10 @@ suspend_on_close = false
 # # Bring windows still open at logout back as suspended windows on the next
 # # launch (they need a .desktop entry; nothing auto-launches). Per window: the
 # # `restore_windows` rule.
-restore_windows = true
+restore_windows = false
 
 # # Restore each output's camera and zoom on the next launch.
-restore_camera = true
+restore_camera = false
 
 # # Keep bookmarks changed at runtime (set-bookmark, `msg bookmark`) across
 # # restarts.
@@ -199,9 +199,8 @@ inactive_opacity = 0.5      # cursor opacity on non-active outputs (0.0–1.0)
 # mouse_speed = 1.0           # mouse-wheel zoom multiplier (1.0 = direct, 0 = off)
 # touch_speed = 1.0           # touchscreen zoom multiplier (1.0 = direct, 0 = off)
 # fit_padding = 80.0          # screen px kept around zoom-to-fit
-# reset_on_new_window = false # zoom to 1.0 when a new window opens
-# reset_on_activation = true  # zoom to 1.0 when an off-screen window asks
-# for focus
+reset_on_new_window = false # zoom to 1.0 when a new window opens
+reset_on_activation = false  # zoom to 1.0 when an off-screen window asks for focus
 # interact_min = 0.5          # zoom below which canvas windows take no
 # pointer input: a left click navigates to the
 # window, a drag moves it. 0 disables. The zoom
